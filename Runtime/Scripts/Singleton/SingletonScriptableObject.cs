@@ -7,7 +7,6 @@ namespace HHG.Common
 {
 	public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 	{
-
 		private static string resourcePath => $"{typeof(T)}";
 		private static string assetPath => $"Assets/Resources/{resourcePath}.asset";
 
