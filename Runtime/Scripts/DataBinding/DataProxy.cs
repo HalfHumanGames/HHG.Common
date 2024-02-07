@@ -36,14 +36,8 @@ namespace HHG.Common
             return binding;
         }
 
-        public void Unbind(DataBinding<TMember> binding)
-        {
-            bindings.Remove(binding);
-        }
+        public void Unbind(DataBinding<TMember> binding) => bindings.Remove(binding);
 
-        public static implicit operator TMember(DataProxy<TMember> dataBinding)
-        {
-            return dataBinding.getter();
-        }
+        public static implicit operator TMember(DataProxy<TMember> proxy) => proxy.getter();
     }
 }

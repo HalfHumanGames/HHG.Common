@@ -13,14 +13,10 @@ namespace HHG.Common
             setter = set;
         }
 
-        public void Set(TMember value)
-        {
-            setter(value);
-        }
+        public void Set(TMember value) => setter(value);
 
-        public void Release()
-        {
-            proxy.Unbind(this);
-        }
+        public void Release() => proxy.Unbind(this);
+
+        public static implicit operator TMember(DataBinding<TMember> binding) => binding.proxy;
     }
 }
