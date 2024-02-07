@@ -7,8 +7,7 @@ namespace HHG.Common
     {
         private readonly Func<TMember> getter;
         private readonly Action<TMember> setter;
-
-        internal readonly List<DataBinding<TMember>> bindings = new List<DataBinding<TMember>>();
+        private readonly List<DataBinding<TMember>> bindings = new List<DataBinding<TMember>>();
 
         public TMember Value
         {
@@ -23,10 +22,22 @@ namespace HHG.Common
             }
         }
 
-        internal DataProxy(Func<TMember> get, Action<TMember> set)
+        public DataProxy(Func<TMember> get, Action<TMember> set)
         {
             getter = get;
             setter = set;
+        }
+
+        public DataBinding<TMember> Bind(Action<TMember> bind)
+        {
+            DataBinding<TMember> binding = new DataBinding<TMember>(this, bind);
+            bindings.Add(binding);
+            return binding;
+        }
+
+        public void Unbind(DataBinding<TMember> binding)
+        {
+            bindings.Remove(binding);
         }
 
         public static implicit operator TMember(DataProxy<TMember> dataBinding)

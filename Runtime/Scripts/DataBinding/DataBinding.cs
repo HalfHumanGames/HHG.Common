@@ -20,7 +20,7 @@ namespace HHG.Common
 
         public void Release()
         {
-            proxy.bindings.Remove(this);
+            proxy.Unbind(this);
         }
     }
 }
