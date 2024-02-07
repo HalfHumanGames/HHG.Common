@@ -31,6 +31,7 @@ namespace HHG.Common
         public DataBinding<TMember> Bind(Action<TMember> bind)
         {
             DataBinding<TMember> binding = new DataBinding<TMember>(this, bind);
+            binding.Set(getter());
             bindings.Add(binding);
             return binding;
         }
