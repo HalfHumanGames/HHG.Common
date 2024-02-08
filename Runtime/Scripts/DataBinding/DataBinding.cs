@@ -7,10 +7,10 @@ namespace HHG.Common
         private readonly DataProxy<TMember> proxy;
         private readonly Action<TMember> setter;
 
-        public DataBinding(DataProxy<TMember> source, Action<TMember> set)
+        public DataBinding(DataProxy<TMember> source, Action<TMember> set = null)
         {
             proxy = source;
-            setter = set;
+            setter = set ?? (v => { });
         }
 
         public void Set(TMember value) => setter(value);
