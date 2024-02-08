@@ -28,7 +28,7 @@ namespace HHG.Common
             setter = set;
         }
 
-        public DataBinding<TMember> Bind(Action<TMember> bind)
+        public DataBinding<TMember> Bind(Action<TMember> bind = null)
         {
             DataBinding<TMember> binding = new DataBinding<TMember>(this, bind);
             binding.Set(getter());
