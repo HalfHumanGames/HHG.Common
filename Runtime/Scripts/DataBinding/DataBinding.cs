@@ -4,8 +4,6 @@ namespace HHG.Common
 {
     internal class DataBinding<T> : IDataProxy<T>
     {
-        public static readonly DataBinding<T> Empty = new DataBinding<T>();
-
         private readonly DataProxy<T> proxy;
         private readonly Action<T> setter;
 
