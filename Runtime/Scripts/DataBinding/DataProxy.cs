@@ -38,6 +38,6 @@ namespace HHG.Common
 
         public void Unbind(DataBinding<TMember> binding) => bindings.Remove(binding);
 
-        public static implicit operator TMember(DataProxy<TMember> proxy) => proxy.getter();
+        public static implicit operator TMember(DataProxy<TMember> proxy) => proxy == null ? default : proxy.getter();
     }
 }
