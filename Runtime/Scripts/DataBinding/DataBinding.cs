@@ -2,14 +2,14 @@ using System;
 
 namespace HHG.Common
 {
-    public class DataBinding<TMember>
+    public class DataBinding<T>
     {
-        public static readonly DataBinding<TMember> Empty = new DataBinding<TMember>();
+        public static readonly DataBinding<T> Empty = new DataBinding<T>();
 
-        private readonly DataProxy<TMember> proxy;
-        private readonly Action<TMember> setter;
+        private readonly DataProxy<T> proxy;
+        private readonly Action<T> setter;
 
-        public TMember Value
+        public T Value
         {
             get => proxy;
             set {
@@ -20,16 +20,16 @@ namespace HHG.Common
             }
         }
 
-        internal DataBinding(DataProxy<TMember> source = null, Action<TMember> set = null)
+        internal DataBinding(DataProxy<T> source = null, Action<T> set = null)
         {
             proxy = source;
             setter = set;
         }
 
-        internal void Set(TMember value) => setter?.Invoke(value);
+        internal void Set(T value) => setter?.Invoke(value);
 
         public void Release() => proxy?.Unbind(this);
 
-        public static implicit operator TMember(DataBinding<TMember> binding) => binding.proxy;
+        public static implicit operator T(DataBinding<T> binding) => binding.proxy;
     }
 }

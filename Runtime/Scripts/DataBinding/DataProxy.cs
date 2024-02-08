@@ -3,41 +3,41 @@ using System.Collections.Generic;
 
 namespace HHG.Common
 {
-    public class DataProxy<TMember>
+    public class DataProxy<T>
     {
-        private readonly Func<TMember> getter;
-        private readonly Action<TMember> setter;
-        private readonly List<DataBinding<TMember>> bindings = new List<DataBinding<TMember>>();
+        private readonly Func<T> getter;
+        private readonly Action<T> setter;
+        private readonly List<DataBinding<T>> bindings = new List<DataBinding<T>>();
 
-        public TMember Value
+        public T Value
         {
             get => getter();
             set
             {
                 setter(value);
-                foreach (DataBinding<TMember> binding in bindings)
+                foreach (DataBinding<T> binding in bindings)
                 {
                     binding.Set(value);
                 }
             }
         }
 
-        public DataProxy(Func<TMember> get, Action<TMember> set)
+        public DataProxy(Func<T> get, Action<T> set)
         {
             getter = get;
             setter = set;
         }
 
-        public DataBinding<TMember> Bind(Action<TMember> bind = null)
+        public DataBinding<T> Bind(Action<T> bind = null)
         {
-            DataBinding<TMember> binding = new DataBinding<TMember>(this, bind);
+            DataBinding<T> binding = new DataBinding<T>(this, bind);
             binding.Set(getter());
             bindings.Add(binding);
             return binding;
         }
 
-        public void Unbind(DataBinding<TMember> binding) => bindings.Remove(binding);
+        public void Unbind(DataBinding<T> binding) => bindings.Remove(binding);
 
-        public static implicit operator TMember(DataProxy<TMember> proxy) => proxy == null ? default : proxy.getter();
+        public static implicit operator T(DataProxy<T> proxy) => proxy == null ? default : proxy.getter();
     }
 }
