@@ -2,7 +2,7 @@ using System;
 
 namespace HHG.Common
 {
-    public class DataBinding<T>
+    internal class DataBinding<T> : IDataProxy<T>
     {
         public static readonly DataBinding<T> Empty = new DataBinding<T>();
 
@@ -27,6 +27,8 @@ namespace HHG.Common
         }
 
         internal void Set(T value) => setter?.Invoke(value);
+
+        public IDataProxy<T> Bind(Action<T> bind = null) => proxy?.Bind(bind);
 
         public void Release() => proxy?.Unbind(this);
 

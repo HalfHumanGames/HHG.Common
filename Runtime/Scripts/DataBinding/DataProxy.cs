@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HHG.Common
 {
-    public class DataProxy<T>
+    public class DataProxy<T> : IDataProxy<T>
     {
         private readonly Func<T> getter;
         private readonly Action<T> setter;
@@ -28,7 +28,7 @@ namespace HHG.Common
             setter = set;
         }
 
-        public DataBinding<T> Bind(Action<T> bind = null)
+        public IDataProxy<T> Bind(Action<T> bind = null)
         {
             DataBinding<T> binding = new DataBinding<T>(this, bind);
             binding.Set(getter());
@@ -36,7 +36,9 @@ namespace HHG.Common
             return binding;
         }
 
-        public void Unbind(DataBinding<T> binding) => bindings.Remove(binding);
+        internal void Unbind(DataBinding<T> binding) => bindings.Remove(binding);
+
+        public void Release() { }
 
         public static implicit operator T(DataProxy<T> proxy) => proxy == null ? default : proxy.getter();
     }
