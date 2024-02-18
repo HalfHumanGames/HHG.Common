@@ -40,6 +40,8 @@ namespace HHG.Common
 
         public void Release() { }
 
+        public override string ToString() => Value.ToString();
+
         public static implicit operator T(DataProxy<T> proxy) => proxy == null ? default : proxy.getter();
     }
 }
