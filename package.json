@@ -5,9 +5,9 @@
   "description": "Common dependencies for our Unity packages",
   "unity": "2020.3",
   "unityRelease": "6f1",
-  "documentationUrl": "https://github.com/HalfHumanGames/Common/blob/main/README.md",
-  "changelogUrl": "https://github.com/HalfHumanGames/Common/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/HalfHumanGames/Common/blob/main/LICENSE",
+  "documentationUrl": "https://github.com/HalfHumanGames/HHG.Common/blob/main/README.md",
+  "changelogUrl": "https://github.com/HalfHumanGames/HHG.Common/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/HalfHumanGames/HHG.Common/blob/main/LICENSE",
   "keywords": [
     "Common",
     "Shared",
