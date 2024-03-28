@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class FixPosition : MonoBehaviour
     {

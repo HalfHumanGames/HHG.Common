@@ -2,7 +2,7 @@
 //using System.Collections.Generic;
 //using System;
 
-//namespace HHG.Common
+//namespace HHG.Common.Runtime
 //{
 //    /// <summary>
 //    /// Convenience way to create objects in the hierarchy that are a bit like prefabs, except that they

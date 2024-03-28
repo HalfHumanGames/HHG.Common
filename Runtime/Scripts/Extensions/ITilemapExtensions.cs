@@ -1,6 +1,6 @@
 using UnityEngine.Tilemaps;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class ITilemapExtensions
     {

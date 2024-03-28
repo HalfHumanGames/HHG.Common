@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class Database
     {

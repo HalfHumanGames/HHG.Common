@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class ZipArchiveExtensions
     {

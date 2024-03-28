@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class UITooltip : MonoBehaviour

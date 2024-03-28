@@ -1,4 +1,4 @@
-using HHG.Common;
+using HHG.Common.Runtime;
 using UnityEngine;
 
 namespace Safeguard

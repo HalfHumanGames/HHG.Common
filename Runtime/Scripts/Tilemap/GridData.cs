@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     [RequireComponent(typeof(Grid))]
     public class GridData : DataBase<Vector3Int, object>

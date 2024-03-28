@@ -1,4 +1,4 @@
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class UnixUtility
     {

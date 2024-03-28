@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class FollowMouse : MonoBehaviour
     {

@@ -17,7 +17,10 @@
   "author": {
     "name": "Half Human Games",
     "email": "contact@halfhumangames.com",
-    "url": "https://halfhumangames.com/"
+    "url": "https://github.com/HalfHumanGames"
   },
-  "type": "library"
+  "dependencies": {
+    "com.unity.splines": "2.4",
+    "com.alexeytaranov.serializereferencedropdown": "https://github.com/AlexeyTaranov/SerializeReferenceDropdown.git"
+  }
 }

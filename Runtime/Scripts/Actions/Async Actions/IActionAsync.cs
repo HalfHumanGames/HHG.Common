@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public interface IActionAsync
     {

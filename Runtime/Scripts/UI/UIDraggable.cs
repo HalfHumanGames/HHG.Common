@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class UIDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler
     {

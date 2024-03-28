@@ -1,10 +1,10 @@
-using HHG.Common;
+using HHG.Common.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class FloodFill
     {

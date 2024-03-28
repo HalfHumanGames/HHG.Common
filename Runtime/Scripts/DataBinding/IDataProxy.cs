@@ -1,6 +1,6 @@
 using System;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public interface IDataProxy<T>
     {

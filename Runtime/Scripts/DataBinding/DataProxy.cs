@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class DataProxy<T> : IDataProxy<T>
     {

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class Typewriter
     {

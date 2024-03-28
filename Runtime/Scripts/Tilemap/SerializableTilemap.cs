@@ -5,7 +5,7 @@ using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     [Serializable]
     public class SerializableTilemap

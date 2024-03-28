@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public interface IHealth : IReadOnlyHealth
     {

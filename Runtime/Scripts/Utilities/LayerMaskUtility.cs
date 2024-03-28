@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class LayerMaskUtility
     {

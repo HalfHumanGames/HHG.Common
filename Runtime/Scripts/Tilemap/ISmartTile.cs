@@ -1,6 +1,6 @@
 using Safeguard;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public interface ISmartTile
     {

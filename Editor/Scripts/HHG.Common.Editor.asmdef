@@ -1,0 +1,19 @@
+{
+    "name": "HHG.Common.Editor",
+    "rootNamespace": "HHG.Common.Editor",
+    "references": [
+        "GUID:8413476b1284ef74fa7300662f10cca9",
+        "GUID:3a9781db4804a9945b9883f3a7c46d45"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

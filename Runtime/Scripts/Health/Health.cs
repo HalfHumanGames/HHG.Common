@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class Health : MonoBehaviour, IHealth
     {

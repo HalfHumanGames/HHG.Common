@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEditor;
 #endif
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public abstract class AssetExporterBase : MonoBehaviour
     {

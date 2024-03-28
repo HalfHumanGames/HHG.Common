@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class ObjectExtensions
     {

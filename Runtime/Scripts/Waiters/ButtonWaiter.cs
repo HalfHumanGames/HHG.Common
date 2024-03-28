@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine.InputSystem;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class ButtonWaiter
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class MetaBehaviourExtensions
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     internal class DataBinding<T> : IDataProxy<T>
     {

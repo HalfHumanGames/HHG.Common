@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class NavMeshPathExtensions
     {

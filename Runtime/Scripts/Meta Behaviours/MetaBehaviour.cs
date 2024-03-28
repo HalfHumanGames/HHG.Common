@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     [System.Serializable]
     public class MetaBehaviour : ICloneable<MetaBehaviour>

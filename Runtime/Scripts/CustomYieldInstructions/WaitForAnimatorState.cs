@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public class WaitForAnimatorState : CustomYieldInstruction
     {

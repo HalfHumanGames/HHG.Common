@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public interface ITaggedTile
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     public static class TextInterpolator
     {

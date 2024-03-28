@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
     [InitializeOnLoad]
     public static class AssetExporterSceneSaver

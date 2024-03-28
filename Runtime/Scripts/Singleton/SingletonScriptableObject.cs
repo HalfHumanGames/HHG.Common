@@ -3,7 +3,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-namespace HHG.Common
+namespace HHG.Common.Runtime
 {
 	public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 	{
