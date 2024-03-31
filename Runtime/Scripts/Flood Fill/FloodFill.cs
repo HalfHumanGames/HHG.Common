@@ -78,7 +78,8 @@ namespace HHG.Common.Runtime
 
                 if (IsIndexObstacle(x, y))
                 {
-                    if (fillobstacle)
+                    // Don't fill obstacle if start position
+                    if (result.Area.Count > 0 && fillobstacle)
                     {
                         visited[x, y] = true;
                         result.Area.Add(position);
