@@ -64,6 +64,11 @@ namespace HHG.Common.Runtime
                 int x = position.x + offsetX;
                 int y = position.y + offsetY;
 
+                if (HasVisitedIndex(x, y))
+                {
+                    continue;
+                }
+
                 if (IsIndexOutOfBounds(x, y))
                 {
                     result.AreaBordersEdge = true;
@@ -75,12 +80,8 @@ namespace HHG.Common.Runtime
                     if (fillobstacle)
                     {
                         visited[x, y] = true;
+                        result.Area.Add(position);
                     }
-                    continue;
-                }
-
-                if (HasVisitedIndex(x, y))
-                {
                     continue;
                 }
 
@@ -102,7 +103,6 @@ namespace HHG.Common.Runtime
                 }
             }
         }
-
 
         public bool IsPositionOutOfBounds(int x, int y)
         {
