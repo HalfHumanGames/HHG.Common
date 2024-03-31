@@ -64,14 +64,15 @@ namespace HHG.Common.Runtime
                 int x = position.x + offsetX;
                 int y = position.y + offsetY;
 
-                if (HasVisitedIndex(x, y))
-                {
-                    continue;
-                }
-
+                // Make sure to perform out of bounds check first
                 if (IsIndexOutOfBounds(x, y))
                 {
                     result.AreaBordersEdge = true;
+                    continue;
+                }
+
+                if (HasVisitedIndex(x, y))
+                {
                     continue;
                 }
 
