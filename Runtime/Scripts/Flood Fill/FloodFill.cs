@@ -14,19 +14,20 @@ namespace HHG.Common.Runtime
         private int maxY;
         private bool[,] visited;
         private bool[,] obstacles;
-        private bool diagonal;
+        private bool filldiagonal;
+        private bool fillobstacle;
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileBases))
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, fillObstacle, (t, p) => t.HasTile(p, tileBases))
         {
             
         }
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileTagAsset[] tileTags) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileTags))
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, params TileTagAsset[] tileTags) : this(tilemap, bounds, mode, fillDiagonal, fillObstacle, (t, p) => t.HasTile(p, tileTags))
         {
 
         }
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<Tilemap, Vector3Int, bool> evaluator)
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, Func<Tilemap, Vector3Int, bool> evaluator)
         {
             int width = bounds.size.x;
             int height = bounds.size.y;
@@ -38,7 +39,8 @@ namespace HHG.Common.Runtime
             maxY = height - 1;
             visited = new bool[width, height];
             obstacles = new bool[width, height];
-            diagonal = fillDiagonal;
+            filldiagonal = fillDiagonal;
+            fillobstacle = fillObstacle;
 
             foreach (Vector3Int position in bounds.allPositionsWithin)
             {
@@ -62,13 +64,22 @@ namespace HHG.Common.Runtime
                 int x = position.x + offsetX;
                 int y = position.y + offsetY;
 
-                if (IsOutOfBoundsByIndices(x, y))
+                if (IsIndexOutOfBounds(x, y))
                 {
                     result.AreaBordersEdge = true;
                     continue;
                 }
 
-                if (CanSkipPositionByIndices(x, y))
+                if (IsIndexObstacle(x, y))
+                {
+                    if (fillobstacle)
+                    {
+                        visited[x, y] = true;
+                    }
+                    continue;
+                }
+
+                if (HasVisitedIndex(x, y))
                 {
                     continue;
                 }
@@ -82,7 +93,7 @@ namespace HHG.Common.Runtime
                 queue.Enqueue(new Vector3Int(position.x + 1, position.y));
                 queue.Enqueue(new Vector3Int(position.x - 1, position.y));
                 
-                if (diagonal)
+                if (filldiagonal)
                 {
                     queue.Enqueue(new Vector3Int(position.x + 1, position.y + 1));
                     queue.Enqueue(new Vector3Int(position.x + 1, position.y - 1));
@@ -92,19 +103,35 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public bool IsOutOfBoundsByIndices(int x, int y)
+
+        public bool IsPositionOutOfBounds(int x, int y)
+        {
+            return IsIndexOutOfBounds(x + offsetX, y + offsetY);
+        }
+
+        public bool HasVisitedPosition(int x, int y)
+        {
+            return HasVisitedIndex(x + offsetX, y + offsetY);
+        }
+
+        public bool IsPositionObstacle(int x, int y)
+        {
+            return IsIndexObstacle(x + offsetX, y + offsetY);
+        }
+
+        public bool IsIndexOutOfBounds(int x, int y)
         {
             return x < 0 || y < 0 || x > maxX || y > maxY;
         }
 
-        public bool CanSkipPosition(int x, int y)
+        public bool HasVisitedIndex(int x, int y)
         {
-            return CanSkipPositionByIndices(x + offsetX, y + offsetY);
+            return visited[x, y];
         }
 
-        public bool CanSkipPositionByIndices(int x, int y)
+        public bool IsIndexObstacle(int x, int y)
         {
-            return visited[x, y] || obstacles[x, y];
+            return obstacles[x, y];
         }
     }
 }
