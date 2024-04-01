@@ -14,20 +14,24 @@ namespace HHG.Common.Runtime
         private int maxY;
         private bool[,] visited;
         private bool[,] obstacles;
-        private bool filldiagonal;
-        private bool fillobstacle;
+        private bool diagonal;
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, fillObstacle, (t, p) => t.HasTile(p, tileBases))
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileBases))
         {
             
         }
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, params TileTagAsset[] tileTags) : this(tilemap, bounds, mode, fillDiagonal, fillObstacle, (t, p) => t.HasTile(p, tileTags))
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileTagAsset[] tileTags) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileTags))
         {
 
         }
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, bool fillObstacle, Func<Tilemap, Vector3Int, bool> evaluator)
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<Tilemap, Vector3Int, bool> evaluator) : this(bounds, mode, fillDiagonal, pos => evaluator(tilemap, pos))
+        {
+            
+        }
+
+        public FloodFill(BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<Vector3Int, bool> evaluator)
         {
             int width = bounds.size.x;
             int height = bounds.size.y;
@@ -39,20 +43,26 @@ namespace HHG.Common.Runtime
             maxY = height - 1;
             visited = new bool[width, height];
             obstacles = new bool[width, height];
-            filldiagonal = fillDiagonal;
-            fillobstacle = fillObstacle;
+            diagonal = fillDiagonal;
 
             foreach (Vector3Int position in bounds.allPositionsWithin)
             {
                 int x = position.x + offsetX;
                 int y = position.y + offsetY;
-                bool hasTile = evaluator(tilemap, position);
+                bool hasTile = evaluator(position);
                 obstacles[x, y] = mode == FloodFillMode.Obstacle ? hasTile : !hasTile;
             }
         }
 
-        public void Fill(Vector3Int startPosition, FloodFillResult result)
+        public bool TryFill(Vector3Int startPosition, FloodFillResult result)
         {
+            if (IsPositionOutOfBounds(startPosition) || 
+                HasVisitedPosition(startPosition) || 
+                IsPositionObstacle(startPosition))
+            {
+                return false;
+            }
+
             result.Reset();
             queue.Clear();
             queue.Enqueue(startPosition);
@@ -71,19 +81,8 @@ namespace HHG.Common.Runtime
                     continue;
                 }
 
-                if (HasVisitedIndex(x, y))
+                if (HasVisitedIndex(x, y) || IsIndexObstacle(x, y))
                 {
-                    continue;
-                }
-
-                if (IsIndexObstacle(x, y))
-                {
-                    // Don't fill obstacle if start position
-                    if (result.Area.Count > 0 && fillobstacle)
-                    {
-                        visited[x, y] = true;
-                        result.Area.Add(position);
-                    }
                     continue;
                 }
 
@@ -96,7 +95,7 @@ namespace HHG.Common.Runtime
                 queue.Enqueue(new Vector3Int(position.x + 1, position.y));
                 queue.Enqueue(new Vector3Int(position.x - 1, position.y));
                 
-                if (filldiagonal)
+                if (diagonal)
                 {
                     queue.Enqueue(new Vector3Int(position.x + 1, position.y + 1));
                     queue.Enqueue(new Vector3Int(position.x + 1, position.y - 1));
@@ -104,34 +103,36 @@ namespace HHG.Common.Runtime
                     queue.Enqueue(new Vector3Int(position.x - 1, position.y - 1));
                 }
             }
+
+            return true;
         }
 
-        public bool IsPositionOutOfBounds(int x, int y)
+        private bool IsPositionOutOfBounds(Vector3Int pos)
         {
-            return IsIndexOutOfBounds(x + offsetX, y + offsetY);
+            return IsIndexOutOfBounds(pos.x + offsetX, pos.y + offsetY);
         }
 
-        public bool HasVisitedPosition(int x, int y)
+        private bool HasVisitedPosition(Vector3Int pos)
         {
-            return HasVisitedIndex(x + offsetX, y + offsetY);
+            return HasVisitedIndex(pos.x + offsetX, pos.y + offsetY);
         }
 
-        public bool IsPositionObstacle(int x, int y)
+        private bool IsPositionObstacle(Vector3Int pos)
         {
-            return IsIndexObstacle(x + offsetX, y + offsetY);
+            return IsIndexObstacle(pos.x + offsetX, pos.y + offsetY);
         }
 
-        public bool IsIndexOutOfBounds(int x, int y)
+        private bool IsIndexOutOfBounds(int x, int y)
         {
             return x < 0 || y < 0 || x > maxX || y > maxY;
         }
 
-        public bool HasVisitedIndex(int x, int y)
+        private bool HasVisitedIndex(int x, int y)
         {
             return visited[x, y];
         }
 
-        public bool IsIndexObstacle(int x, int y)
+        private bool IsIndexObstacle(int x, int y)
         {
             return obstacles[x, y];
         }
