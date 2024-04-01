@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private bool autoDestroy;
         [SerializeField] private float destroyDelay;
 
-        public override void Start()
+        public override void Awake()
         {
             GameObject instance = parent ?
                 Object.Instantiate(prefab, gameObject.transform) :
