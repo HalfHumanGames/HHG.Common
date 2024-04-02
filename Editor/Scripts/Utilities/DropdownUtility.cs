@@ -1,9 +1,8 @@
-using HHG.Common.Runtime;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace HHG.SpawnSystem
+namespace HHG.Common.Runtime
 {
     public static class DropdownUtility
     {

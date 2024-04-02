@@ -1,7 +1,6 @@
-using HHG.Common.Runtime;
 using UnityEngine;
 
-namespace Safeguard
+namespace HHG.Common.Runtime
 {
     [CreateAssetMenu(fileName = "Tilemap Layer", menuName = "HHG/Assets/Variable/Other/Tilemap Layer")]
     public class TilemapLayerAsset : StringNameAsset

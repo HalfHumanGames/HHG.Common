@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace HHG.Requirements
+namespace HHG.Common.Runtime
 {
     public class RequireOr : IRequirement
     {
