@@ -13,6 +13,8 @@ namespace HHG.Common.Runtime
         private const int emptyTileIndex = -1;
 
         public string Name => name;
+        public BoundsInt Bounds => bounds;
+        public string Encoded => encoded;
 
         [SerializeField] private string name;
         [SerializeField] private BoundsInt bounds;

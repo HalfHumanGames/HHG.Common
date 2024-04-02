@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -16,12 +17,32 @@ namespace HHG.Common.Runtime
         private bool[,] obstacles;
         private bool diagonal;
 
+        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileLayerAsset[] layers) : this(tileLayers, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
+        {
+
+        }
+
+        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params int[] layers) : this(tileLayers, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
+        {
+
+        }
+
+        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<TilemapTileLayers, Vector3Int, bool> evaluator) : this(bounds, mode, fillDiagonal, pos => evaluator(tileLayers, pos))
+        {
+
+        }
+
         public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileBases))
         {
             
         }
 
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileTagAsset[] tileTags) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileTags))
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileLayerAsset[] layers) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
+        {
+
+        }
+
+        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params int[] layers) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
         {
 
         }

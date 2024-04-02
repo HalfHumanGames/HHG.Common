@@ -14,6 +14,13 @@ namespace HHG.Common.Runtime
 
         [SerializeField, HideInInspector] private string id => Guid.NewGuid().ToString();
 
+        public enum LoadMode
+        {
+            Manual,
+            Awake,
+            Start
+        }
+
         [ContextMenu("Load Asset")]
         public void Load() => LoadInternal();
 
@@ -42,7 +49,9 @@ namespace HHG.Common.Runtime
 
     public abstract class AssetExporterBase<TAsset> : AssetExporterBase where TAsset : ScriptableObject
     {
-        public bool LoadOnAwake => Application.isEditor ? loadOnAwakeEditor : loadOnAwakePlayer;
+        public bool LoadOnAwake => Mode == LoadMode.Awake;
+        public bool LoadOnStart => Mode == LoadMode.Start;
+        public LoadMode Mode => Application.isEditor ? loadEditor : loadPlayer;
         public string Path => path;
         public TAsset Current
         {
@@ -60,7 +69,8 @@ namespace HHG.Common.Runtime
         public bool IsLoaded => isLoaded;
         public UnityEvent Loaded;
 
-        [SerializeField] private bool loadOnAwakeEditor;
+        [SerializeField] private LoadMode loadEditor;
+        [SerializeField] private LoadMode loadPlayer;
         [SerializeField] private bool loadOnAwakePlayer;
         [SerializeField] private string path;
         [SerializeField] private TAsset current;
@@ -71,13 +81,26 @@ namespace HHG.Common.Runtime
         {
             if (LoadOnAwake)
             {
-                Load();
-
-                // For some reason, colliders don't work 
-                // unless we toggle the game object off/on
-                gameObject.SetActive(false);
-                gameObject.SetActive(true);
+                InitialLoad();
             }
+        }
+
+        private void Start()
+        {
+            if (LoadOnStart)
+            {
+                InitialLoad();
+            }
+        }
+
+        private void InitialLoad()
+        {
+            Load();
+
+            // For some reason, colliders don't work 
+            // unless we toggle the game object off/on
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
 
         protected virtual void Save(TAsset asset) { }

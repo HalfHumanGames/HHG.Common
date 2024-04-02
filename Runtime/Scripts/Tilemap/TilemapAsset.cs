@@ -7,6 +7,8 @@ namespace HHG.Common.Runtime
     [CreateAssetMenu(fileName = "Tilemap", menuName = "HHG/Assets/Tilemap")]
     public class TilemapAsset : ScriptableObject
     {
+        public IReadOnlyList<SerializableTilemap> Tilemaps => serialized;
+
         [SerializeField] private List<TileBase> tiles = new List<TileBase>();
         [SerializeField] private List<SerializableTilemap> serialized = new List<SerializableTilemap>();
 

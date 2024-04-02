@@ -5,42 +5,39 @@ namespace HHG.Common.Runtime
 {
     public static class TilemapExtensions
     {
-        public static bool HasAdjacentTile(this Tilemap tilemap, Vector3Int position, bool includeDiagonals = false, params TileTagAsset[] tags)
+        public static bool TryGetComponent<T>(this ITilemap tilemap, out T result) where T : Component
         {
-            if (tags == null)
+            if (tilemap != null && tilemap.TryGetComponent(out result))
             {
+                return true;
+            }
+            else
+            {
+                result = default;
                 return false;
             }
+        }
 
-            for (int i = 0; i < tags.Length; i++)
+        public static bool HasAdjacentTileLayer(this Tilemap tilemap, Vector3Int position, bool includeDiagonals, TileLayerAsset layer)
+        {
+            foreach (Vector3Int adj in position.GetAdjacentPositions(includeDiagonals))
             {
-                foreach (Vector3Int adj in position.GetAdjacentPositions(includeDiagonals))
+                if (tilemap.GetTile(adj) is ILayerdTile tile)
                 {
-                    if (tilemap.GetTile(adj) is ITaggedTile taggedTile)
-                    {
-                        return taggedTile.HasTag(tags);
-                    }
+                    return tile.HasTileLayer(layer);
                 }
             }
 
             return false;
         }
 
-        public static bool HasAdjacentTile(this Tilemap tilemap, Vector3Int position, bool includeDiagonals = false, params string[] tags)
+        public static bool HasAdjacentTileLayer(this Tilemap tilemap, Vector3Int position, bool includeDiagonals, int layer)
         {
-            if (tags == null)
+            foreach (Vector3Int adj in position.GetAdjacentPositions(includeDiagonals))
             {
-                return false;
-            }
-
-            for (int i = 0; i < tags.Length; i++)
-            {
-                foreach (Vector3Int adj in position.GetAdjacentPositions(includeDiagonals))
+                if (tilemap.GetTile(adj) is ILayerdTile tile)
                 {
-                    if (tilemap.GetTile(adj) is ITaggedTile taggedTile)
-                    {
-                        return taggedTile.HasTag(tags);
-                    }
+                    return tile.HasTileLayer(layer);
                 }
             }
 
@@ -76,37 +73,21 @@ namespace HHG.Common.Runtime
             return false;
         }
 
-        public static bool HasTile(this Tilemap tilemap, Vector3Int position, params TileTagAsset[] tags)
+        public static bool HasTileLayer(this Tilemap tilemap, Vector3Int position, TileLayerAsset tileLayer)
         {
-            if (tags == null)
+            if (tilemap.GetTile(position) is ILayerdTile tile)
             {
-                return false;
-            }
-
-            for (int i = 0; i < tags.Length; i++)
-            {
-                if (tilemap.GetTile(position) is ITaggedTile taggedTile)
-                {
-                    return taggedTile.HasTag(tags);
-                }
+                return tile.HasTileLayer(tileLayer);
             }
 
             return false;
         }
 
-        public static bool HasTile(this Tilemap tilemap, Vector3Int position, params string[] tags)
+        public static bool HasTileLayer(this Tilemap tilemap, Vector3Int position, int tileLayer)
         {
-            if (tags == null)
+            if (tilemap.GetTile(position) is ILayerdTile tile)
             {
-                return false;
-            }
-
-            for (int i = 0; i < tags.Length; i++)
-            {
-                if (tilemap.GetTile(position) is ITaggedTile taggedTile)
-                {
-                    return taggedTile.HasTag(tags);
-                }
+                return tile.HasTileLayer(tileLayer);
             }
 
             return false;

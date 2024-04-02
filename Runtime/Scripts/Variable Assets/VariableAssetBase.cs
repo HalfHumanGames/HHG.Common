@@ -22,5 +22,10 @@ namespace HHG.Common.Runtime
         }
 
         [SerializeField] protected T value;
+
+        public static implicit operator T(VariableAssetBase<T> var)
+        {
+            return var == null ? default : var.value;
+        }
     }
 }
