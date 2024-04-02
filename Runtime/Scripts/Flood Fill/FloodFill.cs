@@ -2,83 +2,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace HHG.Common.Runtime
 {
     public class FloodFill
     {
+        private readonly Vector3Int[] offsets4Directions = {
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, 0, 0)
+        };
+
+        private readonly Vector3Int[] offsets8Directions = {
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(1, -1, 0),
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int(-1, -1, 0)
+        };
+
         private Queue<Vector3Int> queue;
-        private int offsetX;
-        private int offsetY;
-        private int maxX;
-        private int maxY;
+        private BoundsData<int> data;
+        private FloodFillMode mode;
         private bool[,] visited;
-        private bool[,] obstacles;
         private bool diagonal;
+        private int mask;
+        private Func<Vector3Int, bool> search;
 
-        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileLayerAsset[] layers) : this(tileLayers, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
+        public FloodFill(BoundsData<int> boundsData, FloodFillMode fillMode, bool fillDiagonal, params int[] layers) : this(boundsData, fillMode, fillDiagonal, layers.ToFlags())
         {
 
         }
 
-        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params int[] layers) : this(tileLayers, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
+        public FloodFill(BoundsData<int> boundsData, FloodFillMode fillMode, bool fillDiagonal, int tileMask)
         {
-
-        }
-
-        public FloodFill(TilemapTileLayers tileLayers, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<TilemapTileLayers, Vector3Int, bool> evaluator) : this(bounds, mode, fillDiagonal, pos => evaluator(tileLayers, pos))
-        {
-
-        }
-
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileBase[] tileBases) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => t.HasTile(p, tileBases))
-        {
-            
-        }
-
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params TileLayerAsset[] layers) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
-        {
-
-        }
-
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, params int[] layers) : this(tilemap, bounds, mode, fillDiagonal, (t, p) => layers.Any(l => t.HasTileLayer(p, l)))
-        {
-
-        }
-
-        public FloodFill(Tilemap tilemap, BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<Tilemap, Vector3Int, bool> evaluator) : this(bounds, mode, fillDiagonal, pos => evaluator(tilemap, pos))
-        {
-            
-        }
-
-        public FloodFill(BoundsInt bounds, FloodFillMode mode, bool fillDiagonal, Func<Vector3Int, bool> evaluator)
-        {
-            int width = bounds.size.x;
-            int height = bounds.size.y;
-
             queue = new Queue<Vector3Int>();
-            offsetX = -bounds.min.x;
-            offsetY = -bounds.min.y;
-            maxX = width - 1;
-            maxY = height - 1;
-            visited = new bool[width, height];
-            obstacles = new bool[width, height];
+            data = boundsData;
+            mode = fillMode;
             diagonal = fillDiagonal;
-
-            foreach (Vector3Int position in bounds.allPositionsWithin)
-            {
-                int x = position.x + offsetX;
-                int y = position.y + offsetY;
-                bool hasTile = evaluator(position);
-                obstacles[x, y] = mode == FloodFillMode.Obstacle ? hasTile : !hasTile;
-            }
+            mask = tileMask;
+            visited = new bool[data.Width, data.Height];
         }
 
         public bool TryFill(Vector3Int startPosition, FloodFillResult result)
         {
-            if (IsPositionOutOfBounds(startPosition) || 
-                HasVisitedPosition(startPosition) || 
+            return TryFillSearchInternal(startPosition, result);
+        }
+
+        public bool TrySearch(Vector3Int startPosition, Func<Vector3Int, bool> searchFunc, FloodFillSearchResult result)
+        {
+            search = searchFunc;
+            ClearVisited();
+            return TryFillSearchInternal(startPosition, result);
+        }
+
+        public bool TrySearch(Vector3Int startPosition, IEnumerable<Vector3Int> targets, FloodFillSearchResult result)
+        {
+            search = p => targets.Contains(p);
+            ClearVisited();
+            return TryFillSearchInternal(startPosition, result);
+        }
+
+        private bool TryFillSearchInternal(Vector3Int startPosition, FloodFillResultBase result)
+        {
+            if (data.IsOutOfBounds(startPosition) ||
+                HasVisitedPosition(startPosition) ||
                 IsPositionObstacle(startPosition))
             {
                 return false;
@@ -88,17 +80,31 @@ namespace HHG.Common.Runtime
             queue.Clear();
             queue.Enqueue(startPosition);
 
-            while (queue.Count > 0)
+            FloodFillResult fillResult = result as FloodFillResult;
+            FloodFillSearchResult searchResult = result as FloodFillSearchResult;
+
+            Vector3Int[] offsets = diagonal ? offsets8Directions : offsets4Directions;
+
+            do
             {
                 Vector3Int position = queue.Dequeue();
 
-                int x = position.x + offsetX;
-                int y = position.y + offsetY;
-
-                // Make sure to perform out of bounds check first
-                if (IsIndexOutOfBounds(x, y))
+                if (searchResult != null && search?.Invoke(position) is bool b && b)
                 {
-                    result.AreaBordersEdge = true;
+                    searchResult.IsSuccess = true;
+                    searchResult.TargetPosition = position;
+                    return true;
+                }
+
+                (int x, int y) = data.GetIndex(position);
+
+                // Make sure to perform the out-of-bounds check first
+                if (data.IsOutOfBounds(x, y))
+                {
+                    if (fillResult != null)
+                    {
+                        fillResult.AreaBordersEdge = true;
+                    }
                     continue;
                 }
 
@@ -108,44 +114,28 @@ namespace HHG.Common.Runtime
                 }
 
                 visited[x, y] = true;
-                result.Area.Add(position);
+                fillResult?.Area.Add(position);
 
-                // Enqueue neighboring positions
-                queue.Enqueue(new Vector3Int(position.x, position.y + 1));
-                queue.Enqueue(new Vector3Int(position.x, position.y - 1));
-                queue.Enqueue(new Vector3Int(position.x + 1, position.y));
-                queue.Enqueue(new Vector3Int(position.x - 1, position.y));
-                
-                if (diagonal)
+                for (int i = 0; i < offsets.Length; i++)
                 {
-                    queue.Enqueue(new Vector3Int(position.x + 1, position.y + 1));
-                    queue.Enqueue(new Vector3Int(position.x + 1, position.y - 1));
-                    queue.Enqueue(new Vector3Int(position.x - 1, position.y + 1));
-                    queue.Enqueue(new Vector3Int(position.x - 1, position.y - 1));
+                    Vector3Int adjacent = position + offsets[i];
+                    queue.Enqueue(adjacent);
                 }
-            }
+            } while (queue.Count > 0);
 
-            return true;
+            return fillResult != null;
         }
 
-        private bool IsPositionOutOfBounds(Vector3Int pos)
+        private bool HasVisitedPosition(Vector3Int position)
         {
-            return IsIndexOutOfBounds(pos.x + offsetX, pos.y + offsetY);
+            (int x, int y) = data.GetIndex(position);
+            return HasVisitedIndex(x, y);
         }
 
-        private bool HasVisitedPosition(Vector3Int pos)
+        private bool IsPositionObstacle(Vector3Int position)
         {
-            return HasVisitedIndex(pos.x + offsetX, pos.y + offsetY);
-        }
-
-        private bool IsPositionObstacle(Vector3Int pos)
-        {
-            return IsIndexObstacle(pos.x + offsetX, pos.y + offsetY);
-        }
-
-        private bool IsIndexOutOfBounds(int x, int y)
-        {
-            return x < 0 || y < 0 || x > maxX || y > maxY;
+            (int x, int y) = data.GetIndex(position);
+            return IsIndexObstacle(x, y);
         }
 
         private bool HasVisitedIndex(int x, int y)
@@ -155,7 +145,20 @@ namespace HHG.Common.Runtime
 
         private bool IsIndexObstacle(int x, int y)
         {
-            return obstacles[x, y];
+            int flags = data.GetData(x, y);
+            bool match = (flags & mask) != 0;
+            return  mode == FloodFillMode.Obstacle ? match : !match;
+        }
+
+        private void ClearVisited()
+        {
+            for (int i = 0; i < data.Width; i++)
+            {
+                for (int j = 0; j < data.Height; j++)
+                {
+                    visited[i, j] = false;
+                }
+            }
         }
     }
 }

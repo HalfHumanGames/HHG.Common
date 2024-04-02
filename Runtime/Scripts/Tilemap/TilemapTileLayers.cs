@@ -6,12 +6,8 @@ namespace HHG.Common.Runtime
     [RequireComponent(typeof(Tilemap))]
     public class TilemapTileLayers : MonoBehaviour
     {
-        private int offsetX;
-        private int offsetY;
-        private int maxX;
-        private int maxY;
-        private int[,] layers = new int[0, 0];
-
+        public BoundsData<int> Data => data;
+        private BoundsData<int> data;
         private Tilemap tilemap;
 
         private void Awake()
@@ -34,68 +30,33 @@ namespace HHG.Common.Runtime
 
         public int this[Vector3Int pos]
         {
-            get => GetTileLayer(pos);
-            set => SetTileLayer(pos, value);
+            get => data[pos];
+            set => data[pos] = value;
         }
 
         public void Initialize(BoundsInt bounds)
         {
-            int width = bounds.size.x;
-            int height = bounds.size.y;
-            offsetX = -bounds.min.x;
-            offsetY = -bounds.min.y;
-            maxX = width - 1;
-            maxY = height - 1;
-            layers = new int[width, height];
+            data = new BoundsData<int>(bounds);
         }
 
         public bool TryGetTileLayer(Vector3Int position, out int layer)
         {
-            (int x, int y) = GetIndex(position);
-            if (IsInBounds(x, y))
-            {
-                layer = layers[x, y];
-                return true;
-            }
-            else
-            {
-                layer = default;
-                return false;
-            }
+            return data.TryGetData(position, out layer);
         }
 
         public bool HasTileLayer(Vector3Int position, int layer)
         {
-            return GetTileLayer(position) == layer;
+            return data.DataEquals(position, layer);
         }
 
         public int GetTileLayer(Vector3Int position)
         {
-            if (TryGetTileLayer(position, out int layer))
-            {
-                return layer;
-            }
-
-            return default;
+            return data.GetData(position);
         }
 
         public void SetTileLayer(Vector3Int position, int value)
         {
-            (int x, int y) = GetIndex(position);
-            if (IsInBounds(x, y))
-            {
-                layers[x, y] = value;
-            }
-        }
-
-        private (int x, int y) GetIndex(Vector3Int position)
-        {
-            return (position.x + offsetX, position.y + offsetY);
-        }
-
-        private bool IsInBounds(int x, int y)
-        {
-            return x >= 0 && y >= 0 && x <= maxX && y <= maxY;
+            data.SetData(position, value);
         }
 
         private void OnDestroy()
