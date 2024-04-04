@@ -21,6 +21,20 @@ namespace HHG.Common.Runtime
             AssemblyReloadEvents.afterAssemblyReload += OnAfterDomainReload;
         }
 
+        public static void ClearCache()
+        {
+            if (CanContinue())
+            {
+                foreach (AssetExporterBase exporter in FindExporters())
+                {
+                    if (EditorPrefs.HasKey(exporter.Id))
+                    {
+                        EditorPrefs.DeleteKey(exporter.Id);
+                    }
+                }
+            }
+        }
+
         // EditorSceneManager.sceneOpened does not get called when Unity opens for the
         // first time. Nor is the scene loaded when the static constructor gets called.
         // EditorApplication.delayCall ensures it gets called after the scene is loaded.
