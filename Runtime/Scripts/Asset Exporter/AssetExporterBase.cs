@@ -71,7 +71,6 @@ namespace HHG.Common.Runtime
 
         [SerializeField] private LoadMode loadEditor;
         [SerializeField] private LoadMode loadPlayer;
-        [SerializeField] private bool loadOnAwakePlayer;
         [SerializeField] private string path;
         [SerializeField] private TAsset current;
 
