@@ -5,6 +5,11 @@ namespace HHG.Common.Runtime
     [System.Serializable]
     public class MetaBehaviour : ICloneable<MetaBehaviour>
     {
+        public bool IsEnabled
+        {
+            get => runner.enabled; 
+            set => runner.enabled = value;
+        }
         protected MetaBehaviourRunner runner;
         protected GameObject gameObject;
         protected Transform transform;
