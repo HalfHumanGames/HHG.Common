@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
@@ -11,13 +12,18 @@ namespace HHG.Common.Runtime
             filter ??= _ => true;
             return AppDomain.CurrentDomain.GetAssemblies().
                 SelectMany(assembly => assembly.GetTypes()).
-                Where(t => t.IsClass && !t.IsAbstract && type.IsAssignableFrom(t) && t != type && filter(t)).
+                Where(t => t.IsClass && type.IsAssignableFrom(t) && t != type && filter(t)). 
                 ToList();
         }
 
         public static bool Implements(this Type type, params Type[] interfaces)
         {
             return Array.Exists(type.GetInterfaces(), i => interfaces.Contains(i));
+        }
+
+        public static bool IsBaseImplementationOf(this Type type, Type _interface)
+        {
+            return type.Implements(_interface) && (type.BaseType == null || !type.BaseType.Implements(_interface));
         }
     }
 }

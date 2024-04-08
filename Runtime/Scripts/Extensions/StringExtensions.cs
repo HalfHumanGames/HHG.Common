@@ -15,5 +15,11 @@ namespace HHG.Common.Runtime
             string[] temp = s.Split(search, StringSplitOptions.RemoveEmptyEntries);
             return string.Join(replace, temp);
         }
+
+        public static string ReplaceMany(this string s, char[] search, string replace)
+        {
+            string[] temp = s.Split(search, StringSplitOptions.RemoveEmptyEntries);
+            return string.Join(replace, temp);
+        }
     }
 }
