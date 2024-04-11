@@ -28,5 +28,16 @@ namespace HHG.Common.Runtime
         {
             return agent.velocity.normalized;
         }
+
+        public static void WarpToNavMesh(this NavMeshAgent agent)
+        {
+            if (!agent.isOnNavMesh)
+            {
+                if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, Mathf.Infinity, NavMesh.AllAreas))
+                {
+                    agent.Warp(hit.position);
+                }
+            }
+        }
     }
 }
