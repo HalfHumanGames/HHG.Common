@@ -1,28 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;
 
 namespace HHG.Common.Runtime
 {
     public static class DropdownUtility
     {
-        public static void GetChoiceList<T>(
-            ref List<T> objects,
-            System.Func<System.Type, bool> typeFilter = null,
-            System.Func<T, bool> objectFilter = null
-        ) where T : Object
+        public static void GetChoiceList<T>(ref List<T> objects, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {
             GetChoicesEnumerable(out IEnumerable<T> objs, out IEnumerable<string> str, typeFilter, objectFilter);
             objects.Clear();
             objects.AddRange(objs);
         }
 
-        public static void GetChoiceList<T>(
-            ref List<T> objects,
-            ref List<string> options,
-            System.Func<System.Type, bool> typeFilter = null,
-            System.Func<T, bool> objectFilter = null
-        ) where T : Object
+        public static void GetChoiceList<T>(ref List<T> objects, ref List<string> options, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {
             GetChoicesEnumerable(out IEnumerable<T> objs, out IEnumerable<string> str, typeFilter, objectFilter);
             objects.Clear();
@@ -31,14 +23,10 @@ namespace HHG.Common.Runtime
             options.AddRange(str);
         }
 
-        public static void GetChoiceArray<T>(
-            ref T[] objects,
-            System.Func<System.Type, bool> typeFilter = null,
-            System.Func<T, bool> objectFilter = null
-        ) where T : Object
+        public static void GetChoiceArray<T>(ref T[] objects, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {
             GetChoicesEnumerable(out IEnumerable<T> objs, out IEnumerable<string> str, typeFilter, objectFilter);
-            System.Array.Resize(ref objects, objs.Count());
+            Array.Resize(ref objects, objs.Count());
 
             int i = 0;
             foreach (T obj in objs)
@@ -47,16 +35,11 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static void GetChoiceArray<T>(
-            ref T[] objects,
-            ref string[] options,
-            System.Func<System.Type, bool> typeFilter = null,
-            System.Func<T, bool> objectFilter = null
-        ) where T : Object
+        public static void GetChoiceArray<T>(ref T[] objects, ref string[] options, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {
             GetChoicesEnumerable(out IEnumerable<T> objs, out IEnumerable<string> opts, typeFilter, objectFilter);
-            System.Array.Resize(ref objects, objs.Count());
-            System.Array.Resize(ref options, opts.Count());
+            Array.Resize(ref objects, objs.Count());
+            Array.Resize(ref options, opts.Count());
 
             int i = 0;
             foreach (T obj in objs)
@@ -71,17 +54,19 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private static void GetChoicesEnumerable<T>(
-            out IEnumerable<T> objects,
-            out IEnumerable<string> options,
-            System.Func<System.Type, bool> typeFilter = null,
-            System.Func<T, bool> objectFilter = null
-        ) where T : Object
+        private static void GetChoicesEnumerable<T>(out IEnumerable<T> objects, out IEnumerable<string> options, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {
             objectFilter ??= _ => true;
             typeFilter ??= _ => true;
-            System.Type type = typeof(ScriptableObject).FindSubclasses().FirstOrDefault(typeFilter);
-            objects = Resources.LoadAll(string.Empty, type).Select(r => r as T).Where(objectFilter).Prepend(null);
+            List<T> objectsRetval = new List<T>() { null };
+            List<string> optionsRetval = new List<string>();
+            var types = typeof(ScriptableObject).FindSubclasses().Where(typeFilter);
+            foreach (var type in types)
+            {
+                var objs = Resources.LoadAll(string.Empty, type).Cast<T>().Where(objectFilter);
+                objectsRetval.AddRange(objs);
+            }
+            objects = objectsRetval;
             options = objects.Select(e => e == null ? "None" : FormatChoiceText(e.name));
         }
 
