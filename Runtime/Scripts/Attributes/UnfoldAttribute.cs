@@ -4,7 +4,7 @@ namespace HHG.Common.Runtime
 {
     public enum UnfoldName
     {
-        Auto,
+        Auto, // Not implemented yet
         Full,
         Child,
         Parent
@@ -16,7 +16,7 @@ namespace HHG.Common.Runtime
 
         private UnfoldName name;
 
-        public UnfoldAttribute(UnfoldName unfoldName = UnfoldName.Full)
+        public UnfoldAttribute(UnfoldName unfoldName = UnfoldName.Auto)
         {
             name = unfoldName;   
         }
