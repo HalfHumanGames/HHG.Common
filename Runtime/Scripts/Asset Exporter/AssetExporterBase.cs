@@ -67,7 +67,7 @@ namespace HHG.Common.Runtime
         }
         public sealed override bool HasAsset => current != null;
         public bool IsLoaded => isLoaded;
-        public UnityEvent Loaded;
+        public UnityEvent OnLoaded;
 
         [SerializeField] private LoadMode loadEditor;
         [SerializeField] private LoadMode loadPlayer;
@@ -127,7 +127,7 @@ namespace HHG.Common.Runtime
         {
             Load(current);
             isLoaded = true;
-            Loaded?.Invoke();
+            OnLoaded?.Invoke();
         }
 
 #if UNITY_EDITOR

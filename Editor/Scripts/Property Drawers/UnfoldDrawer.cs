@@ -16,7 +16,8 @@ namespace HHG.Common.Editor
             VisualElement container = new VisualElement();
             SerializedProperty childProperty = property.Copy();
             SerializedProperty endProperty = property.GetEndProperty();
-            while (childProperty.NextVisible(true) && !SerializedProperty.EqualContents(childProperty, endProperty))
+            childProperty.NextVisible(true);
+            do
             {
                 string name = unfold.Name switch {
                     UnfoldName.Child => childProperty.displayName,
@@ -26,7 +27,7 @@ namespace HHG.Common.Editor
                 PropertyField field = new PropertyField(childProperty, name);
                 field.Bind(childProperty.serializedObject);
                 container.Add(field);
-            }
+            } while (childProperty.NextVisible(false) && !SerializedProperty.EqualContents(childProperty, endProperty));
             return container;
         }
     }
