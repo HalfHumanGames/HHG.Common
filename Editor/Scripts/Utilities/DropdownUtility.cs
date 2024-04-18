@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System;
+using System.Text.RegularExpressions;
 
 namespace HHG.Common.Runtime
 {
@@ -72,9 +73,9 @@ namespace HHG.Common.Runtime
 
         public static string FormatChoiceText(string choice)
         {
-            return choice.
-                   ReplaceMany(new char[] { '.', '-', '[', '(', '{' }, '/').
-                   ReplaceMany(new char[] { ' ', ']', ')', '}' }, string.Empty);
+            return Regex.Replace(choice.
+                       ReplaceMany(new char[] { '.', '-', ',', '[', '(', '{' }, '/').
+                       ReplaceMany(new char[] { ']', ')', '}' }, string.Empty), @"\s+", " ");
         }
     }
 }
