@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
 {
-    public class ReferenceFinder : EditorWindow
+    public class FindReferencesTool : EditorWindow
     {
         private string guidToFind = string.Empty;
         private string replacementGuid = string.Empty;
@@ -20,7 +20,7 @@ namespace HHG.Common.Editor
         [MenuItem("Half Human Games/Tools/Reference Finder")]
         static void Init()
         {
-            GetWindow(typeof(ReferenceFinder), false, "Reference Finder");
+            GetWindow(typeof(FindReferencesTool), false, "Reference Finder");
         }
 
         void OnGUI()
@@ -90,7 +90,6 @@ namespace HHG.Common.Editor
                         }
 
                         searchTimer.Stop();
-                        //Debug.Log("Search took " + searchTimer.Elapsed);
                     }
                     else
                     {
