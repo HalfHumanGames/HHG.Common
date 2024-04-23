@@ -13,7 +13,12 @@ namespace HHG.Common.Runtime
         private void Awake()
         {
             tilemap = GetComponent<Tilemap>();
-            Initialize(tilemap.cellBounds);
+
+            if (data == null)
+            {
+                Initialize(tilemap.cellBounds);
+            }
+
             Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
@@ -34,9 +39,17 @@ namespace HHG.Common.Runtime
             set => data[pos] = value;
         }
 
-        public void Initialize(BoundsInt bounds)
+        public void Initialize(BoundsInt bounds, bool search = false)
         {
             data = new BoundsData<int>(bounds);
+
+            if (search)
+            {
+                foreach (Vector3Int position in tilemap.cellBounds.allPositionsWithin)
+                {
+                    SetTileLayer(position, tilemap.GetTile(position) is ILayerdTile tile ? tile.TileLayer : 0);
+                }
+            }
         }
 
         public bool TryGetTileLayer(Vector3Int position, out int layer)
@@ -61,7 +74,7 @@ namespace HHG.Common.Runtime
 
         private void OnDestroy()
         {
-            Tilemap.tilemapTileChanged += OnTileChanged;
+            Tilemap.tilemapTileChanged -= OnTileChanged;
         }
     }
 }
