@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -195,6 +197,36 @@ namespace HHG.Common.Runtime
         public static Vector3 WorldToCellWorld(this Tilemap tilemap, Vector3 position)
         {
             return tilemap.CellToWorld(tilemap.WorldToCell(position));
+        }
+
+        public static void CompressBounds(this IEnumerable<Tilemap> tilemaps)
+        {
+            foreach(Tilemap tilemap in tilemaps)
+            {
+                tilemap.CompressBounds();
+            }
+        }
+
+        public static BoundsInt GetCellBounds(this IEnumerable<Tilemap> tilemaps)
+        {
+            BoundsInt bounds = new BoundsInt();
+            foreach (Tilemap tilemap in tilemaps)
+            {
+                tilemap.CompressBounds();
+                bounds = bounds.Encapsulated(tilemap.cellBounds);
+            }
+            return bounds;
+        }
+
+        public static Bounds GetLocalBounds(this IEnumerable<Tilemap> tilemaps)
+        {
+            Bounds bounds = new Bounds();
+            foreach (Tilemap tilemap in tilemaps)
+            {
+                tilemap.CompressBounds();
+                bounds.Encapsulate(tilemap.localBounds);
+            }
+            return bounds;
         }
     }
 }

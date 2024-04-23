@@ -33,6 +33,7 @@ namespace HHG.Common.Runtime
         [ContextMenu("Save Asset As...")]
         public void SaveAs() => SaveAsInternal();
 
+        [ContextMenu("Clear")]
         public void Clear() => ClearInternal();
 
         protected abstract void LoadInternal();
