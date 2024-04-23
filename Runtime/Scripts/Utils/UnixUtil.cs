@@ -1,6 +1,6 @@
 namespace HHG.Common.Runtime
 {
-    public static class UnixUtility
+    public static class UnixUtil
     {
         public static int GetUnixPermissions(int unixPermissions)
         {

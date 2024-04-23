@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public static class PixelUtility
+    public static class PixelUtil
     {
         public static Color[] Noise(int width, int height, float scale, int seed) => Noise(width, height, scale, scale, seed);
         public static Color[] Noise(int width, int height, float scaleX, float scaleY, int seed)

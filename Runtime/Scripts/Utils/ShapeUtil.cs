@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public static class ShapeUtility
+    public static class ShapeUtil
     {
         public static Vector3[] GetConePoints(Vector3 position, Vector3 direction, Vector3 axis, float width, float min, float max)
         {

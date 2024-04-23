@@ -1,4 +1,5 @@
 using HHG.Common.Runtime;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -22,7 +23,7 @@ namespace HHG.Common.Editor
             VisualElement container = new VisualElement();
             property = prop;
 
-            if (property.propertyType != SerializedPropertyType.ObjectReference || filter.Type == null)
+            if (property.propertyType != SerializedPropertyType.ObjectReference)
             {
                 PropertyField propertyField = new PropertyField(property);
                 container.Add(propertyField);
@@ -43,7 +44,8 @@ namespace HHG.Common.Editor
 
         private void RefreshDropdownValues()
         {
-            DropdownUtility.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(filter.Type), filter.filter);
+            Type type = filter.Type ?? property.GetPropertyType();
+            DropdownUtility.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(type), filter.filter);
         }
 
         private ContextualMenuManipulator CreateDropdownContextMenu(VisualElement visualElement) => new ContextualMenuManipulator((evt) =>

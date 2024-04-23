@@ -86,7 +86,7 @@ namespace HHG.Common.Editor
                             foreach(ZipArchiveEntry entry in entries)
                             {
                                 // Make sure to set the execution permissions for mac and linux so the app can run
-                                entry.ExternalAttributes = UnixUtility.GetUnixPermissions(755);
+                                entry.ExternalAttributes = UnixUtil.GetUnixPermissions(755);
                             }
                         }
 

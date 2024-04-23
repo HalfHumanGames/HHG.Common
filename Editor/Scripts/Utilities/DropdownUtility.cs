@@ -73,9 +73,11 @@ namespace HHG.Common.Runtime
 
         public static string FormatChoiceText(string choice)
         {
+            // Make sure to replace " - " but not "-" since we don't 
+            // want to split for hyphenated words or negative numbers
             return Regex.Replace(choice.
-                       ReplaceMany(new char[] { '.', '-', ',', '[', '(', '{' }, '/').
-                       ReplaceMany(new char[] { ']', ')', '}' }, string.Empty), @"\s+", " ");
+                       ReplaceMany(new string[] { " - ", ",", "[", "(", "{" }, "/").
+                       ReplaceMany(new string[] { "]", ")", "}" }, string.Empty), @"\s+", " ");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace HHG.Common.Runtime
 
         public static bool IsBaseImplementationOf(this Type type, Type _interface)
         {
-            return type.Implements(_interface) && (type.BaseType == null || !type.BaseType.Implements(_interface));
+            return type == _interface || (type.Implements(_interface) && (type.BaseType == null || !type.BaseType.Implements(_interface)));
         }
     }
 }

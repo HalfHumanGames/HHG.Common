@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public static class LayerMaskUtility
+    public static class LayerMaskUtil
     {
         // LayerMask.GetMask only accepts an array, so this prevents
         // having to convert a list or any enumerable to an array
