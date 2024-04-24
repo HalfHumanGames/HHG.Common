@@ -12,16 +12,12 @@ namespace HHG.Common.Editor
     public class DropdownDrawer : PropertyDrawer
     {
         private DropdownAttribute filter => attribute as DropdownAttribute;
-
-        private SerializedProperty property;
-        private DropdownField dropdownField;
         private List<ScriptableObject> choiceAssets = new List<ScriptableObject>();
         private List<string> choiceNames = new List<string>();
 
-        public override VisualElement CreatePropertyGUI(SerializedProperty prop)
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement container = new VisualElement();
-            property = prop;
 
             if (property.propertyType != SerializedPropertyType.ObjectReference)
             {
@@ -30,19 +26,20 @@ namespace HHG.Common.Editor
             }
             else
             {
-                RefreshDropdownValues();
-                dropdownField = new DropdownField(property.displayName, choiceNames, 0);
+                RefreshDropdownValues(property);
+                DropdownField dropdownField = new DropdownField(property.displayName, choiceNames, 0);
                 dropdownField.AddToClassList(BaseField<string>.alignedFieldUssClassName);
                 dropdownField.AddManipulator(CreateDropdownContextMenu(dropdownField));
                 dropdownField.RegisterValueChangedCallback(OnSpawnDropdownChanged);
                 dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
+                dropdownField.userData = property;
                 container.Add(dropdownField);
             }
 
             return container;
         }
 
-        private void RefreshDropdownValues()
+        private void RefreshDropdownValues(SerializedProperty property)
         {
             Type type = filter.Type ?? property.GetPropertyType();
             DropdownUtility.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(type), filter.filter);
@@ -50,11 +47,13 @@ namespace HHG.Common.Editor
 
         private ContextualMenuManipulator CreateDropdownContextMenu(VisualElement visualElement) => new ContextualMenuManipulator((evt) =>
         {
-            evt.menu.AppendAction("Refresh", (x) => RefreshDropdownValues(), DropdownMenuAction.AlwaysEnabled, visualElement);
+            evt.menu.AppendAction("Refresh", (x) => RefreshDropdownValues((SerializedProperty)visualElement.userData), DropdownMenuAction.AlwaysEnabled, visualElement);
         });
 
         private void OnSpawnDropdownChanged(ChangeEvent<string> evt)
         {
+            DropdownField dropdownField = evt.currentTarget as DropdownField;
+            SerializedProperty property = dropdownField.userData as SerializedProperty;
             int i = choiceNames.IndexOf(evt.newValue);
             property.objectReferenceValue = choiceAssets[i];
             property.serializedObject.ApplyModifiedProperties();
