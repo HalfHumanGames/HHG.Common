@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace HHG.Common.Runtime
 {
-    public static class DropdownUtility
+    public static class DropdownUtil
     {
         public static void GetChoiceList<T>(ref List<T> objects, Func<Type, bool> typeFilter = null, Func<T, bool> objectFilter = null) where T : UnityEngine.Object
         {

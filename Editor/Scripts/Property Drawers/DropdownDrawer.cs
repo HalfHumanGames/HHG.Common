@@ -42,7 +42,7 @@ namespace HHG.Common.Editor
         private void RefreshDropdownValues(SerializedProperty property)
         {
             Type type = filter.Type ?? property.GetPropertyType();
-            DropdownUtility.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(type), filter.filter);
+            DropdownUtil.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(type), filter.filter);
         }
 
         private ContextualMenuManipulator CreateDropdownContextMenu(VisualElement visualElement) => new ContextualMenuManipulator((evt) =>

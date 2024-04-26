@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace HHG.Common.Editor
 {
-    public static class ProjectWindowUtility
+    public static class EditorUtil
     {
         public static string GetActiveFolderPath()
         {
