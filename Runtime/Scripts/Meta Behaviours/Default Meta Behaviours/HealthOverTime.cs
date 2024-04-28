@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class HealthOverTime : MetaBehaviour
+    public class HealthOverTime : MetaBehaviour, IAggregatable, IAggregatable<HealthOverTime>
     {
         [SerializeField] private float frequency;
         [SerializeField] private float amount;
@@ -39,6 +39,17 @@ namespace HHG.Common.Runtime
                     }
                 }
             }
+        }
+
+        public object Aggregate(object other)
+        {
+            return Aggregate(other as HealthOverTime);
+        }
+
+        public HealthOverTime Aggregate(HealthOverTime other)
+        {
+            amount += other.amount;
+            return this;
         }
     }
 }
