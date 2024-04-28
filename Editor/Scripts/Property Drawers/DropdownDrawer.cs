@@ -30,6 +30,7 @@ namespace HHG.Common.Editor
                 DropdownField dropdownField = new DropdownField(property.displayName, choiceNames, 0);
                 dropdownField.AddToClassList(BaseField<string>.alignedFieldUssClassName);
                 dropdownField.AddManipulator(CreateDropdownContextMenu(dropdownField));
+                dropdownField.UnregisterValueChangedCallback(OnSpawnDropdownChanged);
                 dropdownField.RegisterValueChangedCallback(OnSpawnDropdownChanged);
                 dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
                 dropdownField.userData = property;
@@ -55,9 +56,14 @@ namespace HHG.Common.Editor
             DropdownField dropdownField = evt.currentTarget as DropdownField;
             SerializedProperty property = dropdownField.userData as SerializedProperty;
             int i = choiceNames.IndexOf(evt.newValue);
-            property.objectReferenceValue = choiceAssets[i];
-            property.serializedObject.ApplyModifiedProperties();
-            dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
+
+            // For some reason this event triggers for the label change as well
+            if (i != -1)
+            {
+                property.objectReferenceValue = choiceAssets[i];
+                property.serializedObject.ApplyModifiedProperties();
+                dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
+            }
         }
     }
 }
