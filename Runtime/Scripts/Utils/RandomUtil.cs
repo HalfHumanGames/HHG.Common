@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public static class RandomExtensions
+    public static class RandomUtil
     {
         public static Vector3 InsideCircle(float min, float max)
         {
