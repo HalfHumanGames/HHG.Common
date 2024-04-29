@@ -11,6 +11,7 @@ namespace HHG.Common.Runtime
         public UnityEvent<IHealth> OnHit => root.OnHit;
         public UnityEvent<IHealth> OnHeal => root.OnHeal;
         public UnityEvent<IHealth> OnDied => root.OnDied;
+        public UnityEvent<IHealth> OnHealthUpdated => root.OnHealthUpdated;
 
         private IHealth _root;
         private IHealth root

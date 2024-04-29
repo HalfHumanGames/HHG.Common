@@ -9,24 +9,25 @@ namespace HHG.Common.Runtime
             return array[Random.Range(0, array.Length)];
         }
 
-        public static T[] RotatedClockwise<T>(this T[] array, int rows, int cols, int rotation = 1)
+        public static T[] RotatedClockwise<T>(this T[] array, int rotation = 1)
         {
+            int size = (int) Mathf.Sqrt(array.Length);
             T[] source = new T[array.Length];
             T[] destination = new T[array.Length];
 
-            System.Array.Copy(array, source, rows * cols);
-            System.Array.Copy(array, destination, rows * cols);
+            System.Array.Copy(array, source, array.Length);
+            System.Array.Copy(array, destination, array.Length);
 
             for (int interation = 0; interation < rotation; interation++)
             {
-                for (int i = 0; i < rows; i++)
+                for (int i = 0; i < size; i++)
                 {
-                    for (int j = 0; j < cols; j++)
+                    for (int j = 0; j < size; j++)
                     {
-                        destination[j * rows + (rows - 1 - i)] = source[i * cols + j];
+                        destination[j * size + (size - 1 - i)] = source[i * size + j];
                     }
                 }
-                System.Array.Copy(destination, source, rows * cols);
+                System.Array.Copy(destination, source, array.Length);
             }
 
             return destination;

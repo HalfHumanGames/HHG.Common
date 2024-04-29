@@ -11,12 +11,27 @@ namespace HHG.Common.Runtime
         public UnityEvent<IHealth> OnHit => onHit;
         public UnityEvent<IHealth> OnHeal => onHeal;
         public UnityEvent<IHealth> OnDied => onDied;
+        public UnityEvent<IHealth> OnHealthUpdated => onHealthUpdated;
 
-        [SerializeField] private float health;
+        private float health
+        {
+            get => _health;
+            set
+            {
+                if (_health != value)
+                {
+                    _health = value;
+                    onHealthUpdated?.Invoke(this);
+                }
+            }
+        }
+
+        [SerializeField] private float _health;
         [SerializeField] private float healthOverTime;
         [SerializeField] private UnityEvent<IHealth> onHit;
         [SerializeField] private UnityEvent<IHealth> onHeal;
         [SerializeField] private UnityEvent<IHealth> onDied;
+        [SerializeField] private UnityEvent<IHealth> onHealthUpdated;
 
         private float maxHealth;
 
@@ -33,7 +48,7 @@ namespace HHG.Common.Runtime
 
                 if (deltaHealth < 0f)
                 {
-                    TakeDamage(deltaHealth);
+                    TakeDamage(Mathf.Abs(deltaHealth));
                 }
                 else if (deltaHealth > 0f)
                 {
