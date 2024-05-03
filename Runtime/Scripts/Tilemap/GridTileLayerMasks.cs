@@ -19,8 +19,6 @@ namespace HHG.Common.Runtime
             {
                 Initialize();
             }
-
-            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         private void OnTileChanged(Tilemap map, Tilemap.SyncTile[] syncs)
@@ -39,7 +37,7 @@ namespace HHG.Common.Runtime
             int mask = 0;
             foreach (Tilemap tilemap in tilemaps)
             {
-                mask |= 1 << (tilemap.GetTile(position) is ILayerdTile tile ? tile.TileLayer : 0);
+                mask |= tilemap.GetTile(position) is ILayerdTile tile && tile.TileLayer != -1 ? 1 << tile.TileLayer : 0;
             }
             SetTileLayerMask(position, mask);
         }
@@ -72,6 +70,9 @@ namespace HHG.Common.Runtime
                     UpdateTileLayerMask(position);
                 }
             }
+
+            Tilemap.tilemapTileChanged -= OnTileChanged;
+            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         public bool TryGetTileLayerMask(Vector3Int position, out int mask)

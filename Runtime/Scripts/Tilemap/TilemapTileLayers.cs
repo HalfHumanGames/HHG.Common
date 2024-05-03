@@ -18,8 +18,6 @@ namespace HHG.Common.Runtime
             {
                 Initialize(tilemap.cellBounds);
             }
-
-            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         private void OnTileChanged(Tilemap map, Tilemap.SyncTile[] syncs)
@@ -28,7 +26,7 @@ namespace HHG.Common.Runtime
             {
                 foreach (Tilemap.SyncTile sync in syncs)
                 {
-                    SetTileLayer(sync.position, sync.tile is ILayerdTile tile ? tile.TileLayer : 0);
+                    SetTileLayer(sync.position, sync.tile is ILayerdTile tile ? tile.TileLayer : -1);
                 }
             }
         }
@@ -47,9 +45,12 @@ namespace HHG.Common.Runtime
             {
                 foreach (Vector3Int position in tilemap.cellBounds.allPositionsWithin)
                 {
-                    SetTileLayer(position, tilemap.GetTile(position) is ILayerdTile tile ? tile.TileLayer : 0);
+                    SetTileLayer(position, tilemap.GetTile(position) is ILayerdTile tile ? tile.TileLayer : -1);
                 }
             }
+
+            Tilemap.tilemapTileChanged -= OnTileChanged;
+            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         public bool TryGetTileLayer(Vector3Int position, out int layer)
