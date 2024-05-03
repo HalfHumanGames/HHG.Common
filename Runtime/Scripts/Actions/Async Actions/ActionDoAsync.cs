@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     {
         [SerializeReference, SerializeReferenceDropdown] private IAction action;
 
-        public IEnumerator DoAction(MonoBehaviour invoker)
+        public IEnumerator DoActionAsync(MonoBehaviour invoker)
         {
             action?.DoAction(invoker);
 

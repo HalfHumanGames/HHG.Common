@@ -5,6 +5,6 @@ namespace HHG.Common.Runtime
 {
     public interface IActionAsync
     {
-        IEnumerator DoAction(MonoBehaviour invoker);
+        IEnumerator DoActionAsync(MonoBehaviour invoker);
     }
 }

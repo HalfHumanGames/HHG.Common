@@ -8,13 +8,13 @@ namespace HHG.Common.Runtime
     {
         [SerializeReference, SerializeReferenceDropdown] private List<IActionAsync> actions = new List<IActionAsync>();
 
-        public IEnumerator DoAction(MonoBehaviour invoker)
+        public IEnumerator DoActionAsync(MonoBehaviour invoker)
         {
             List<Coroutine> coroutines = new List<Coroutine>();
 
             foreach (IActionAsync action in actions)
             {
-                coroutines.Add(invoker.StartCoroutine(action?.DoAction(invoker)));
+                coroutines.Add(invoker.StartCoroutine(action?.DoActionAsync(invoker)));
             }
 
             foreach (Coroutine coroutine in coroutines)

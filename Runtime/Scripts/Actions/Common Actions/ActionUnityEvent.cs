@@ -3,13 +3,13 @@ using UnityEngine.Events;
 
 namespace HHG.Common.Runtime
 {
-    public class ActionInvokeUnityEvent : IAction
+    public class ActionUnityEvent : IAction
     {
-        [SerializeField] private UnityEvent invoke;
+        [SerializeField] private UnityEvent unityEvent;
 
         public void DoAction(MonoBehaviour invoker)
         {
-            invoke?.Invoke();
+            unityEvent?.Invoke();
         }
     }
 }
