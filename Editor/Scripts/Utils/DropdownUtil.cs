@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using System;
 using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
@@ -61,10 +62,16 @@ namespace HHG.Common.Runtime
             typeFilter ??= _ => true;
             List<T> objectsRetval = new List<T>() { null };
             List<string> optionsRetval = new List<string>();
-            var types = typeof(ScriptableObject).FindSubclasses().Where(typeFilter);
+            var types = typeof(UnityEngine.Object).FindSubclasses().Where(typeFilter);
             foreach (var type in types)
             {
+#if UNITY_EDITOR
+                string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
+                string[] paths = guids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
+                T[] objs = paths.Select(p => AssetDatabase.LoadAssetAtPath<T>(p)).ToArray();
+#else
                 var objs = Resources.LoadAll(string.Empty, type).Cast<T>().Where(objectFilter);
+#endif
                 objectsRetval.AddRange(objs);
             }
             objects = objectsRetval;

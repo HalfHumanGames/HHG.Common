@@ -11,7 +11,7 @@ namespace HHG.Common.Runtime
             filter ??= _ => true;
             return AppDomain.CurrentDomain.GetAssemblies().
                 SelectMany(assembly => assembly.GetTypes()).
-                Where(t => t.IsClass && type.IsAssignableFrom(t) && t != type && filter(t)). 
+                Where(t => t.IsClass && type.IsAssignableFrom(t) && filter(t)).
                 ToList();
         }
 

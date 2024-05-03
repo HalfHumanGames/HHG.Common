@@ -1,5 +1,4 @@
 using HHG.Common.Runtime;
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -12,7 +11,7 @@ namespace HHG.Common.Editor
     public class DropdownDrawer : PropertyDrawer
     {
         private DropdownAttribute filter => attribute as DropdownAttribute;
-        private List<ScriptableObject> choiceAssets = new List<ScriptableObject>();
+        private List<Object> choiceAssets = new List<Object>();
         private List<string> choiceNames = new List<string>();
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -42,7 +41,7 @@ namespace HHG.Common.Editor
 
         private void RefreshDropdownValues(SerializedProperty property)
         {
-            Type type = filter.Type ?? property.GetPropertyType();
+            System.Type type = filter.Type ?? property.GetPropertyType();
             DropdownUtil.GetChoiceList(ref choiceAssets, ref choiceNames, t => t.IsBaseImplementationOf(type), filter.filter);
         }
 

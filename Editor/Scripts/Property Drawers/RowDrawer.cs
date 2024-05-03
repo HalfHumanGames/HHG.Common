@@ -8,8 +8,6 @@ namespace HHG.Common.Editor
     [CustomPropertyDrawer(typeof(RowAttribute))]
     public class RowDrawer : PropertyDrawer
     {
-        private RowAttribute row => attribute as RowAttribute;
-
         // TODO: Make auto do child if child count is 1 or full otherwise
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -47,6 +45,7 @@ namespace HHG.Common.Editor
         private static void OnGeometryChangeEvent(GeometryChangedEvent evt)
         {
             PropertyField field = evt.target as PropertyField;
+
             if (field.Q<Label>() is Label label)
             {
                 label.text = field.userData as string;
