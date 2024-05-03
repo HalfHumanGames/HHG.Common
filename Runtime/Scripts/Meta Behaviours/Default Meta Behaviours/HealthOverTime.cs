@@ -8,7 +8,6 @@ namespace HHG.Common.Runtime
         [SerializeField] private float amount;
 
         private IHealth health;
-        private float timer = .01f;
 
         public override void Start()
         {
@@ -19,24 +18,15 @@ namespace HHG.Common.Runtime
         {
             if (health != null)
             {
-                if (timer > 0f)
+                float actual = 1f / frequency * amount * Time.deltaTime;
+                if (actual < 0f)
                 {
-                    timer -= Time.deltaTime;
-
-                    if (timer <= 0f)
-                    {
-                        timer = frequency;
-                        
-                        if (amount < 0f)
-                        {
-                            // Use absolute since can't take negative damage
-                            health.TakeDamage(Mathf.Abs(amount));
-                        }
-                        else if (amount > 0f)
-                        {
-                            health.Heal(amount);
-                        }
-                    }
+                    // Negate since can't take negative damage
+                    health.TakeDamage(-actual);
+                }
+                else if (actual > 0f)
+                {
+                    health.Heal(actual);
                 }
             }
         }
