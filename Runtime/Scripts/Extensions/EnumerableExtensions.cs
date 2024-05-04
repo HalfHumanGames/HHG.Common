@@ -47,5 +47,10 @@ namespace HHG.Common.Runtime
         {
             return enumerable.Shuffle().Take(take);
         }
+
+        public static IEnumerable<T> NotNull<T>(this IEnumerable<T> enumerable)
+        {
+            return enumerable.Where(item => item != null);
+        }
     } 
 }
