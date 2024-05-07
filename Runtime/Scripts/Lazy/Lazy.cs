@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class Lazy<T> where T : Component
+    // Can't have "where T : Component" constraint since that won't work with interfaces
+    public class Lazy<T> 
     {
         private T component;
         private T[] components;
@@ -62,6 +63,26 @@ namespace HHG.Common.Runtime
             if (components == null)
             {
                 components = mono.GetComponentsInParent<T>();
+            }
+
+            return components;
+        }
+
+        public T FromFindObjectOfType(MonoBehaviour mono)
+        {
+            if (component == null)
+            {
+                component = mono.FindObjectOfType<T>();
+            }
+
+            return component;
+        }
+
+        public T[] FromFindObjectsOfType(MonoBehaviour mono)
+        {
+            if (components == null)
+            {
+                components = mono.FindObjectsOfType<T>();
             }
 
             return components;

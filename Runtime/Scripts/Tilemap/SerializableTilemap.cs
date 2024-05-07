@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -44,14 +42,14 @@ namespace HHG.Common.Runtime
                 tiles[i] = (byte) (tiles == null ? 0 : usedTiles.IndexOf(tile) + 1);
             }
 
-            encoded = Convert.ToBase64String(Compress(tiles));
+            encoded = Convert.ToBase64String(GZipUtil.Compress(tiles));
         }
 
         public void Deserialize(Tilemap tilemap, List<TileBase> usedTiles)
         {
             tilemap.ClearAllTiles();
 
-            byte[] tiles = Decompress(Convert.FromBase64String(encoded));
+            byte[] tiles = GZipUtil.Decompress(Convert.FromBase64String(encoded));
 
             TileBase[] tileBases = new TileBase[tiles.Length];
 
@@ -66,33 +64,6 @@ namespace HHG.Common.Runtime
             }
 
             tilemap.SetTilesBlock(bounds, tileBases);
-        }
-
-        private byte[] Compress(byte[] data)
-        {
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
-                {
-                    gzipStream.Write(data, 0, data.Length);
-                }
-                return memoryStream.ToArray();
-            }
-        }
-
-        private byte[] Decompress(byte[] data)
-        {
-            using (MemoryStream memoryStream = new MemoryStream(data))
-            {
-                using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                {
-                    using (MemoryStream decompressedMemoryStream = new MemoryStream())
-                    {
-                        gzipStream.CopyTo(decompressedMemoryStream);
-                        return decompressedMemoryStream.ToArray();
-                    }
-                }
-            }
         }
     }
 }
