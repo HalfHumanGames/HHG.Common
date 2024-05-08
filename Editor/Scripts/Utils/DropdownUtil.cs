@@ -68,7 +68,7 @@ namespace HHG.Common.Runtime
 #if UNITY_EDITOR
                 string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
                 string[] paths = guids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
-                T[] objs = paths.Select(p => AssetDatabase.LoadAssetAtPath<T>(p)).ToArray();
+                T[] objs = paths.SelectMany(p => AssetDatabase.LoadAllAssetsAtPath(p)).Cast<T>().Where(objectFilter).ToArray();
 #else
                 var objs = Resources.LoadAll(string.Empty, type).Cast<T>().Where(objectFilter);
 #endif
