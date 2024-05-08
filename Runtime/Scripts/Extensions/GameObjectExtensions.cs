@@ -1,9 +1,21 @@
+using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public static class GameObjectExtensions
     {
+        public static string GetPath(this GameObject go)
+        {
+            StringBuilder sb = new StringBuilder($"/{go.name}");
+            while (go.transform.parent != null)
+            {
+                go = go.transform.parent.gameObject;
+                sb.Insert(0, $"/{go.name}");
+            }
+            return sb.ToString();
+        }
+
         public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T component, bool includeInactive = false)
         {
             component = gameObject.GetComponentInChildren<T>(includeInactive);

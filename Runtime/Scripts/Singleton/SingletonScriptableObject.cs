@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-	public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
+    public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 	{
 		private static string resourcePath => $"{typeof(T)}";
 		private static string assetPath => $"Assets/Resources/{resourcePath}.asset";
@@ -23,6 +23,10 @@ namespace HHG.Common.Runtime
 						Debug.LogWarning($"{typeof(T)} asset not found at '{assetPath}' so a new one has been created.");
 						instance = CreateInstance<T>();
 #if UNITY_EDITOR
+						if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+						{
+							AssetDatabase.CreateFolder("Assets", "Resources");
+						}
 						AssetDatabase.CreateAsset(instance, assetPath);
 #endif
 					}
@@ -30,6 +34,5 @@ namespace HHG.Common.Runtime
 				return instance;
 			}
 		}
-	}
-
+    }
 }

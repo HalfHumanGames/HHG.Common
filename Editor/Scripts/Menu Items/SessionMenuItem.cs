@@ -6,7 +6,7 @@ namespace HHG.Common.Editor
     public static class SessionMenuItem
     {
         [MenuItem("Half Human Games/Session")]
-        public static void Open()
+        private static void Open()
         {
             Selection.activeObject = AssetDatabaseUtil.FindAsset<SessionBase>();
         }
