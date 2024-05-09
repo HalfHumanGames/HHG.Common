@@ -13,6 +13,14 @@ namespace HHG.Common.Runtime
         [SerializeField] private List<TileBase> tiles = new List<TileBase>();
         [SerializeField] private List<SerializableTilemap> serialized = new List<SerializableTilemap>();
 
+        public void Initiialize(IEnumerable<TileBase> tileBases, IEnumerable<SerializableTilemap> serializableTilemaps)
+        {
+            tiles.Clear();
+            tiles.AddRange(tileBases);
+            serialized.Clear();
+            serialized.AddRange(serializableTilemaps);
+        }
+
         public void Serialize(params Tilemap[] tilemaps)
         {
             tiles.Clear();
