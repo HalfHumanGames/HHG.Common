@@ -7,17 +7,17 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private Tilemap[] tilemaps = new Tilemap[0];
 
-        protected override void Save(TilemapAsset asset)
+        public override void Save(TilemapAsset asset)
         {
             asset?.Serialize(tilemaps);
         }
 
-        protected override void Load(TilemapAsset asset)
+        public override void Load(TilemapAsset asset)
         {
             asset?.Deserialize(tilemaps);
         }
 
-        protected override void Clear(TilemapAsset asset)
+        public override void Clear(TilemapAsset asset)
         {
             foreach (Tilemap tilemap in tilemaps)
             {

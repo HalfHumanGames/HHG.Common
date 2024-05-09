@@ -6,11 +6,17 @@ using UnityEditor;
 
 namespace HHG.Common.Runtime
 {
-
     public class ResourceDatabase : SingletonScriptableObject<ResourceDatabase>
     {
         [SerializeField] private ResourceFolder[] resourceFolders;
         [SerializeField] private SerializableDictionary<string, Object> resources = new SerializableDictionary<string, Object>();
+
+        public static T GetResourceByGuid<T>(string guid) where T : Object => Instance.getResourceByGuid<T>(guid);
+
+        public T getResourceByGuid<T>(string guid) where T : Object
+        {
+            return resources.ContainsKey(guid) ? resources[guid] as T : null;
+        }
 
 #if UNITY_EDITOR
 
@@ -36,19 +42,13 @@ namespace HHG.Common.Runtime
             }
         }
 
-#endif
-
-        public static T GetResourceByGuid<T>(string guid) where T : Object => Instance.getResourceByGuid<T>(guid);
-
-        public T getResourceByGuid<T>(string guid) where T : Object
-        {
-            return resources.ContainsKey(guid) ? resources[guid] as T : null;
-        }
-
         [MenuItem("Half Human Games/Resource Database")]
         private static void Open()
         {
             Selection.activeObject = Instance;
         }
+
+#endif
+
     }
 }

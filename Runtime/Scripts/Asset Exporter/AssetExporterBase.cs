@@ -103,9 +103,9 @@ namespace HHG.Common.Runtime
             gameObject.SetActive(true);
         }
 
-        protected virtual void Save(TAsset asset) { }
-        protected virtual void Load(TAsset asset) { }
-        protected virtual void Clear(TAsset asset) { }
+        public virtual void Save(TAsset asset) { }
+        public virtual void Load(TAsset asset) { }
+        public virtual void Clear(TAsset asset) { }
 
         public sealed override string ToJson()
         {
