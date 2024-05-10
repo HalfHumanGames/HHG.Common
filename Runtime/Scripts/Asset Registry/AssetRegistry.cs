@@ -26,8 +26,8 @@ namespace HHG.Common.Runtime
         public static T GetAsset<T>(string guid) where T : Object => Instance.getAsset<T>(guid);
         public static string GetGuid(Object asset) => Instance.getGuid(asset);
 
-        public T getAsset<T>(string guid) where T : Object => assets.ContainsKey(guid) ? assets[guid] as T : null;
-        public string getGuid(Object asset) => guids.ContainsKey(asset) ? guids[asset] : null;
+        public T getAsset<T>(string guid) where T : Object => !string.IsNullOrEmpty(guid) && assets.ContainsKey(guid) ? assets[guid] as T : null;
+        public string getGuid(Object asset) => asset != null && guids.ContainsKey(asset) ? guids[asset] : null;
 
         public void OnBeforeSerialize()
         {

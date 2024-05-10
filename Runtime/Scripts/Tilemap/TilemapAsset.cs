@@ -15,9 +15,8 @@ namespace HHG.Common.Runtime
 
         public void Initiialize(IEnumerable<TileBase> tileBases, IEnumerable<SerializableTilemap> serializableTilemaps)
         {
-            tiles.Clear();
+            Clear();
             tiles.AddRange(tileBases);
-            serialized.Clear();
             serialized.AddRange(serializableTilemaps);
         }
 
@@ -45,6 +44,12 @@ namespace HHG.Common.Runtime
                     }
                 }
             }
+        }
+
+        public void Clear()
+        {
+            tiles.Clear();
+            serialized.Clear();
         }
     }
 }

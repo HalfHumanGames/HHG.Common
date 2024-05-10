@@ -7,12 +7,12 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private Tilemap[] tilemaps = new Tilemap[0];
 
-        public override void Save(TilemapAsset asset)
+        protected override void SaveAsset(TilemapAsset asset)
         {
             asset?.Serialize(tilemaps);
         }
 
-        public override void Load(TilemapAsset asset)
+        protected override void LoadAsset(TilemapAsset asset)
         {
             asset?.Deserialize(tilemaps);
 
@@ -21,8 +21,10 @@ namespace HHG.Common.Runtime
             transform.root.gameObject.SetActive(true);
         }
 
-        public override void Clear(TilemapAsset asset)
+        protected override void ClearAsset(TilemapAsset asset)
         {
+            asset?.Clear();
+
             foreach (Tilemap tilemap in tilemaps)
             {
                 tilemap.ClearAllTiles();

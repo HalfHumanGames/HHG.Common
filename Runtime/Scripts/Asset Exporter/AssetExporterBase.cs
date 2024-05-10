@@ -103,14 +103,33 @@ namespace HHG.Common.Runtime
             gameObject.SetActive(true);
         }
 
-        public virtual void Save(TAsset asset) { }
-        public virtual void Load(TAsset asset) { }
-        public virtual void Clear(TAsset asset) { }
+        public void Save(TAsset asset)
+        {
+            SaveAsset(asset);
+        }
+
+        public void Load(TAsset asset)
+        {
+            LoadAsset(asset);
+            isLoaded = true;
+            OnLoaded?.Invoke();
+        }
+
+        public void Clear(TAsset asset)
+        {
+            ClearAsset(asset);
+            isLoaded = true;
+            OnLoaded?.Invoke();
+        }
+
+        protected virtual void SaveAsset(TAsset asset) { }
+        protected virtual void LoadAsset(TAsset asset) { }
+        protected virtual void ClearAsset(TAsset asset) { }
 
         public sealed override string ToJson()
         {
             TAsset temp = ScriptableObject.CreateInstance<TAsset>();
-            Save(temp);
+            SaveAsset(temp);
             string json = JsonUtility.ToJson(temp);
             DestroyImmediate(temp);
             return json;
@@ -120,13 +139,13 @@ namespace HHG.Common.Runtime
         {
             TAsset temp = ScriptableObject.CreateInstance<TAsset>();
             JsonUtility.FromJsonOverwrite(json, temp);
-            Load(temp);
+            LoadAsset(temp);
             DestroyImmediate(temp);
         }
 
         protected sealed override void LoadInternal()
         {
-            Load(current);
+            LoadAsset(current);
             isLoaded = true;
             OnLoaded?.Invoke();
         }
@@ -153,14 +172,14 @@ namespace HHG.Common.Runtime
         protected sealed override void LoadFromInternal(string assetPath)
         {
             current = AssetDatabase.LoadAssetAtPath<TAsset>(assetPath);
-            Load(current);
+            LoadAsset(current);
         }
 
         protected sealed override void SaveInternal()
         {
             if (current != null)
             {
-                Save(current);
+                SaveAsset(current);
                 EditorUtility.SetDirty(current);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -184,7 +203,7 @@ namespace HHG.Common.Runtime
         protected sealed override void SaveAsInternal(string assetPath)
         {
             current = ScriptableObject.CreateInstance<TAsset>();
-            Save(current);
+            SaveAsset(current);
             AssetDatabase.CreateAsset(current, assetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -202,7 +221,7 @@ namespace HHG.Common.Runtime
 
         protected sealed override void ClearInternal()
         {
-            Clear(current);
+            ClearAsset(current);
         }
     }
 }
