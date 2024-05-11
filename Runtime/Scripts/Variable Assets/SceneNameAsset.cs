@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    [CreateAssetMenu(fileName = "String", menuName = "HHG/Assets/Variable/Scene Name")]
+    [CreateAssetMenu(fileName = "Scene Name", menuName = "HHG/Assets/Variable/Scene Name")]
     public class SceneNameAsset : VariableAssetBase<string>
     {
 #if UNITY_EDITOR

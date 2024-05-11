@@ -21,10 +21,8 @@ namespace HHG.Common.Runtime
             transform.root.gameObject.SetActive(true);
         }
 
-        protected override void ClearAsset(TilemapAsset asset)
+        protected override void ClearSceneTarget()
         {
-            asset?.Clear();
-
             foreach (Tilemap tilemap in tilemaps)
             {
                 tilemap.ClearAllTiles();

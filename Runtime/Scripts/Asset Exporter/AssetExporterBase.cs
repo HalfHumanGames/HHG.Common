@@ -115,16 +115,9 @@ namespace HHG.Common.Runtime
             OnLoaded?.Invoke();
         }
 
-        public void Clear(TAsset asset)
-        {
-            ClearAsset(asset);
-            isLoaded = true;
-            OnLoaded?.Invoke();
-        }
-
         protected virtual void SaveAsset(TAsset asset) { }
         protected virtual void LoadAsset(TAsset asset) { }
-        protected virtual void ClearAsset(TAsset asset) { }
+        protected virtual void ClearSceneTarget() { }
 
         public sealed override string ToJson()
         {
@@ -146,6 +139,13 @@ namespace HHG.Common.Runtime
         protected sealed override void LoadInternal()
         {
             LoadAsset(current);
+            isLoaded = true;
+            OnLoaded?.Invoke();
+        }
+
+        protected sealed override void ClearInternal()
+        {
+            ClearSceneTarget();
             isLoaded = true;
             OnLoaded?.Invoke();
         }
@@ -219,9 +219,5 @@ namespace HHG.Common.Runtime
 
 #endif
 
-        protected sealed override void ClearInternal()
-        {
-            ClearAsset(current);
-        }
     }
 }
