@@ -1,9 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public static class TransformExtensions
     {
+        public static IEnumerable<Transform> GetChildren(this Transform transform)
+        {
+            return transform.Cast<Transform>();
+        }
+
         public static Vector3 SnapPosition(this Transform transform, float nearest = 1, bool local = false)
         {
             if (local)
