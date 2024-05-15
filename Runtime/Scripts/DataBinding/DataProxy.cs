@@ -22,11 +22,15 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public object WeakValue { get => Value; set => Value = (T)value; }
+
         public DataProxy(Func<T> get, Action<T> set)
         {
             getter = get;
             setter = set;
         }
+
+        public IDataProxy WeakBind(Action<object> bind = null) => Bind(o => bind(o));
 
         public IDataProxy<T> Bind(Action<T> bind = null)
         {

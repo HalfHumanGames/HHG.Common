@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -16,7 +17,7 @@ namespace HHG.Common.Runtime
     }
 
     [ExecuteInEditMode]
-    public abstract partial class SessionBase<TSession, TState, TIO, TSerializer> : SessionBase
+    public abstract partial class SessionBase<TSession, TState, TIO, TSerializer> : SessionBase, IBindable
         where TSession : SessionBase<TSession, TState, TIO, TSerializer>
         where TState : class, ISessionState<TState>, new()
         where TIO : class, IIO, new()
@@ -30,6 +31,7 @@ namespace HHG.Common.Runtime
         private List<Action<TState>> mutations = new List<Action<TState>>();
         private bool isStagedStateDirty;
         private string fileId = DefaultFileID;
+        private GetSetMap getterSetterMap = new GetSetMap(typeof(TState));
 
         private TState defaultState
         {
@@ -63,7 +65,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private event Action<TState> stateUpdated;
+        public event Action Updated;
 
         private void setup()
         {
@@ -192,7 +194,7 @@ namespace HHG.Common.Runtime
 
         private void issueStateUpdated()
         {
-            stateUpdated?.Invoke(ReadOnlyState);
+            Updated?.Invoke();
         }
 
         private bool fileExists(string fileId)
@@ -203,6 +205,22 @@ namespace HHG.Common.Runtime
         private string getJson()
         {
             return JsonUtility.ToJson(Instance.state);
+        }
+
+        public bool TryGetValue<T>(string name, out T value)
+        {
+            return getterSetterMap.TryGetValue(readOnlyState, name, out value);
+        }
+
+        public bool TrySetValue<T>(string name, T value)
+        {
+            bool success = false;
+            stage(state =>
+            {
+                success = getterSetterMap.TrySetValue(state, name, value);
+            });
+            _ = readOnlyState; // Force call mutation
+            return success;
         }
     }
 }

@@ -27,10 +27,10 @@ namespace HHG.Common.Runtime
 
         private static TSession instance;
 
-        public static event Action<TState> StateUpdated
+        public static event Action StateUpdated
         {
-            add => Instance.stateUpdated += value;
-            remove => Instance.stateUpdated -= value;
+            add => Instance.Updated += value;
+            remove => Instance.Updated -= value;
         }
 
         public static void Save() => Instance.save();
