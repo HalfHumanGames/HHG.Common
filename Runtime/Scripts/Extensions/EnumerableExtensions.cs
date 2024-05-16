@@ -1,11 +1,19 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HHG.Common.Runtime
 {
     public static class EnumerableExtensions
     {
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> func)
+        {
+            foreach (T item in source)
+            {
+                func(item);
+            }
+        }
+
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
