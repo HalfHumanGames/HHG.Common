@@ -5,13 +5,13 @@ namespace HHG.Common.Runtime
 {
     public static class GameObjectExtensions
     {
-        public static string GetPath(this GameObject go)
+        public static string GetPath(this GameObject gameObject)
         {
-            StringBuilder sb = new StringBuilder($"/{go.name}");
-            while (go.transform.parent != null)
+            StringBuilder sb = new StringBuilder($"/{gameObject.name}");
+            while (gameObject.transform.parent != null)
             {
-                go = go.transform.parent.gameObject;
-                sb.Insert(0, $"/{go.name}");
+                gameObject = gameObject.transform.parent.gameObject;
+                sb.Insert(0, $"/{gameObject.name}");
             }
             return sb.ToString();
         }
@@ -37,9 +37,9 @@ namespace HHG.Common.Runtime
             return component;
         }
 
-        public static T GetTopmostComponent<T>(this GameObject go, bool includeInactive = false)
+        public static T GetTopmostComponent<T>(this GameObject gameObject, bool includeInactive = false)
         {
-            T component = go.GetComponentInParent<T>(includeInactive);
+            T component = gameObject.GetComponentInParent<T>(includeInactive);
 
             while (true)
             {
