@@ -13,7 +13,10 @@ namespace HHG.Common.Runtime
 
         private void OnValidate()
         {
-            value = scene?.name;
+            if (scene != null && value != scene.name)
+            {
+                value = scene.name;
+            }
         }
     }
 }

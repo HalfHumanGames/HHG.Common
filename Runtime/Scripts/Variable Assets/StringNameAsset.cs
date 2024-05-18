@@ -7,7 +7,10 @@ namespace HHG.Common.Runtime
     {
         private void OnValidate()
         {
-            value = name;
+            if (value != name)
+            {
+                value = name;
+            }
         }
     }
 }
