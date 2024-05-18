@@ -5,7 +5,8 @@ namespace HHG.Common.Runtime
 {
     public static class NavMeshAgentExtensions
     {
-        private const float agentDrift = .0001f; // minimal
+        private const float sampleDistance = 1000f;
+        private const float agentDrift = .0001f;
 
         // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
         public static void SetDestinationFix(this NavMeshAgent agent, Vector3 destination)
@@ -33,7 +34,7 @@ namespace HHG.Common.Runtime
         {
             if (!agent.isOnNavMesh)
             {
-                if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, Mathf.Infinity, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas))
                 {
                     agent.Warp(hit.position);
                 }
