@@ -197,10 +197,10 @@ namespace HHG.Common.Runtime
                 case InvokeDelayer.None:
                     break;
                 case InvokeDelayer.Seconds:
-                    yield return new WaitForSeconds(startDelay);
+                    if (startDelay > 0f) yield return new WaitForSeconds(startDelay);
                     break;
                 case InvokeDelayer.SecondsRealtime:
-                    yield return new WaitForSecondsRealtime(startDelay);
+                    if (startDelay > 0f) yield return new WaitForSecondsRealtime(startDelay);
                     break;
                 case InvokeDelayer.Frame:
                     yield return new WaitForEndOfFrame();
@@ -209,7 +209,7 @@ namespace HHG.Common.Runtime
                     yield return new WaitForFixedUpdate();
                     break;
                 case InvokeDelayer.When:
-                    yield return new WaitUntil(when);
+                    if (!when()) yield return new WaitUntil(when);
                     break;
             }
 
