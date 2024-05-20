@@ -17,13 +17,13 @@ namespace HHG.Common.Runtime
 #if UNITY_EDITOR
 
             if (!PrefabUtility.IsPartOfPrefabAsset(source))
-#endif
             {
                 Func<T, bool> search = obj => func(obj) == guid && obj != source;
                 T dupe = Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(search);
                 return dupe ? Guid.NewGuid().ToString() : guid;
             }
 
+#endif
             return guid; // Prefabs always keep their id
         }
     }
