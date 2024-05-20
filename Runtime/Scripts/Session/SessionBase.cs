@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Windows.WebCam;
 
 namespace HHG.Common.Runtime
 {
@@ -11,8 +12,8 @@ namespace HHG.Common.Runtime
         [ContextMenu("Load")] private void _Load() => load();
         [ContextMenu("Clear")] private void _Clear() => clear();
 
-        protected abstract void save();
-        protected abstract void load();
+        protected abstract void save(string fileId = null);
+        protected abstract void load(string fileId = null);
         protected abstract void clear(string fileId = null);
     }
 
@@ -72,24 +73,43 @@ namespace HHG.Common.Runtime
             Application.quitting += onApplicationQuit;
         }
 
-        protected sealed override void save()
+        protected sealed override void save(string fileId = null)
         {
+            if (fileId == null)
+            {
+                fileId = FileId;
+            }
+
             if (state == null)
             {
-                Load();
+                Load(fileId);
                 return;
             }
-            mutate(saveFile => saveFile.OnBeforeSave());
-            writeToDisk();
-            issueStateUpdated();
+
+            mutate(fileId, saveFile => saveFile.OnBeforeSave());
+            writeToDisk(fileId);
+
+            if (fileId == FileId)
+            {
+                issueStateUpdated();
+            }
         }
 
-        protected sealed override void load()
+        protected sealed override void load(string fileId = null)
         {
-            loadFromDisk();
-            mutate(saveFile => saveFile.OnAfterLoad());
+            if (fileId == null)
+            {
+                fileId = FileId;
+            }
+
+            loadFromDisk(fileId);
+            mutate(fileId, saveFile => saveFile.OnAfterLoad());
             isStagedStateDirty = true;
-            issueStateUpdated();
+
+            if (fileId == FileId)
+            {
+                issueStateUpdated();
+            }
         }
 
         protected sealed override void clear(string fileId = null)
@@ -111,7 +131,7 @@ namespace HHG.Common.Runtime
 
         private void save(Action<TState> mutation)
         {
-            mutate(mutation);
+            mutate(FileId, mutation);
             isStagedStateDirty = true;
             Save();
         }
@@ -144,30 +164,30 @@ namespace HHG.Common.Runtime
             isStagedStateDirty = true;
         }
 
-        private void mutate(Action<TState> mutation)
+        private void mutate(string fileId, Action<TState> mutation)
         {
             if (state == null)
             {
-                loadFromDisk();
+                loadFromDisk(fileId);
             }
             TState temp = state.Clone();
             mutation(temp);
             state = temp;
         }
 
-        private void writeToDisk()
+        private void writeToDisk(string fileId)
         {
             byte[] bytes = serializer.Serialize(state);
-            io.WriteAllBytes(GetFileName(FileId), bytes);
+            io.WriteAllBytes(GetFileName(fileId), bytes);
         }
 
-        private void loadFromDisk()
+        private void loadFromDisk(string fileId)
         {
-            if (io.Exists(GetFileName(FileId)))
+            if (io.Exists(GetFileName(fileId)))
             {
                 try
                 {
-                    byte[] bytes = io.ReadAllBytes(GetFileName(FileId));
+                    byte[] bytes = io.ReadAllBytes(GetFileName(fileId));
                     state = serializer.Deserialize<TState>(bytes);
                 }
                 catch

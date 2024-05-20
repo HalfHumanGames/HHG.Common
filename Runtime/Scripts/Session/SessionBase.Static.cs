@@ -33,8 +33,8 @@ namespace HHG.Common.Runtime
             remove => Instance.Updated -= value;
         }
 
-        public static void Save() => Instance.save();
-        public static void Load() => Instance.load();
+        public static void Save(string fileId = null) => Instance.save(fileId);
+        public static void Load(string fileId = null) => Instance.load(fileId);
         public static void Clear(string fileId = null) => Instance.clear(fileId);
         public static void Save(Action<TState> mutation) => Instance.save(mutation);
         public static void Stage(Action<TState> mutation) => Instance.stage(mutation);
