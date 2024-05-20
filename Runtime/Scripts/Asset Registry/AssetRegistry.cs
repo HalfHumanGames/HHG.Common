@@ -47,8 +47,10 @@ namespace HHG.Common.Runtime
             assets.Clear();
             foreach (AssetFolder folder in folders)
             {
-                string[] guids = AssetDatabase.FindAssets($"t:{folder.Filter}", new[] { folder.Folder });
-                var objs = guids.Select(g => AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(g)));
+                string filter = string.Join(' ', folder.Filter.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(f => $"t:{f}"));
+                string[] guids = AssetDatabase.FindAssets($"{filter}", new[] { folder.Folder });
+                var paths = guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
+                var objs = paths.Select(path => AssetDatabase.LoadAssetAtPath<Object>(path));
                 foreach (Object obj in objs)
                 {
                     string path = AssetDatabase.GetAssetPath(obj);
