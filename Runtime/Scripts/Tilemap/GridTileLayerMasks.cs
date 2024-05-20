@@ -21,6 +21,16 @@ namespace HHG.Common.Runtime
             }
         }
 
+        private void OnEnable()
+        {
+            Tilemap.tilemapTileChanged += OnTileChanged;
+        }
+
+        private void OnDisable()
+        {
+            Tilemap.tilemapTileChanged -= OnTileChanged;
+        }
+
         private void OnTileChanged(Tilemap map, Tilemap.SyncTile[] syncs)
         {
             if (tilemaps.Contains(map))
@@ -70,9 +80,6 @@ namespace HHG.Common.Runtime
                     UpdateTileLayerMask(position);
                 }
             }
-
-            Tilemap.tilemapTileChanged -= OnTileChanged;
-            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         public bool TryGetTileLayerMask(Vector3Int position, out int mask)
@@ -108,11 +115,6 @@ namespace HHG.Common.Runtime
         public void RemoveTileLayer(Vector3Int position, int layer)
         {
             data.SetData(position, data.GetData(position).WithoutFlag(layer));
-        }
-
-        private void OnDestroy()
-        {
-            Tilemap.tilemapTileChanged -= OnTileChanged;
         }
     }
 }

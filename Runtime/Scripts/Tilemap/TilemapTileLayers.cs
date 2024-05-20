@@ -20,6 +20,16 @@ namespace HHG.Common.Runtime
             }
         }
 
+        private void OnEnable()
+        {
+            Tilemap.tilemapTileChanged += OnTileChanged;
+        }
+
+        private void OnDisable()
+        {
+            Tilemap.tilemapTileChanged -= OnTileChanged;
+        }
+
         private void OnTileChanged(Tilemap map, Tilemap.SyncTile[] syncs)
         {
             if (tilemap == map)
@@ -37,6 +47,11 @@ namespace HHG.Common.Runtime
             set => data[pos] = value;
         }
 
+        public void Initialize(bool search = false)
+        {
+            Initialize(tilemap.cellBounds, search);
+        }
+
         public void Initialize(BoundsInt bounds, bool search = false)
         {
             data = new BoundsData<int>(bounds);
@@ -48,9 +63,6 @@ namespace HHG.Common.Runtime
                     SetTileLayer(position, tilemap.GetTile(position) is ILayerdTile tile ? tile.TileLayer : -1);
                 }
             }
-
-            Tilemap.tilemapTileChanged -= OnTileChanged;
-            Tilemap.tilemapTileChanged += OnTileChanged;
         }
 
         public bool TryGetTileLayer(Vector3Int position, out int layer)
@@ -71,11 +83,6 @@ namespace HHG.Common.Runtime
         public void SetTileLayer(Vector3Int position, int value)
         {
             data.SetData(position, value);
-        }
-
-        private void OnDestroy()
-        {
-            Tilemap.tilemapTileChanged -= OnTileChanged;
         }
     }
 }
