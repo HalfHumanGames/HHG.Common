@@ -9,11 +9,11 @@ namespace HHG.Common.Runtime
         public TGameStateId Current => current;
         public TGameStateId Previous => previous;
 
-        [SerializeField] private TGameStateId initial;
-        [SerializeField] private TGameStateId current;
-        [SerializeField] private TGameStateId previous;
+        [SerializeField] protected TGameStateId initial;
+        [SerializeField] protected TGameStateId current;
+        [SerializeField] protected TGameStateId previous;
 
-        private GameObject currentGameObject;
+        protected GameObject currentGameObject;
 
         protected virtual void Awake()
         {
