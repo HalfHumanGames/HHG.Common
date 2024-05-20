@@ -62,6 +62,12 @@ namespace HHG.Common.Runtime
             maxHealth = health = value;
         }
 
+        public void Initialize(float value, float overTime)
+        {
+            Initialize(value);
+            healthOverTime = overTime;
+        }
+
         public void TakeDamage(float amount)
         {
             if (health > 0f)
