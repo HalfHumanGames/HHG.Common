@@ -5,6 +5,8 @@ namespace HHG.Common.Runtime
 {
     public class Health : MonoBehaviour, IHealth
     {
+        private const float dieThreshold = .01f;
+
         public MonoBehaviour Mono => this;
         public float HealthValue => health;
         public float HealthPerc => maxHealth == 0f ? 1f : health / maxHealth;
@@ -75,7 +77,7 @@ namespace HHG.Common.Runtime
                 health -= amount;
                 OnHit?.Invoke(this);
                 
-                if (health <= 0f)
+                if (health <= dieThreshold)
                 {
                     health = 0f;
                     OnDied?.Invoke(this);
