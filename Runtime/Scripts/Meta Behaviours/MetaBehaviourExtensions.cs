@@ -17,6 +17,7 @@ namespace HHG.Common.Runtime
 
         public static T[] AddMetaBehaviours<T>(this GameObject gameObject, IEnumerable<T> metaBehaviours) where T : MetaBehaviour
         {
+            bool wasActive = gameObject.activeSelf;
             gameObject.SetActive(false);
             int count = metaBehaviours.Count();
             T[] instances = new T[count];
@@ -25,7 +26,7 @@ namespace HHG.Common.Runtime
             {
                 instances[i++] = (T)gameObject.AddComponent<MetaBehaviourRunner>().AttachBehaviour(metaBehaviour.Clone());
             }
-            gameObject.SetActive(true);
+            gameObject.SetActive(wasActive);
             return instances;
         }
 
