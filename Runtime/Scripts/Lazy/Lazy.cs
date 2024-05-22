@@ -16,8 +16,7 @@ namespace HHG.Common.Runtime
         public T FromComponentInChildren(GameObject gameObject) => component ??= gameObject.GetComponentInChildren<T>();
         public T FromComponentInParent(Component comp) => component ??= comp.GetComponentInParent<T>();
         public T FromComponentInParent(GameObject gameObject) => component ??= gameObject.GetComponentInParent<T>();
-        public T FromFindObjectOfType(Component comp) => component ??= comp.FindObjectOfType<T>();
-        public T FromFindObjectOfType(GameObject gameObject) => component ??= gameObject.FindObjectOfType<T>();
+        public T FromFindObjectOfType() => component ??= ObjectUtil.FindObjectOfType<T>();
         public T[] From(Func<T[]> getter) => components ??= getter();
         public T[] FromComponentsInChildren(Component comp) => components ??= comp.GetComponentsInChildren<T>();
         public T[] FromComponentsInChildren(GameObject gameObject) => components ??= gameObject.GetComponentsInChildren<T>();
@@ -25,7 +24,6 @@ namespace HHG.Common.Runtime
         public T[] FromComponentsInParent(GameObject gameObject) => components ??= gameObject.GetComponentsInParent<T>();
         public T[] FromComponents(Component comp) => components ??= comp.GetComponents<T>();
         public T[] FromComponents(GameObject gameObject) => components ??= gameObject.GetComponents<T>();
-        public T[] FromFindObjectsOfType(Component comp) => components ??= comp.FindObjectsOfType<T>();
-        public T[] FromFindObjectsOfType(GameObject gameObject) => components ??= gameObject.FindObjectsOfType<T>();
+        public T[] FromFindObjectsOfType() => components ??= ObjectUtil.FindObjectsOfType<T>();
     }
 }
