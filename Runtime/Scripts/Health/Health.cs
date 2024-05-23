@@ -66,8 +66,13 @@ namespace HHG.Common.Runtime
 
         public void Initialize(float value, float overTime)
         {
-            Initialize(value);
+            maxHealth = health = value;
             healthOverTime = overTime;
+        }
+
+        public void InitializeValue(float value)
+        {
+            health = value;
         }
 
         public void TakeDamage(float amount)
