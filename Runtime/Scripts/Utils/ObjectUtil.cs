@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
 {
     public static class ObjectUtil
     {
-        public static void Destroy(this IEnumerable<Object> objects)
+        public static void Destroy(IEnumerable<Object> objects)
         {
             if (objects != null)
             {
@@ -15,6 +15,22 @@ namespace HHG.Common.Runtime
                 {
                     Object.Destroy(obj);
                 }
+            }
+        }
+
+        public static void DestroyNextFrame(IEnumerable<Object> objects)
+        {
+            if (objects != null)
+            {
+                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
+            }
+        }
+
+        public static void DestroyNextFrame(Object obj)
+        {
+            if (obj != null)
+            {
+                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Object.Destroy(obj));
             }
         }
 

@@ -6,10 +6,10 @@ namespace HHG.Common.Runtime
 {
     public static class CoroutineUtil
     {
-        public class Coroutiner : MonoBehaviour { }
+        private class EmptyMonoBehaviour : MonoBehaviour { }
 
         private static MonoBehaviour _coroutiner;
-        private static MonoBehaviour coroutiner
+        public static MonoBehaviour Coroutiner
         {
             get
             {
@@ -17,7 +17,7 @@ namespace HHG.Common.Runtime
                 {
                     GameObject go = new GameObject("Coroutiner");
                     Object.DontDestroyOnLoad(go);
-                    _coroutiner = go.AddComponent<Coroutiner>();
+                    _coroutiner = go.AddComponent<EmptyMonoBehaviour>();
                 }
                 return _coroutiner;
             }
@@ -30,12 +30,12 @@ namespace HHG.Common.Runtime
 
         private static void OnSceneUnloaded(Scene scene)
         {
-            coroutiner.StopAllCoroutines();
+            Coroutiner.StopAllCoroutines();
         }
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            return coroutiner.StartCoroutine(enumerator);
+            return Coroutiner.StartCoroutine(enumerator);
         }
     }
 }
