@@ -7,7 +7,8 @@ namespace HHG.Common.Runtime
     {
         public static InputSystemUIInputModule GetInputSystemUIInputModule(this EventSystem eventSystem)
         {
-            return eventSystem.currentInputModule as InputSystemUIInputModule;
+            // Use GetComponent as a fallback since currentInputModule is not in available in Start or Awake (becomes available in Update)
+            return eventSystem.currentInputModule as InputSystemUIInputModule ?? eventSystem.GetComponent<InputSystemUIInputModule>();
         }
     }
 }
