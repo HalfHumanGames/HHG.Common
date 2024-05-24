@@ -5,6 +5,11 @@ namespace HHG.Common.Runtime
         void Refresh();
     }
 
+    public interface IRefreshableWeak
+    {
+        void RefreshWeak(object data);
+    }
+
     public interface IRefreshable<T>
     {
         void Refresh(T data);
