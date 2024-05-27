@@ -4,7 +4,7 @@ using UnityEditor.Build.Reporting;
 
 namespace HHG.Common.Editor
 {
-    class AssetRegistryBuildProcessor : IPreprocessBuildWithReport
+    public class AssetRegistryBuildPreprocessor : IPreprocessBuildWithReport
     {
         public int callbackOrder => 0;
 

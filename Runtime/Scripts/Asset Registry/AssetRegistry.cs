@@ -65,6 +65,7 @@ namespace HHG.Common.Runtime
                     assets.Add(guid, obj);
                 }
             }
+            EditorUtility.SetDirty(this);
         }
 
         [MenuItem("Half Human Games/Asset Registry")]
