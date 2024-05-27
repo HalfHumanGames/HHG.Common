@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Windows.WebCam;
 
 namespace HHG.Common.Runtime
 {
@@ -119,7 +117,7 @@ namespace HHG.Common.Runtime
                 fileId = FileId;
             }
 
-            io.Clear(GetFileName(fileId));
+            io.Clear(getFileName(fileId));
 
             if (fileId == FileId)
             {
@@ -178,16 +176,16 @@ namespace HHG.Common.Runtime
         private void writeToDisk(string fileId)
         {
             byte[] bytes = serializer.Serialize(state);
-            io.WriteAllBytes(GetFileName(fileId), bytes);
+            io.WriteAllBytes(getFileName(fileId), bytes);
         }
 
         private void loadFromDisk(string fileId)
         {
-            if (io.Exists(GetFileName(fileId)))
+            if (io.Exists(getFileName(fileId)))
             {
                 try
                 {
-                    byte[] bytes = io.ReadAllBytes(GetFileName(fileId));
+                    byte[] bytes = io.ReadAllBytes(getFileName(fileId));
                     state = serializer.Deserialize<TState>(bytes);
                 }
                 catch
@@ -219,8 +217,14 @@ namespace HHG.Common.Runtime
 
         private bool fileExists(string fileId)
         {
-            return io.Exists(GetFileName(fileId));
+            return io.Exists(getFileName(fileId));
         }
+
+        public string getFileName(string fileId)
+        {
+            return $"{GetType().ToString().ToLower()}.{fileId.ToLower()}.dat";
+        }
+
 
         private string getJson()
         {

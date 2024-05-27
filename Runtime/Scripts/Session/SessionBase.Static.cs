@@ -1,11 +1,10 @@
 using System;
-using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public abstract partial class SessionBase<TSession, TState, TIO, TSerializer>
     {
-        public const string DefaultFileID = "__default";
+        public const string DefaultFileID = "0";
 
         public static string FileId { get => Instance.fileId ?? DefaultFileID; set => Instance.fileId = value ?? DefaultFileID; }
         public static bool HasStagedChanges => Instance.mutations.Count > 0;
@@ -46,6 +45,5 @@ namespace HHG.Common.Runtime
         public static void IssueStateUpdated() => Instance.issueStateUpdated();
         public static bool FileExists(string fileId) => Instance.fileExists(fileId);
         public static string GetJson() => Instance.getJson();
-        public static string GetFileName(string fileId) => $"{Application.productName.ToLower()}.{typeof(TState).ToString().ToLower()}.{fileId}.dat";
     }
 }
