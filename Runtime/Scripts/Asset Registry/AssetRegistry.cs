@@ -41,8 +41,10 @@ namespace HHG.Common.Runtime
 
 #if UNITY_EDITOR
 
+        public static void EditorLoad() => Instance.editorLoad();
+
         [ContextMenu("Load Assets")]
-        private void LoadAssets()
+        private void editorLoad()
         {
             assets.Clear();
             foreach (AssetFolder folder in folders)
