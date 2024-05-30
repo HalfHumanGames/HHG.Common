@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
 
         [SerializeField, Dropdown] private SceneNameAsset sceneName;
 
-        public IEnumerator DoActionAsync(MonoBehaviour invoker)
+        public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
             while (!op.isDone) yield return new WaitForEndOfFrame();

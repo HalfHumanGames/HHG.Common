@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public interface IAction
+    public interface IAction : IActionBase
     {
-        void DoAction(MonoBehaviour invoker);
+        void Invoke(MonoBehaviour invoker);
     }
 }

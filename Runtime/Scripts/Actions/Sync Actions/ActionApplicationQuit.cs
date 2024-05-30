@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
 {
     public class ActionApplicationQuit : IAction
     {
-        public void DoAction(MonoBehaviour invoker)
+        public void Invoke(MonoBehaviour invoker)
         {
 #if UNITY_EDITOR
             EditorApplication.ExitPlaymode();

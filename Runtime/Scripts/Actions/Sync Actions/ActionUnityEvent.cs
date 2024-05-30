@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private UnityEvent unityEvent;
 
-        public void DoAction(MonoBehaviour invoker)
+        public void Invoke(MonoBehaviour invoker)
         {
             unityEvent?.Invoke();
         }
