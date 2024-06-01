@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
@@ -33,6 +34,18 @@ namespace HHG.Common.Runtime
             }
 
             rect.localPosition = position;
+        }
+
+        public static void RebuildLayout(this RectTransform rect)
+        {
+            LayoutGroup[] layouts = rect.GetComponentsInChildren<LayoutGroup>(true);
+
+            foreach (LayoutGroup layout in layouts)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(layout.GetComponent<RectTransform>());
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rect.GetComponent<RectTransform>());
         }
     }
 }

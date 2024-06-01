@@ -36,9 +36,7 @@ namespace HHG.Common.Runtime
 
             int index = button.transform.GetSiblingIndex();
             content[index].SetActive(true);
-
-            // Makes sure the horizontal/vertical layout groups get rebuild which may not happen by default
-            LayoutRebuilder.ForceRebuildLayoutImmediate(content[index].GetComponent<RectTransform>());
+            content[index].GetComponent<RectTransform>().RebuildLayout();
         }
     }
 }

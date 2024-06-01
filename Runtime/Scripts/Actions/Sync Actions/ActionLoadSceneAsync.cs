@@ -6,8 +6,12 @@ namespace HHG.Common.Runtime
 {
     public class ActionLoadSceneAsync : IActionAsync
     {
-
         [SerializeField, Dropdown] private SceneNameAsset sceneName;
+
+        public ActionLoadSceneAsync(SceneNameAsset scene)
+        {
+            sceneName = scene;
+        }
 
         public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
