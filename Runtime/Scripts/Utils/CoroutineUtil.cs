@@ -37,5 +37,10 @@ namespace HHG.Common.Runtime
         {
             return Coroutiner.StartCoroutine(enumerator);
         }
+
+        public static void StopCoroutine(Coroutine coroutine)
+        {
+            Coroutiner.StopCoroutine(coroutine);
+        }
     }
 }
