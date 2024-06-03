@@ -10,7 +10,7 @@ namespace HHG.Common.Runtime
             get
             {
                 seconds -= Time.deltaTime * (getter?.Invoke() ?? timeScale);
-                return seconds <= 0;
+                return seconds > 0f;
             }
         }
 
@@ -32,6 +32,7 @@ namespace HHG.Common.Runtime
 
         public WaitForSecondsScaled(float secs, Func<float> scale)
         {
+            seconds = secs;
             getter = scale;
         }
     }

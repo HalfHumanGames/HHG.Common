@@ -13,7 +13,7 @@ namespace HHG.Common.Runtime
         {
             get
             {
-                if (_coroutiner == null)
+                if (_coroutiner == null && !isQuitting)
                 {
                     GameObject go = new GameObject("Coroutiner");
                     Object.DontDestroyOnLoad(go);
@@ -23,9 +23,18 @@ namespace HHG.Common.Runtime
             }
         }
 
+        private static bool isQuitting;
+
         static CoroutineUtil()
         {
             SceneManager.sceneUnloaded += OnSceneUnloaded;
+            Application.quitting += OnApplicationQuit;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            Application.quitting -= OnApplicationQuit;
+            isQuitting = true;
         }
 
         private static void OnSceneUnloaded(Scene scene)
@@ -35,12 +44,15 @@ namespace HHG.Common.Runtime
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            return Coroutiner.StartCoroutine(enumerator);
+            return isQuitting ? null : Coroutiner.StartCoroutine(enumerator);
         }
 
         public static void StopCoroutine(Coroutine coroutine)
         {
-            Coroutiner.StopCoroutine(coroutine);
+            if (!isQuitting)
+            {
+                Coroutiner.StopCoroutine(coroutine);
+            }
         }
     }
 }
