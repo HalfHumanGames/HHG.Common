@@ -11,7 +11,7 @@ namespace HHG.Common.Runtime
         public override void Reset()
         {
             AreaBordersEdge = false;
-            Area = new HashSet<Vector3Int>();
+            Area.Clear();
         }
     }
 }

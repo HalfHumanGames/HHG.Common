@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -6,11 +7,13 @@ namespace HHG.Common.Runtime
     {
         public bool IsSuccess;
         public Vector3Int TargetPosition;
+        public List<Vector3Int> Path = new List<Vector3Int>();
 
         public override void Reset()
         {
             IsSuccess = false;
             TargetPosition = default;
+            Path.Clear();
         }
     }
 }

@@ -42,20 +42,17 @@ namespace HHG.Common.Runtime
 
         public bool IsInBounds(Vector3Int position)
         {
-            (int x, int y) = GetIndex(position);
-            return IsInBounds(x, y);
+            return IsInBounds(GetIndex(position));
         }
 
         public bool IsOutOfBounds(Vector3Int position)
         {
-            (int x, int y) = GetIndex(position);
-            return IsOutOfBounds(x, y);
+            return IsOutOfBounds(GetIndex(position));
         }
 
         public T GetData(Vector3Int position)
         {
-            (int x, int y) = GetIndex(position);
-            return GetData(x, y);
+            return GetData(GetIndex(position));
         }
 
         public bool DataEquals(Vector3Int position, T value)
@@ -65,14 +62,12 @@ namespace HHG.Common.Runtime
 
         public bool TryGetData(Vector3Int position, out T value)
         {
-            (int x, int y) = GetIndex(position);
-            return TryGetData(x, y, out value);
+            return TryGetData(GetIndex(position), out value);
         }
 
         public void SetData(Vector3Int position, T value)
         {
-            (int x, int y) = GetIndex(position);
-            SetData(x, y, value);
+            SetData(GetIndex(position), value);
         }
 
         public (int x, int y) GetIndex(Vector3Int position)
@@ -80,26 +75,31 @@ namespace HHG.Common.Runtime
             return (position.x + offsetX, position.y + offsetY);
         }
 
-        public bool IsInBounds(int x, int y)
+        public Vector3Int GetPosition((int x, int y) pos)
         {
-            return x >= 0 && y >= 0 && x <= maxX && y <= maxY;
+            return new Vector3Int(pos.x - offsetX, pos.y - offsetY);
         }
 
-        public bool IsOutOfBounds(int x, int y)
+        public bool IsInBounds((int x, int y) pos)
         {
-            return !IsInBounds(x, y);
+            return pos.x >= 0 && pos.y >= 0 && pos.x <= maxX && pos.y <= maxY;
         }
 
-        public T GetData(int x, int y)
+        public bool IsOutOfBounds((int x, int y) pos)
         {
-            return data[x, y];
+            return !IsInBounds(pos);
         }
 
-        public bool TryGetData(int x, int y, out T value)
+        public T GetData((int x, int y) pos)
         {
-            if (IsInBounds(x, y))
+            return data[pos.x, pos.y];
+        }
+
+        public bool TryGetData((int x, int y) pos, out T value)
+        {
+            if (IsInBounds(pos))
             {
-                value = GetData(x, y);
+                value = GetData(pos);
                 return value != null;
             }
             else
@@ -109,9 +109,9 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void SetData(int x, int y, T value)
+        public void SetData((int x, int y) pos, T value)
         {
-            data[x, y] = value;
+            data[pos.x, pos.y] = value;
         }
 
         public override string ToString()
