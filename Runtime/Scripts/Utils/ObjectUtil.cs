@@ -22,7 +22,7 @@ namespace HHG.Common.Runtime
         {
             if (objects != null)
             {
-                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
+                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
             }
         }
 
@@ -30,7 +30,7 @@ namespace HHG.Common.Runtime
         {
             if (obj != null)
             {
-                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Object.Destroy(obj));
+                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => Object.Destroy(obj));
             }
         }
 

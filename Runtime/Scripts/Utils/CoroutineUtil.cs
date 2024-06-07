@@ -1,4 +1,7 @@
 using System.Collections;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,33 +28,40 @@ namespace HHG.Common.Runtime
 
         private static bool isQuitting;
 
-        static CoroutineUtil()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        private static void Initialize()
         {
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
+            Application.quitting -= OnApplicationQuit;
             Application.quitting += OnApplicationQuit;
+#if UNITY_EDITOR
+            EditorApplication.quitting -= OnApplicationQuit;
+            EditorApplication.quitting += OnApplicationQuit;
+#endif
         }
 
         private static void OnApplicationQuit()
         {
-            Application.quitting -= OnApplicationQuit;
+            Coroutiner?.StopAllCoroutines();
             isQuitting = true;
         }
 
         private static void OnSceneUnloaded(Scene scene)
         {
-            Coroutiner.StopAllCoroutines();
+            Coroutiner?.StopAllCoroutines();
         }
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            return isQuitting ? null : Coroutiner.StartCoroutine(enumerator);
+            return isQuitting ? null : Coroutiner?.StartCoroutine(enumerator);
         }
 
         public static void StopCoroutine(Coroutine coroutine)
         {
             if (!isQuitting)
             {
-                Coroutiner.StopCoroutine(coroutine);
+                Coroutiner?.StopCoroutine(coroutine);
             }
         }
     }
