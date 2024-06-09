@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
     public class FloodFillResult : FloodFillResultBase
     {
         public bool AreaBordersEdge;
-        public HashSet<Vector3Int> Area = new HashSet<Vector3Int>();
+        public List<Vector3Int> Area = new List<Vector3Int>();
 
         public override void Reset()
         {

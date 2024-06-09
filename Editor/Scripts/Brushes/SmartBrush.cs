@@ -11,11 +11,18 @@ namespace HHG.Common.Editor
     {
         private const string paletteParentName = "Tile Palette";
 
+        public bool Log;
+
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
             if (IsBrushTargetSceneTilemap(brushTarget))
             {
                 GridPaintingState.scenePaintTarget = brushTarget = FindPaintTarget(brushTarget);
+            }
+            
+            if (Log)
+            {
+                Debug.Log(position);
             }
 
             base.Paint(gridLayout, brushTarget, position);

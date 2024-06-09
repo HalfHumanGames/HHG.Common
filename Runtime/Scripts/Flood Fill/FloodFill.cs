@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -50,28 +51,50 @@ namespace HHG.Common.Runtime
 
         public bool TryFill(Vector3Int start, FloodFillResult result)
         {
-            return TryFillSearchInternal(start, result);
+            return TryFillSearchInternal(start, -1, result);
+        }
+
+        public bool TryFill(Vector3Int start, float maxDistance, FloodFillResult result)
+        {
+            return TryFillSearchInternal(start, maxDistance, result);
         }
 
         public bool TrySearch(Vector3Int start, Func<Vector3Int, bool> searchFunc, FloodFillSearchResult result)
         {
             found = searchFunc;
             ClearVisited();
-            return TryFillSearchInternal(start, result);
+            return TryFillSearchInternal(start, -1, result);
+        }
+
+        public bool TrySearch(Vector3Int start, Func<Vector3Int, bool> searchFunc, float maxDistance, FloodFillSearchResult result)
+        {
+            found = searchFunc;
+            ClearVisited();
+            return TryFillSearchInternal(start, maxDistance, result);
         }
 
         public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, FloodFillSearchResult result)
         {
             found = p => targets.Contains(p);
             ClearVisited();
-            return TryFillSearchInternal(start, result);
+            return TryFillSearchInternal(start, -1, result);
         }
 
-        private bool TryFillSearchInternal(Vector3Int position, FloodFillResultBase result)
+        public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, float maxDistance, FloodFillSearchResult result)
+        {
+            found = p => targets.Contains(p);
+            ClearVisited();
+            return TryFillSearchInternal(start, maxDistance, result);
+        }
+
+        private bool TryFillSearchInternal(Vector3Int position, float maxDistance, FloodFillResultBase result)
         {
             (int x, int y) start = bounds.GetIndex(position);
 
-            if (!IsValidStartIndex(start))
+            FloodFillResult fill = result as FloodFillResult;
+            FloodFillSearchResult search = result as FloodFillSearchResult;
+
+            if (!IsValidStartIndex(start, fill))
             {
                 return false;
             }
@@ -81,11 +104,9 @@ namespace HHG.Common.Runtime
             queue.Clear();
             queue.Enqueue(start);
 
-            FloodFillResult fill = result as FloodFillResult;
-            FloodFillSearchResult search = result as FloodFillSearchResult;
-
             (int x, int y)[] offsets = diagonal ? offsets8 : offsets4;
 
+            bool forceEnqueue = search != null;
             while (queue.Count > 0)
             {
                 (int x, int y) current = queue.Dequeue();
@@ -95,9 +116,10 @@ namespace HHG.Common.Runtime
                     return true;
                 }
 
-                if (TryVisitIndex(current, fill))
+                if (forceEnqueue || TryVisitIndex(current, fill))
                 {
-                    EnqueueAdjacentPositions(current, offsets, search);
+                    forceEnqueue = false;
+                    EnqueueAdjacentPositions(start, current, offsets, maxDistance, search);
                 }
             }
 
@@ -127,9 +149,9 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private bool IsValidStartIndex((int x, int y) pos)
+        private bool IsValidStartIndex((int x, int y) pos, FloodFillResult fill)
         {
-            return !(bounds.IsOutOfBounds(pos) || HasVisitedIndex(pos) || IsIndexObstacle(pos));
+            return !bounds.IsOutOfBounds(pos) && !HasVisitedIndex(pos) && (fill == null || !IsIndexObstacle(pos));
         }
 
         private bool FoundSearchTarget((int x, int y) start, (int x, int y) pos, FloodFillSearchResult search)
@@ -141,11 +163,22 @@ namespace HHG.Common.Runtime
                 {
                     search.IsSuccess = true;
                     search.TargetPosition = vec;
+                    search.Distance = GetDistance(start, pos);
                     ConstructPath(start, pos, search.Path);
                     return true;
                 }
             }
             return false;
+        }
+
+        private bool SurpassedMaxDistance(float currentDistance, float maxDistance)
+        {
+            return maxDistance > 0 && currentDistance >= maxDistance;
+        }
+
+        private float GetDistance((int x, int y) start, (int x, int y) pos)
+        {
+            return Mathf.Sqrt(Mathf.Pow(pos.x - start.x, 2) + Mathf.Pow(pos.y - start.y, 2));
         }
 
         private bool TryVisitIndex((int x, int y) pos, FloodFillResult fill)
@@ -169,19 +202,45 @@ namespace HHG.Common.Runtime
             return true;
         }
 
-        private void EnqueueAdjacentPositions((int x, int y) position, (int x, int y)[] offsets, FloodFillSearchResult search)
+        private void EnqueueAdjacentPositions((int x, int y) start, (int x, int y) current, (int x, int y)[] offsets, float maxDistance, FloodFillSearchResult search)
         {
             for (int i = 0; i < offsets.Length; i++)
             {
-                (int x, int y) adjacent = (position.x + offsets[i].x, position.y + offsets[i].y);
+                (int x, int y) adjacent = (current.x + offsets[i].x, current.y + offsets[i].y);
 
-                if (search != null && !parents.ContainsKey(adjacent))
+                if (!SurpassedMaxDistance(GetDistance(start, current), maxDistance))
                 {
-                    parents[adjacent] = position;
-                }
+                    if (search != null && !parents.ContainsKey(adjacent))
+                    {
+                        parents[adjacent] = current;
+                    }
 
-                queue.Enqueue(adjacent);
+                    queue.Enqueue(adjacent);
+                }
             }
+        }
+
+        public int GetPathLength(Vector3Int start, Vector3Int target)
+        {
+            int len = GetPathLength(bounds.GetIndex(start), bounds.GetIndex(target));
+            return len;
+        }
+
+        private int GetPathLength((int x, int y) start, (int x, int y) target)
+        {
+            int length = 1;
+            (int x, int y) current = target;
+            while (current != start)
+            {
+                length++;
+                current = parents[current];
+            }
+            return length;
+        }
+
+        public void ConstructPath(Vector3Int start, Vector3Int target, List<Vector3Int> path)
+        {
+            ConstructPath(bounds.GetIndex(start), bounds.GetIndex(target), path);
         }
 
         private void ConstructPath((int x, int y) start, (int x, int y) target, List<Vector3Int> path)

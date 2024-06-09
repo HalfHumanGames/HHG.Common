@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace HHG.Common.Runtime
 {
@@ -150,6 +150,93 @@ namespace HHG.Common.Runtime
                 retval[i++] = position;
             }
             return retval;
+        }
+
+        public static bool IsStraightLine(this IEnumerable<Vector2Int> points)
+        {
+            using (var enumerator = points.GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                {
+                    return true; // No points, considered trivially collinear
+                }
+
+                Vector2Int firstPoint = enumerator.Current;
+
+                if (!enumerator.MoveNext())
+                {
+                    return true; // Only one point, considered trivially collinear
+                }
+
+                Vector2Int secondPoint = enumerator.Current;
+                Vector2Int start = secondPoint - firstPoint;
+
+                Vector2Int previousPoint = secondPoint;
+                while (enumerator.MoveNext())
+                {
+                    Vector2Int currentPoint = enumerator.Current;
+                    Vector2Int next = currentPoint - previousPoint;
+                    int cross = start.x * next.y - start.y * next.x;
+                    if (cross != 0)
+                    {
+                        return false;
+                    }
+                    previousPoint = currentPoint;
+                }
+            }
+            return true;
+        }
+
+        public static bool IsStraightLine(this IEnumerable<Vector3Int> points)
+        {
+            using (var enumerator = points.GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                {
+                    return true; // No points, considered trivially collinear
+                }
+
+                Vector3Int firstPoint = enumerator.Current;
+
+                if (!enumerator.MoveNext())
+                {
+                    return true; // Only one point, considered trivially collinear
+                }
+
+                Vector3Int secondPoint = enumerator.Current;
+                Vector3 start = (Vector3)(secondPoint - firstPoint);
+
+                Vector3Int previousPoint = secondPoint;
+                while (enumerator.MoveNext())
+                {
+                    Vector3Int currentPoint = enumerator.Current;
+                    Vector3 next = (Vector3)(currentPoint - previousPoint);
+                    Vector3 cross = Vector3.Cross(start, next);
+                    if (cross != Vector3.zero)
+                    {
+                        return false;
+                    }
+                    previousPoint = currentPoint;
+                }
+            }
+            return true;
+        }
+
+        public static bool IsAdjacent(this Vector2Int a, Vector2Int b)
+        {
+            int deltaX = Mathf.Abs(a.x - b.x);
+            int deltaY = Mathf.Abs(a.y - b.y);
+
+            return deltaX <= 1 && deltaY <= 1 && (deltaX + deltaY) > 0;
+        }
+
+        public static bool IsAdjacent(this Vector3Int a, Vector3Int b)
+        {
+            int deltaX = Mathf.Abs(a.x - b.x);
+            int deltaY = Mathf.Abs(a.y - b.y);
+            int deltaZ = Mathf.Abs(a.z - b.z);
+
+            return deltaX <= 1 && deltaY <= 1 && deltaZ <= 1 && (deltaX + deltaY + deltaZ) > 0;
         }
     }
 }
