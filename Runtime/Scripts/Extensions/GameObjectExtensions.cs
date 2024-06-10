@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using UnityEngine;
 
@@ -28,13 +29,13 @@ namespace HHG.Common.Runtime
             return component != null;
         }
 
-        public static T GetOrAddComponent<T>(this GameObject go) where T : Component
+        public static T GetOrAddComponent<T>(this GameObject go, bool add = true)
         {
-            if (!go.TryGetComponent(out T component))
+            if (!go.TryGetComponent(typeof(T), out Component component) && add)
             {
-                component = go.AddComponent<T>();
+                component = go.AddComponent(typeof(T));
             }
-            return component;
+            return (T)(object)component;
         }
 
         public static T GetTopmostComponent<T>(this GameObject gameObject, bool includeInactive = false)

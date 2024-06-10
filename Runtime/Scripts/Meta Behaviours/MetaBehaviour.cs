@@ -10,15 +10,17 @@ namespace HHG.Common.Runtime
             get => runner.enabled; 
             set => runner.enabled = value;
         }
-        protected MetaBehaviourRunner runner;
-        protected GameObject gameObject;
-        protected Transform transform;
 
-        internal void AttachToRunner(MetaBehaviourRunner metaBehaviourRunner)
+        [SerializeField, HideInInspector] protected MetaBehaviourRunner runner;
+        [SerializeField, HideInInspector] protected GameObject gameObject;
+        [SerializeField, HideInInspector] protected Transform transform;
+
+        internal MetaBehaviour EnsureAttached(MetaBehaviourRunner metaBehaviourRunner)
         {
             runner = metaBehaviourRunner;
             gameObject = metaBehaviourRunner.gameObject;
             transform = metaBehaviourRunner.transform;
+            return this;
         }
 
         public virtual void Awake() { }
@@ -29,6 +31,9 @@ namespace HHG.Common.Runtime
         public virtual void LateUpdate() { }
         public virtual void FixedUpdate() { }
         public virtual void OnDestroy() { }
+        public virtual void OnDrawGizmos() { }
+        public virtual void OnDrawGizmosSelected() { }
+        public virtual void OnValidate() { }
 
         public void Destroy(float delay = 0f) => Object.Destroy(runner, delay);
 

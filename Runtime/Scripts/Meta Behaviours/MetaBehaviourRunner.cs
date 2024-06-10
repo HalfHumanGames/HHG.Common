@@ -6,13 +6,14 @@ namespace HHG.Common.Runtime
     {
         public MetaBehaviour Behaviour => behaviour;
 
-        [SerializeReference] private MetaBehaviour behaviour;
+        [SerializeReference] private MetaBehaviour _behaviour;
+
+        protected MetaBehaviour behaviour => _behaviour?.EnsureAttached(this);
 
         internal MetaBehaviour AttachBehaviour(MetaBehaviour metaBehaviour)
         {
-            behaviour = metaBehaviour;
-            behaviour.AttachToRunner(this);
-            return behaviour;
+            _behaviour = metaBehaviour;
+            return behaviour; // Use getter to ensure attached
         }
 
         private void Awake()
@@ -48,6 +49,21 @@ namespace HHG.Common.Runtime
         private void FixedUpdate()
         {
             behaviour?.FixedUpdate();
+        }
+
+        private void OnDrawGizmos()
+        {
+            behaviour?.OnDrawGizmos();
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            behaviour?.OnDrawGizmosSelected();
+        }
+
+        private void OnValidate()
+        {
+            behaviour?.OnValidate();
         }
 
         private void OnDestroy()

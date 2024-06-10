@@ -7,6 +7,32 @@ namespace HHG.Common.Runtime
 {
     public static class ObjectUtil
     {
+        public static void SmartDestroy(Object obj)
+        {
+            if (obj != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Object.Destroy(obj);
+                }
+                else
+                {
+                    Object.DestroyImmediate(obj);
+                }
+            }
+        }
+
+        public static void SmartDestroy(IEnumerable<Object> objects)
+        {
+            if (objects != null)
+            {
+                foreach (Object obj in objects.Distinct())
+                {
+                    SmartDestroy(obj);
+                }
+            }
+        }
+
         public static void Destroy(IEnumerable<Object> objects)
         {
             if (objects != null)
@@ -18,19 +44,19 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static void DestroyNextFrame(IEnumerable<Object> objects)
-        {
-            if (objects != null)
-            {
-                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
-            }
-        }
-
         public static void DestroyNextFrame(Object obj)
         {
             if (obj != null)
             {
                 CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => Object.Destroy(obj));
+            }
+        }
+
+        public static void DestroyNextFrame(IEnumerable<Object> objects)
+        {
+            if (objects != null)
+            {
+                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
             }
         }
 

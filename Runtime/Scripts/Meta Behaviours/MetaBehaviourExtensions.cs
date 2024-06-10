@@ -7,6 +7,11 @@ namespace HHG.Common.Runtime
 {
     public static class MetaBehaviourExtensions
     {
+        public static T GetOrAddMetaBehaviour<T>(this GameObject gameObject, T metaBehaviour) where T : MetaBehaviour
+        {
+            return gameObject.GetMetaBehaviour<T>() ?? gameObject.AddMetaBehaviour(metaBehaviour);
+        }
+
         public static T AddMetaBehaviour<T>(this GameObject gameObject, T metaBehaviour) where T : MetaBehaviour
         {
             gameObject.SetActive(false);
