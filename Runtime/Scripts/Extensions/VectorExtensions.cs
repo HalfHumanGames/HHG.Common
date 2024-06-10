@@ -222,21 +222,37 @@ namespace HHG.Common.Runtime
             return true;
         }
 
-        public static bool IsAdjacent(this Vector2Int a, Vector2Int b)
+        public static bool IsAdjacent(this Vector2Int a, Vector2Int b, bool includeDiagonals = false)
         {
             int deltaX = Mathf.Abs(a.x - b.x);
             int deltaY = Mathf.Abs(a.y - b.y);
 
-            return deltaX <= 1 && deltaY <= 1 && (deltaX + deltaY) > 0;
+            if (includeDiagonals)
+            {
+                return deltaX <= 1 && deltaY <= 1 && (deltaX + deltaY) > 0;
+            }
+            else
+            {
+                return (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1);
+            }
         }
 
-        public static bool IsAdjacent(this Vector3Int a, Vector3Int b)
+        public static bool IsAdjacent(this Vector3Int a, Vector3Int b, bool includeDiagonals = false)
         {
             int deltaX = Mathf.Abs(a.x - b.x);
             int deltaY = Mathf.Abs(a.y - b.y);
             int deltaZ = Mathf.Abs(a.z - b.z);
 
-            return deltaX <= 1 && deltaY <= 1 && deltaZ <= 1 && (deltaX + deltaY + deltaZ) > 0;
+            if (includeDiagonals)
+            {
+                return deltaX <= 1 && deltaY <= 1 && deltaZ <= 1 && (deltaX + deltaY + deltaZ) > 0;
+            }
+            else
+            {
+                return (deltaX == 1 && deltaY == 0 && deltaZ == 0) ||
+                       (deltaX == 0 && deltaY == 1 && deltaZ == 0) ||
+                       (deltaX == 0 && deltaY == 0 && deltaZ == 1);
+            }
         }
     }
 }
