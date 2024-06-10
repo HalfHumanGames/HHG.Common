@@ -1,4 +1,4 @@
-Shader "Sprites/Sprite Flash"
+Shader "Sprites/Flash"
 {
 	Properties
 	{

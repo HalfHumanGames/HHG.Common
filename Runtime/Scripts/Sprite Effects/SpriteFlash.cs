@@ -5,10 +5,13 @@ namespace HHG.Common.Runtime
 {
     public class SpriteFlash : MonoBehaviour
     {
-        private const string flashShaderName = "Sprites/Sprite Flash";
+        private const string flashShaderName = "Sprites/Flash";
 
-        [SerializeField] private Color color;
-        [SerializeField] private float duration;
+        [SerializeField] private Color color = Color.white;
+        [SerializeField] private float duration = 1f;
+        [SerializeField] private int loops;
+        [SerializeField] private float loopDelay;
+        [SerializeField] private bool unscaledTime;
 
         private Material material;
         private Shader originalShader;
@@ -18,7 +21,7 @@ namespace HHG.Common.Runtime
 
         private void Awake()
         {
-            material = GetComponent<SpriteRenderer>().material;
+            material = GetComponent<Renderer>().material;
             originalShader = material.shader;
             flashShader = Shader.Find(flashShaderName);
         }
@@ -53,17 +56,23 @@ namespace HHG.Common.Runtime
 
         private IEnumerator FlashAsync()
         {
-            float time = 0;
 
             material.shader = flashShader;
             material.SetColor("_FlashColor", color);
 
-            while (time < duration)
+            for (int i = 0; loops < 0 || i < loops; i++)
             {
-                time += Time.deltaTime;
-                float perc = time / duration;
-                SetFlashAmount(1f - perc);
-                yield return null;
+                float time = 0;
+
+                while (time < duration)
+                {
+                    time += unscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                    float perc = time / duration;
+                    SetFlashAmount(1f - perc);
+                    yield return new WaitForEndOfFrame();
+                }
+
+                yield return unscaledTime ? new WaitForSecondsRealtime(loopDelay) : new WaitForSeconds(loopDelay);
             }
 
             Cleanup();
