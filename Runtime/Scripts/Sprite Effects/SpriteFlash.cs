@@ -46,6 +46,11 @@ namespace HHG.Common.Runtime
 
         public void Flash()
         {
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
             if (coroutine != null)
             {
                 StopCoroutine(coroutine);

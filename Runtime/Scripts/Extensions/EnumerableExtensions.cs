@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace HHG.Common.Runtime
 {
@@ -42,8 +44,7 @@ namespace HHG.Common.Runtime
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable)
         {
-            Random random = new Random();
-            return enumerable.OrderBy(x => random.Next());
+            return enumerable.OrderBy(x => Random.Range(0, int.MaxValue));
         }
 
         public static T GetRandom<T>(this IEnumerable<T> enumerable)
@@ -59,6 +60,13 @@ namespace HHG.Common.Runtime
         public static IEnumerable<T> NotNull<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.Where(item => item != null);
+        }
+
+        public static T SelectByWeight<T>(this IEnumerable<T> source, Func<T, int> getter)
+        {
+            Func<T, int> min = item => Mathf.Max(getter(item), 1);
+            int rand = Random.Range(0, source.Sum(min));
+            return source.FirstOrDefault(item => (rand -= min(item)) < 0);
         }
     } 
 }

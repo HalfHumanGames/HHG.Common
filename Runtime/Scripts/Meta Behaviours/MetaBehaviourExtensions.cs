@@ -42,7 +42,7 @@ namespace HHG.Common.Runtime
 
         public static MetaBehaviour GetMetaBehaviour(this GameObject gameObject, Type type) 
         {
-            return gameObject.GetComponents<MetaBehaviourRunner>().FirstOrDefault(r => r.Behaviour.GetType() == type)?.Behaviour;
+            return gameObject.GetComponents<MetaBehaviourRunner>().FirstOrDefault(r => type.IsAssignableFrom(r.Behaviour.GetType()))?.Behaviour;
         }
 
         public static T GetMetaBehaviourInChildren<T>(this GameObject gameObject) where T : MetaBehaviour
@@ -52,7 +52,7 @@ namespace HHG.Common.Runtime
 
         public static MetaBehaviour GetMetaBehaviourInChildren(this GameObject gameObject, Type type)
         {
-            return gameObject.GetComponentsInChildren<MetaBehaviourRunner>().FirstOrDefault(r => r.Behaviour.GetType() == type)?.Behaviour;
+            return gameObject.GetComponentsInChildren<MetaBehaviourRunner>().FirstOrDefault(r => type.IsAssignableFrom(r.Behaviour.GetType()))?.Behaviour;
         }
 
         public static T GetMetaBehaviourInParent<T>(this GameObject gameObject) where T : MetaBehaviour
@@ -62,43 +62,43 @@ namespace HHG.Common.Runtime
 
         public static MetaBehaviour GetMetaBehaviourInParent(this GameObject gameObject, Type type)
         {
-            return gameObject.GetComponentsInParent<MetaBehaviourRunner>().FirstOrDefault(r => r.Behaviour.GetType() == type)?.Behaviour;
+            return gameObject.GetComponentsInParent<MetaBehaviourRunner>().FirstOrDefault(r => type.IsAssignableFrom(r.Behaviour.GetType()))?.Behaviour;
         }
 
         public static T[] GetMetaBehaviours<T>(this GameObject gameObject) where T : MetaBehaviour
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponents<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == typeof(T)).Select(r => (T)r.Behaviour).ToArray();
+            return runners.Where(r => typeof(T).IsAssignableFrom(r.Behaviour.GetType())).Select(r => (T)r.Behaviour).ToArray();
         }
 
         public static MetaBehaviour[] GetMetaBehaviours(this GameObject gameObject, Type type)
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponents<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == type).Select(r => r.Behaviour).ToArray();
+            return runners.Where(r => type.IsAssignableFrom(r.Behaviour.GetType())).Select(r => r.Behaviour).ToArray();
         }
 
         public static T[] GetMetaBehavioursInChildren<T>(this GameObject gameObject) where T : MetaBehaviour
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponentsInChildren<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == typeof(T)).Select(r => (T)r.Behaviour).ToArray();
+            return runners.Where(r => typeof(T).IsAssignableFrom(r.Behaviour.GetType())).Select(r => (T)r.Behaviour).ToArray();
         }
 
         public static MetaBehaviour[] GetMetaBehavioursInChildren(this GameObject gameObject, Type type)
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponentsInChildren<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == type).Select(r => r.Behaviour).ToArray();
+            return runners.Where(r => type.IsAssignableFrom(r.Behaviour.GetType())).Select(r => r.Behaviour).ToArray();
         }
 
         public static T[] GetMetaBehavioursInParent<T>(this GameObject gameObject) where T : MetaBehaviour
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponentsInParent<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == typeof(T)).Select(r => (T)r.Behaviour).ToArray();
+            return runners.Where(r => typeof(T).IsAssignableFrom(r.Behaviour.GetType())).Select(r => (T)r.Behaviour).ToArray();
         }
 
         public static MetaBehaviour[] GetMetaBehavioursInParent(this GameObject gameObject, Type type)
         {
             MetaBehaviourRunner[] runners = gameObject.GetComponentsInParent<MetaBehaviourRunner>();
-            return runners.Where(r => r.Behaviour.GetType() == type).Select(r => r.Behaviour).ToArray();
+            return runners.Where(r => type.IsAssignableFrom(r.Behaviour.GetType())).Select(r => r.Behaviour).ToArray();
         }
 
         public static void Destroy(this IEnumerable<MetaBehaviour> behaviours)

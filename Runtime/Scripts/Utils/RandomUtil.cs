@@ -4,6 +4,11 @@ namespace HHG.Common.Runtime
 {
     public static class RandomUtil
     {
+        public static bool Chance(float chance)
+        {
+            return Random.Range(0f, 1f) < chance;
+        }
+
         public static Vector3 InsideCircle(float min, float max)
         {
             return Random.insideUnitCircle.normalized * Random.Range(min, max);

@@ -43,13 +43,15 @@ namespace HHG.Common.Runtime
 
         private static void OnApplicationQuit()
         {
-            Coroutiner?.StopAllCoroutines();
+            // Don't create if doesn't exist
+            _coroutiner?.StopAllCoroutines();
             isQuitting = true;
         }
 
         private static void OnSceneUnloaded(Scene scene)
         {
-            Coroutiner?.StopAllCoroutines();
+            // Don't create if doesn't exist
+            _coroutiner?.StopAllCoroutines();
         }
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)

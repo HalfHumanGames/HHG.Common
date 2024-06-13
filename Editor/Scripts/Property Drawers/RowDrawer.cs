@@ -23,7 +23,7 @@ namespace HHG.Common.Editor
             {
                 // Neither the constructor nor the label field work
                 // There seems to be no means to set the label text
-                PropertyField field = new PropertyField(child, string.Empty);
+                PropertyField field = new PropertyField(child, property.displayName);
 
                 // Not sure how to get all elements the same width
                 field.style.flexGrow = 1f;

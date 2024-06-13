@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
     {
         public MetaBehaviour Behaviour => behaviour;
 
-        [SerializeReference] private MetaBehaviour _behaviour;
+        [SerializeReference, SerializeReferenceDropdown] private MetaBehaviour _behaviour;
 
         protected MetaBehaviour behaviour => _behaviour?.EnsureAttached(this);
 
