@@ -3,7 +3,6 @@ using UnityEngine.Tilemaps;
 
 namespace HHG.Common.Runtime
 {
-    [RequireComponent(typeof(Tilemap))]
     public class SnapToTilemap : MonoBehaviour
     {
         [SerializeField] private Tilemap tilemap;
