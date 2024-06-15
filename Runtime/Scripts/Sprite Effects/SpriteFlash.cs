@@ -65,7 +65,7 @@ namespace HHG.Common.Runtime
             material.shader = flashShader;
             material.SetColor("_FlashColor", color);
 
-            for (int i = 0; loops < 0 || i < loops; i++)
+            for (int i = 0; loops < 0 || i <= loops; i++)
             {
                 float time = 0;
 
