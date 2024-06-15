@@ -11,6 +11,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private float duration = 1f;
         [SerializeField] private int loops;
         [SerializeField] private float loopDelay;
+        [SerializeField] private float cooldown;
         [SerializeField] private bool unscaledTime;
 
         private Material material;
@@ -51,12 +52,10 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            if (coroutine != null)
+            if (coroutine == null)
             {
-                StopCoroutine(coroutine);
-            }
-
-            coroutine = StartCoroutine(FlashAsync());
+                coroutine = StartCoroutine(FlashAsync());
+            }  
         }
 
         private IEnumerator FlashAsync()
@@ -80,6 +79,8 @@ namespace HHG.Common.Runtime
                 yield return unscaledTime ? new WaitForSecondsRealtime(loopDelay) : new WaitForSeconds(loopDelay);
             }
 
+            yield return unscaledTime ? new WaitForSecondsRealtime(cooldown) : new WaitForSeconds(cooldown);
+
             Cleanup();
         }
 
@@ -93,6 +94,7 @@ namespace HHG.Common.Runtime
             StopAllCoroutines();
             SetFlashAmount(0);
             material.shader = originalShader;
+            coroutine = null;
         }
     }
 }
