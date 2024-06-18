@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -33,8 +34,14 @@ namespace HHG.Common.Editor
                     Texture2D newTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(newSpritePath);
                     Sprite[] newSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(newSpritePath).OfType<Sprite>().ToArray();
 
-                    var spriteMap = sprites.Select((originalSprite, index) => new { originalSprite, newSprite = newSprites.FirstOrDefault(s => s.name == originalSprite.name) })
-                                           .ToDictionary(pair => pair.originalSprite, pair => pair.newSprite);
+                    Dictionary<Sprite, Sprite> spriteMap = sprites.
+                                            Select((originalSprite, index) => new { 
+                                                originalSprite, 
+                                                newSprite = newSprites.FirstOrDefault(s => s.name == originalSprite.name)
+                                            }).
+                                            ToDictionary(pair => pair.originalSprite, pair => pair.newSprite);
+
+                    newTile.m_DefaultSprite = spriteMap[newTile.m_DefaultSprite];
 
                     foreach (var rule in newTile.m_TilingRules)
                     {
