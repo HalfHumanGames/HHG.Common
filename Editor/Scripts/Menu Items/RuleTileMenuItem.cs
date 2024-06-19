@@ -1,7 +1,10 @@
+using HHG.Common.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
 {
@@ -12,6 +15,14 @@ namespace HHG.Common.Editor
         {
             foreach (RuleTile tile in Selection.objects.OfType<RuleTile>())
             {
+                foreach (var rule in tile.m_TilingRules)
+                {
+                    if (rule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Single)
+                    {
+                        Array.Resize(ref rule.m_Sprites, 1);
+                    }
+                }
+
                 string tilePath = AssetDatabase.GetAssetPath(tile);
                 string tileDir = System.IO.Path.GetDirectoryName(tilePath);
                 string tileName = System.IO.Path.GetFileNameWithoutExtension(tilePath);
@@ -20,10 +31,15 @@ namespace HHG.Common.Editor
                 RuleTile newTile = Object.Instantiate(tile);
                 AssetDatabase.CreateAsset(newTile, newTilePath);
 
-                var sprites = tile.m_TilingRules.SelectMany(rule => rule.m_Sprites).Distinct().ToArray();
-                if (sprites.Length > 0)
+                // Collect all distinct sprites from the tile
+                var allSprites = tile.m_TilingRules.SelectMany(rule => rule.m_Sprites).Distinct().ToArray();
+                var spritePaths = allSprites.Select(s => AssetDatabase.GetAssetPath(s)).Distinct();
+
+                Dictionary<Sprite, Sprite> spriteMap = new Dictionary<Sprite, Sprite>();
+
+                // Process each sprite sheet
+                foreach (var spritePath in spritePaths)
                 {
-                    string spritePath = AssetDatabase.GetAssetPath(sprites[0]);
                     string spriteDir = System.IO.Path.GetDirectoryName(spritePath);
                     string spriteName = System.IO.Path.GetFileNameWithoutExtension(spritePath);
                     string spriteExtension = System.IO.Path.GetExtension(spritePath);
@@ -31,32 +47,32 @@ namespace HHG.Common.Editor
 
                     AssetDatabase.CopyAsset(spritePath, newSpritePath);
                     AssetDatabase.ImportAsset(newSpritePath, ImportAssetOptions.ForceUpdate);
-                    Texture2D newTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(newSpritePath);
+
                     Sprite[] newSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(newSpritePath).OfType<Sprite>().ToArray();
 
-                    Dictionary<Sprite, Sprite> spriteMap = sprites.
-                                            Select((originalSprite, index) => new { 
-                                                originalSprite, 
-                                                newSprite = newSprites.FirstOrDefault(s => s.name == originalSprite.name)
-                                            }).
-                                            ToDictionary(pair => pair.originalSprite, pair => pair.newSprite);
-
-                    newTile.m_DefaultSprite = spriteMap[newTile.m_DefaultSprite];
-
-                    foreach (var rule in newTile.m_TilingRules)
+                    // Map old sprites to new sprites
+                    var originalSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritePath).OfType<Sprite>().ToArray();
+                    for (int i = 0; i < originalSprites.Length; i++)
                     {
-                        for (int i = 0; i < rule.m_Sprites.Length; i++)
-                        {
-                            if (spriteMap.ContainsKey(rule.m_Sprites[i]))
-                            {
-                                rule.m_Sprites[i] = spriteMap[rule.m_Sprites[i]];
-                            }
-                        }
+                        spriteMap[originalSprites[i]] = newSprites.FirstOrDefault(s => s.name == originalSprites[i].name);
                     }
-
-                    EditorUtility.SetDirty(newTile);
                 }
 
+                // Update the new tile's default sprite and tiling rules with the new sprites
+                newTile.m_DefaultSprite = spriteMap.ContainsKey(newTile.m_DefaultSprite) ? spriteMap[newTile.m_DefaultSprite] : newTile.m_DefaultSprite;
+
+                foreach (var rule in newTile.m_TilingRules)
+                {
+                    for (int i = 0; i < rule.m_Sprites.Length; i++)
+                    {
+                        if (spriteMap.ContainsKey(rule.m_Sprites[i]))
+                        {
+                            rule.m_Sprites[i] = spriteMap[rule.m_Sprites[i]];
+                        }
+                    }
+                }
+
+                EditorUtility.SetDirty(newTile);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
