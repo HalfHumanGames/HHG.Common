@@ -27,7 +27,7 @@ namespace HHG.Common.Runtime
             return val.NextRand;
         }
 
-        public static implicit operator MinMaxFloat(int val)
+        public static implicit operator MinMaxFloat(float val)
         {
             return new MinMaxFloat(val);
         }

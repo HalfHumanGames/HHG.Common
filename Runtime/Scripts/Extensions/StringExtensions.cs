@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace HHG.Common.Runtime
 {
@@ -20,6 +21,11 @@ namespace HHG.Common.Runtime
         {
             string[] temp = s.Split(search, StringSplitOptions.RemoveEmptyEntries);
             return string.Join(replace, temp);
+        }
+
+        public static string ToTitleCase(this string s)
+        {
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s);
         }
     }
 }
