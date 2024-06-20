@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace HHG.Common.Runtime
 {
@@ -12,6 +13,9 @@ namespace HHG.Common.Runtime
 
         [SerializeReference, SerializeReferenceDropdown] private List<IActionBase> actions = new List<IActionBase>();
 
+        private event Action invokedEvent;
+        private UnityEvent invokedUnityEvent;
+
         public Coroutine Invoke(MonoBehaviour invoker)
         {
             return invoker.StartCoroutine(InvokeRoutine(invoker));
@@ -19,6 +23,8 @@ namespace HHG.Common.Runtime
 
         public IEnumerator InvokeRoutine(MonoBehaviour invoker)
         {
+            invokedEvent?.Invoke();
+            invokedUnityEvent?.Invoke();
             foreach (IActionBase action in actions)
             {
                 if (action is IAction syncAction)
@@ -30,6 +36,47 @@ namespace HHG.Common.Runtime
                     yield return asyncAction.InvokeAsync(invoker);
                 }
             }
+        }
+
+        public void AddListener(UnityAction call)
+        {
+            invokedUnityEvent.AddListener(call);
+        }
+
+        public void RemoveListener(UnityAction call)
+        {
+            invokedUnityEvent.RemoveListener(call);
+        }
+
+        public void RemoveAllListeners()
+        {
+            actions.Clear();
+            invokedEvent = null;
+            invokedUnityEvent.RemoveAllListeners();
+        }
+
+        public static ActionEvent operator +(ActionEvent actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.invokedEvent += action;
+
+            return actionEvent;
+        }
+
+        public static ActionEvent operator -(ActionEvent actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.invokedEvent -= action;
+
+            return actionEvent;
         }
     }
 }
