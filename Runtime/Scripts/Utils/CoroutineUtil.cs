@@ -11,18 +11,18 @@ namespace HHG.Common.Runtime
     {
         private class EmptyMonoBehaviour : MonoBehaviour { }
 
-        private static MonoBehaviour _coroutiner;
+        private static MonoBehaviour coroutiner;
         public static MonoBehaviour Coroutiner
         {
             get
             {
-                if (_coroutiner == null && !isQuitting)
+                if (coroutiner == null && !isQuitting)
                 {
                     GameObject go = new GameObject("Coroutiner");
                     Object.DontDestroyOnLoad(go);
-                    _coroutiner = go.AddComponent<EmptyMonoBehaviour>();
+                    coroutiner = go.AddComponent<EmptyMonoBehaviour>();
                 }
-                return _coroutiner;
+                return coroutiner;
             }
         }
 
@@ -44,14 +44,14 @@ namespace HHG.Common.Runtime
         private static void OnApplicationQuit()
         {
             // Don't create if doesn't exist
-            _coroutiner?.StopAllCoroutines();
+            coroutiner?.StopAllCoroutines();
             isQuitting = true;
         }
 
         private static void OnSceneUnloaded(Scene scene)
         {
             // Don't create if doesn't exist
-            _coroutiner?.StopAllCoroutines();
+            coroutiner?.StopAllCoroutines();
         }
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
