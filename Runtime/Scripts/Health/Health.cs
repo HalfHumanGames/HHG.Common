@@ -10,6 +10,9 @@ namespace HHG.Common.Runtime
         public MonoBehaviour Mono => this;
         public float HealthValue => health;
         public float HealthPerc => maxHealth == 0f ? 1f : health / maxHealth;
+        public float PreviousHealthPerc => maxHealth == 0f ? 1f : previousHealthValue / maxHealth;
+        public float PreviousHealthValue => previousHealthValue;
+        public float PreviousHealthValueDelta => previousHealthValueDelta;
         public UnityEvent<IHealth> OnHit => onHit;
         public UnityEvent<IHealth> OnHeal => onHeal;
         public UnityEvent<IHealth> OnDied => onDied;
@@ -22,6 +25,7 @@ namespace HHG.Common.Runtime
             {
                 if (_health != value)
                 {
+                    previousHealthValue = _health;
                     _health = value;
                     onHealthUpdated?.Invoke(this);
                 }
@@ -30,12 +34,14 @@ namespace HHG.Common.Runtime
 
         [SerializeField] private float _health;
         [SerializeField] private float healthOverTime;
-        [SerializeField] private UnityEvent<IHealth> onHit;
-        [SerializeField] private UnityEvent<IHealth> onHeal;
-        [SerializeField] private UnityEvent<IHealth> onDied;
-        [SerializeField] private UnityEvent<IHealth> onHealthUpdated;
+        [SerializeField] private UnityEvent<IHealth> onHit = new UnityEvent<IHealth>();
+        [SerializeField] private UnityEvent<IHealth> onHeal = new UnityEvent<IHealth>();
+        [SerializeField] private UnityEvent<IHealth> onDied = new UnityEvent<IHealth>();
+        [SerializeField] private UnityEvent<IHealth> onHealthUpdated = new UnityEvent<IHealth>();
 
         private float maxHealth;
+        private float previousHealthValue;
+        private float previousHealthValueDelta => health - previousHealthValue;
 
         private void Awake()
         {
@@ -81,7 +87,7 @@ namespace HHG.Common.Runtime
             {
                 health -= amount;
                 OnHit?.Invoke(this);
-                
+
                 if (health <= dieThreshold)
                 {
                     health = 0f;
