@@ -11,9 +11,9 @@ namespace HHG.Common.Runtime
             set => runner.enabled = value;
         }
 
-        [SerializeField, HideInInspector] protected MetaBehaviourRunner runner;
-        [SerializeField, HideInInspector] protected GameObject gameObject;
-        [SerializeField, HideInInspector] protected Transform transform;
+        protected MetaBehaviourRunner runner;
+        protected GameObject gameObject;
+        protected Transform transform;
 
         internal MetaBehaviour EnsureAttached(MetaBehaviourRunner metaBehaviourRunner)
         {
