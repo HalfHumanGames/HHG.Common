@@ -1,6 +1,6 @@
 namespace HHG.Common.Runtime
 {
-    public interface IHealth : IReadOnlyHealth
+    public interface IHealth : IReadOnlyHealthWithEvents
     {
         public void Initialize(float health);
         public void TakeDamage(float amount);
