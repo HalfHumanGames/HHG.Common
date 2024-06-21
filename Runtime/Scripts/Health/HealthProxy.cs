@@ -8,6 +8,9 @@ namespace HHG.Common.Runtime
         public MonoBehaviour Mono => this;
         public float HealthValue => root.HealthValue;
         public float HealthPerc => root.HealthPerc;
+        public float PreviousHealthPerc => root.PreviousHealthPerc;
+        public float PreviousHealthValue => root.PreviousHealthValue;
+        public float PreviousHealthValueDelta => root.PreviousHealthValueDelta;
         public UnityEvent<IHealth> OnHit => root.OnHit;
         public UnityEvent<IHealth> OnHeal => root.OnHeal;
         public UnityEvent<IHealth> OnDied => root.OnDied;
