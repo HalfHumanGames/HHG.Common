@@ -42,7 +42,10 @@ namespace HHG.Common.Runtime
 
         private void HideTooltip()
         {
-            ui?.Hide();
+            if (ui)
+            {
+                ui.Hide();
+            }
         }
     } 
 }

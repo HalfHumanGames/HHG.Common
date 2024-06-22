@@ -30,12 +30,18 @@ namespace HHG.Common.Runtime
 
         public static T Get<T>(object id = null)
         {
+            return TryGet(id, out T v) ? v : default;
+        }
+
+        public static bool TryGet<T>(out T val)
+        {
+            return TryGet(null, out val);
+        }
+
+        public static bool TryGet<T>(object id, out T val)
+        {
             SubjectId subjectId = new SubjectId(typeof(T), id);
-            if (dict.ContainsKey(subjectId))
-            {
-                return (T)dict[subjectId];
-            }
-            return default;
+            return dict.TryGetValue(subjectId, out var v) && v is T t ? (val = t) is T : (val = default) is T;
         }
     }
 }
