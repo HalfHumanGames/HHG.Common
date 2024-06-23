@@ -47,7 +47,10 @@ namespace HHG.Common.Runtime
             T[] items = Resources.LoadAll<T>("");
             foreach (T item in items)
             {
-                dict[key][item.name] = item;
+                if (item is not IEnablable enablable || enablable.IsEnabled)
+                {
+                    dict[key][item.name] = item;
+                }
             }
         }
     } 
