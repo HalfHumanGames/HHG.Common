@@ -19,7 +19,7 @@ namespace HHG.Common.Runtime
                 float easedT = ease(t);
                 float newValue = Mathf.Lerp(start, end, easedT);
                 setter(newValue);
-                yield return null;
+                yield return WaitFor.EndOfFrame;
             }
 
             setter(end);

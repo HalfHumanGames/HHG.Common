@@ -73,7 +73,7 @@ namespace HHG.Common.Runtime
                     time += unscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
                     float perc = time / duration;
                     SetFlashAmount(1f - perc);
-                    yield return null;
+                    yield return WaitFor.EndOfFrame;
                 }
 
                 yield return unscaledTime ? new WaitForSecondsRealtime(loopDelay) : new WaitForSeconds(loopDelay);

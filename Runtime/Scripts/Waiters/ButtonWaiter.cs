@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
         {
             while (!action.IsPressed())
             {
-                yield return null;
+                yield return WaitFor.EndOfFrame;
             }
         }
     }
