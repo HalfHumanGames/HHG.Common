@@ -14,8 +14,9 @@ namespace HHG.Common.Runtime
 
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            originalflipX = flipX; 
-            originalflipY = flipY;    
+            spriteRenderer ??= _spriteRenderer.FromComponent(animator);
+            originalflipX = spriteRenderer.flipX; 
+            originalflipY = spriteRenderer.flipY;    
         }
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -27,6 +28,7 @@ namespace HHG.Common.Runtime
 
         override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            spriteRenderer ??= _spriteRenderer.FromComponent(animator);
             spriteRenderer.flipX = originalflipX;
             spriteRenderer.flipY = originalflipY;
         }

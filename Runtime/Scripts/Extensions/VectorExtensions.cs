@@ -5,6 +5,34 @@ namespace HHG.Common.Runtime
 {
     public static class VectorExtensions
     {
+        public static Vector2[] directionsCompassV2 = new Vector2[]
+        {
+            new Vector2(1, 0),
+            new Vector2(1, 1),
+            new Vector2(0, 1),
+            new Vector2(-1, 1),
+            new Vector2(-1, 0),
+            new Vector2(-1, -1),
+            new Vector2(0, -1),
+            new Vector2(1, -1)
+        };
+
+        public static Vector2[] directionsCardinalV2 = new Vector2[]
+        {
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(-1, 0),
+            new Vector2(0, -1)
+        };
+
+        public static Vector2[] directionsOrdinalV2 = new Vector2[]
+        {
+            new Vector2(1, 1),
+            new Vector2(1, -1),
+            new Vector2(-1, 1),
+            new Vector2(-1, -1)
+        };
+
         public static Vector2 Round(this Vector2 v, float nearest = 1f)
         {
             return new Vector2(
@@ -253,6 +281,60 @@ namespace HHG.Common.Runtime
                        (deltaX == 0 && deltaY == 1 && deltaZ == 0) ||
                        (deltaX == 0 && deltaY == 0 && deltaZ == 1);
             }
+        }
+
+        public static Vector2Int SnapToNearestDirectionCompass(this Vector3 direction)
+        {
+            return direction.SnapToNearestDirection(directionsCompassV2);
+        }
+
+        public static Vector2Int SnapToNearestDirectionCardinal(this Vector3 direction)
+        {
+            return direction.SnapToNearestDirection(directionsCardinalV2);
+        }
+
+        public static Vector2Int SnapToNearestDirectionOrdinal(this Vector3 direction)
+        {
+            return direction.SnapToNearestDirection(directionsOrdinalV2);
+        }
+
+        public static Vector2Int SnapToNearestDirectionCompass(this Vector2 direction)
+        {
+            return direction.SnapToNearestDirection(directionsCompassV2);
+        }
+
+        public static Vector2Int SnapToNearestDirectionCardinal(this Vector2 direction)
+        {
+            return direction.SnapToNearestDirection(directionsCardinalV2);
+        }
+
+        public static Vector2Int SnapToNearestDirectionOrdinal(this Vector2 direction)
+        {
+            return direction.SnapToNearestDirection(directionsOrdinalV2);
+        }
+
+        public static Vector2Int SnapToNearestDirection(this Vector3 direction, Vector2[] directions)
+        {
+            return ((Vector2)direction).SnapToNearestDirection(directions);
+        }
+
+        public static Vector2Int SnapToNearestDirection(this Vector2 direction, Vector2[] directions)
+        {
+            direction.Normalize();
+            Vector2 closestDirection = Vector2.zero;
+            float closestDistance = float.MaxValue;
+
+            foreach (Vector2 dir in directions)
+            {
+                float distance = Vector2.Distance(direction, dir);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestDirection = dir;
+                }
+            }
+
+            return new Vector2Int(Mathf.RoundToInt(closestDirection.x), Mathf.RoundToInt(closestDirection.y));
         }
     }
 }
