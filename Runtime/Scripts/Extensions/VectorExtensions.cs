@@ -336,5 +336,50 @@ namespace HHG.Common.Runtime
 
             return new Vector2Int(Mathf.RoundToInt(closestDirection.x), Mathf.RoundToInt(closestDirection.y));
         }
+
+        public static float ToAngle(this Vector3 direction)
+        {
+            // Calculate the angle in radians and convert to degrees
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Ensure the angle is in the range [0, 360)
+            if (angle < 0) angle += 360;
+
+            return angle;
+        }
+
+        public static float ToAngle(this Vector2 direction)
+        {
+            // Calculate the angle in radians and convert to degrees
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Ensure the angle is in the range [0, 360)
+            if (angle < 0) angle += 360;
+
+            return angle;
+        }
+
+
+        public static float ToAngle(this Vector3Int direction)
+        {
+            // Calculate the angle in radians and convert to degrees
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Ensure the angle is in the range [0, 360)
+            if (angle < 0) angle += 360;
+
+            return angle;
+        }
+
+        public static float ToAngle(this Vector2Int direction)
+        {
+            // Calculate the angle in radians and convert to degrees
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Ensure the angle is in the range [0, 360)
+            if (angle < 0) angle += 360;
+
+            return angle;
+        }
     }
 }
