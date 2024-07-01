@@ -251,5 +251,10 @@ namespace HHG.Common.Runtime
         {
             transform.SetGlobalScale(transform.lossyScale.WithZ(z));
         }
+
+        public static GameObject FindGameObject(this Transform transform, string path)
+        {
+            return transform.Find(path) is Transform found ? found.gameObject : null;
+        }
     }
 }

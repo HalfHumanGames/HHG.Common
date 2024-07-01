@@ -14,9 +14,10 @@ namespace HHG.Common.Runtime
 
         public static T AddMetaBehaviour<T>(this GameObject gameObject, T metaBehaviour) where T : MetaBehaviour
         {
+            bool wasActive = gameObject.activeSelf;
             gameObject.SetActive(false);
             MetaBehaviour instance = gameObject.AddComponent<MetaBehaviourRunner>().AttachBehaviour(metaBehaviour.Clone());
-            gameObject.SetActive(true);
+            gameObject.SetActive(wasActive);
             return (T)instance;
         }
 
