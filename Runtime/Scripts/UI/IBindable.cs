@@ -12,6 +12,6 @@ namespace HHG.Common.Runtime
 	public static class IBindableExtensions
 	{
         public static T GetValue<T>(this IBindable bindable, string name) => bindable.TryGetValue(name, out T value) ? value : default;
-		public static void SetValue<T>(this IBindable bindable, string name, T value) => bindable.SetValue(name, value);
+		public static void SetValue<T>(this IBindable bindable, string name, T value) => bindable.TrySetValue(name, value);
     }
 }

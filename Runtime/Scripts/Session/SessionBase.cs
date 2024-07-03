@@ -16,7 +16,7 @@ namespace HHG.Common.Runtime
     }
 
     [ExecuteInEditMode]
-    public abstract partial class SessionBase<TSession, TState, TIO, TSerializer> : SessionBase, IBindable
+    public abstract partial class SessionBase<TSession, TState, TIO, TSerializer> : SessionBase, IBindable, IBindableProvider
         where TSession : SessionBase<TSession, TState, TIO, TSerializer>
         where TState : class, ISessionState<TState>, new()
         where TIO : class, IIO, new()
@@ -231,6 +231,8 @@ namespace HHG.Common.Runtime
             return JsonUtility.ToJson(Instance.state);
         }
 
+        public IBindable Bindable => instance;
+
         public bool TryGetValue<T>(string name, out T value)
         {
             return getterSetterMap.TryGetValue(readOnlyState, name, out value);
@@ -239,11 +241,14 @@ namespace HHG.Common.Runtime
         public bool TrySetValue<T>(string name, T value)
         {
             bool success = false;
+
             stage(state =>
             {
                 success = getterSetterMap.TrySetValue(state, name, value);
             });
-            _ = readOnlyState; // Force call mutation
+
+            _ = ReadOnlyState; // Force call mutation
+
             return success;
         }
     }

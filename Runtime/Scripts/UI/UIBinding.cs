@@ -15,7 +15,7 @@ namespace HHG.Common.Runtime
         [SerializeField] protected Object _bindable;
         [SerializeField] protected string name;
 
-        protected IBindable bindable => _bindable as IBindable;
+        protected IBindable bindable => _bindable is IBindableProvider provider ? provider.Bindable : _bindable as IBindable;
 
         protected abstract void OnUpdated();
 
@@ -197,13 +197,13 @@ namespace HHG.Common.Runtime
 
         private void OnDestroy()
         {
-            texts.Setup();
-            images.Setup();
-            spriteRenderers.Setup();
-            sliders.Setup();
-            dropdowns.Setup();
-            toggles.Setup();
-            inputFields.Setup();
+            texts.Dispose();
+            images.Dispose();
+            spriteRenderers.Dispose();
+            sliders.Dispose();
+            dropdowns.Dispose();
+            toggles.Dispose();
+            inputFields.Dispose();
         }
 
         // OnValidate clutters the debug console

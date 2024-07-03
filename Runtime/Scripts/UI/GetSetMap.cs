@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System;
 
 namespace HHG.Common.Runtime
 {
@@ -13,11 +13,19 @@ namespace HHG.Common.Runtime
         {
             getters = new Dictionary<string, Func<object, object>>();
             setters = new Dictionary<string, Action<object, object>>();
+            
             PropertyInfo[] props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             foreach (PropertyInfo prop in props)
             {
                 getters[prop.Name] = obj => prop.GetValue(obj);
                 setters[prop.Name] = (obj, value) => prop.SetValue(obj, value);
+            }
+
+            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                getters[field.Name] = obj => field.GetValue(obj);
+                setters[field.Name] = (obj, value) => field.SetValue(obj, value);
             }
         }
 
