@@ -123,7 +123,7 @@ namespace HHG.Common.Runtime
     }
 
     [Serializable]
-    public class DropdownBinding : BindingBase<int, Dropdown>
+    public class DropdownBinding : BindingBase<int, TMP_Dropdown>
     {
         public override void OnSetup()
         {
