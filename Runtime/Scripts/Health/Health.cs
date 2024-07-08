@@ -65,20 +65,32 @@ namespace HHG.Common.Runtime
             }
         }
 
+        private void CheckForDeath()
+        {
+            if (health <= dieThreshold)
+            {
+                health = 0f;
+                OnDied?.Invoke(this);
+            }
+        }
+
         public void Initialize(float value)
         {
             maxHealth = health = value;
+            CheckForDeath();
         }
 
         public void Initialize(float value, float overTime)
         {
             maxHealth = health = value;
             healthOverTime = overTime;
+            CheckForDeath();
         }
 
         public void InitializeValue(float value)
         {
             health = value;
+            CheckForDeath();
         }
 
         public void TakeDamage(float amount)
@@ -87,12 +99,7 @@ namespace HHG.Common.Runtime
             {
                 health -= amount;
                 OnHit?.Invoke(this);
-
-                if (health <= dieThreshold)
-                {
-                    health = 0f;
-                    OnDied?.Invoke(this);
-                }
+                CheckForDeath();
             }
         }
 
