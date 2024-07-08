@@ -24,7 +24,10 @@ namespace HHG.Common.Runtime
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            ShowTooltip();
+            if (!eventData.pointerDrag)
+            {
+                ShowTooltip();
+            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
