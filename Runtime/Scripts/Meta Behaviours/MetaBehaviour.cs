@@ -36,6 +36,7 @@ namespace HHG.Common.Runtime
         public virtual void OnValidate() { }
 
         public void Destroy(float delay = 0f) => Object.Destroy(runner, delay);
+        public void SmartDestroy() => ObjectUtil.SmartDestroy(runner);
 
         public MetaBehaviour Clone()
         {

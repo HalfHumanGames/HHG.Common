@@ -102,11 +102,19 @@ namespace HHG.Common.Runtime
             return runners.Where(r => type.IsAssignableFrom(r.Behaviour.GetType())).Select(r => r.Behaviour).ToArray();
         }
 
-        public static void Destroy(this IEnumerable<MetaBehaviour> behaviours)
+        public static void Destroy(this IEnumerable<MetaBehaviour> behaviours, float delay = 0f)
         {
             foreach (MetaBehaviour behaviour in behaviours)
             {
-                behaviour.Destroy();
+                behaviour.Destroy(delay);
+            }
+        }
+
+        public static void SmartDestroy(this IEnumerable<MetaBehaviour> behaviours)
+        {
+            foreach (MetaBehaviour behaviour in behaviours)
+            {
+                behaviour.SmartDestroy();
             }
         }
     }
