@@ -34,10 +34,8 @@ namespace HHG.Common.Runtime
 
         private void OnEnable()
         {
-            if (hasStarted)
-            {
-                Flash();
-            }
+            // Do not auto-flash in OnEnable
+            // Explicitly call Flash manually
         }
 
         private void OnDisable()
