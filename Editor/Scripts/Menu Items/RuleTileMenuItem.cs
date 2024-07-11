@@ -32,7 +32,7 @@ namespace HHG.Common.Editor
                 AssetDatabase.CreateAsset(newTile, newTilePath);
 
                 // Collect all distinct sprites from the tile
-                var allSprites = tile.m_TilingRules.SelectMany(rule => rule.m_Sprites).Distinct().ToArray();
+                var allSprites = tile.m_TilingRules.SelectMany(rule => rule.m_Sprites).Append(tile.m_DefaultSprite).Distinct().ToArray();
                 var spritePaths = allSprites.Select(s => AssetDatabase.GetAssetPath(s)).Distinct();
 
                 Dictionary<Sprite, Sprite> spriteMap = new Dictionary<Sprite, Sprite>();
