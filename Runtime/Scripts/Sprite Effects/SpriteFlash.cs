@@ -18,18 +18,12 @@ namespace HHG.Common.Runtime
         private Shader originalShader;
         private Shader flashShader;
         private Coroutine coroutine;
-        private bool hasStarted;
 
         private void Awake()
         {
             material = GetComponent<Renderer>().material;
             originalShader = material.shader;
             flashShader = Shader.Find(flashShaderName);
-        }
-
-        private void Start()
-        {
-            hasStarted = true;
         }
 
         private void OnEnable()

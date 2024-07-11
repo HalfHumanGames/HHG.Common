@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 namespace HHG.Common.Runtime
@@ -7,7 +8,7 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private Tilemap sourceTilemap;
         [SerializeField] private Tilemap targetTilemap;
-        [SerializeField] private LinkedTileMapAsset linkedTileMap;
+        [SerializeField, FormerlySerializedAs("linkedTileMap")] private TileLookupMapAsset tileLookupMap;
 
         private bool initialized;
 
@@ -39,7 +40,7 @@ namespace HHG.Common.Runtime
 
         private void UpdatedLinkedTile(TileBase tile, Vector3Int position)
         {
-            targetTilemap.SetTile(position, tile == null ? null : linkedTileMap.Map.TryGetValue(tile, out TileBase set) ? set : tile);
+            targetTilemap.SetTile(position, tile == null ? null : tileLookupMap.Map.TryGetValue(tile, out TileBase set) ? set : tile);
         }
 
         public void TryInitialize()
