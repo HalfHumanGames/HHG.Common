@@ -46,17 +46,17 @@ namespace HHG.Common.Runtime
 
         public static void DestroyNextFrame(Object obj)
         {
-            if (obj != null)
+            if (obj != null && CoroutineUtil.Coroutiner != null)
             {
-                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => Object.Destroy(obj));
+                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Object.Destroy(obj));
             }
         }
 
         public static void DestroyNextFrame(IEnumerable<Object> objects)
         {
-            if (objects != null)
+            if (objects != null && CoroutineUtil.Coroutiner != null)
             {
-                CoroutineUtil.Coroutiner?.Invoker().NextFrame(_ => ObjectUtil.Destroy(objects));
+                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Destroy(objects));
             }
         }
 
