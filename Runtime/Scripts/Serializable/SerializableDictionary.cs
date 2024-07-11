@@ -97,7 +97,7 @@ namespace HHG.Common.Runtime
         {
             if (item is KeyValuePair<TKey, TValue> kvpair)
             {
-                Insert(index, kvpair);   
+                Insert(index, kvpair);
             }
         }
 
@@ -187,16 +187,18 @@ namespace HHG.Common.Runtime
             keysToAdd.Clear();
             valuesToAdd.Clear();
 
-            if (keys.Count == values.Count)
+            if (keys.Count != values.Count)
             {
-                for (int i = 0; i < keys.Count; i++)
+                values.Resize(keys.Count);
+            }
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (keys[i] == null || !TryAdd(keys[i], values[i]))
                 {
-                    if (!TryAdd(keys[i], values[i]))
-                    {
-                        ToAdd.Add(i);
-                        keysToAdd.Add(keys[i]);
-                        valuesToAdd.Add(values[i]);
-                    }
+                    ToAdd.Add(i);
+                    keysToAdd.Add(keys[i]);
+                    valuesToAdd.Add(values[i]);
                 }
             }
         }
