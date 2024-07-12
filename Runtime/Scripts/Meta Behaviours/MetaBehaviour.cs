@@ -7,8 +7,14 @@ namespace HHG.Common.Runtime
     {
         public bool IsEnabled
         {
-            get => runner.enabled; 
-            set => runner.enabled = value;
+            get => runner != null && runner.enabled;
+            set
+            {
+                if (runner != null)
+                {
+                    runner.enabled = value;
+                }
+            }
         }
 
         protected MetaBehaviourRunner runner;
