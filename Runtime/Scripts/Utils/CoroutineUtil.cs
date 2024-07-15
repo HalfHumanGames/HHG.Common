@@ -61,10 +61,31 @@ namespace HHG.Common.Runtime
 
         public static void StopCoroutine(Coroutine coroutine)
         {
-            if (!isQuitting)
+            if (!isQuitting && Coroutiner != null && coroutine != null)
             {
-                Coroutiner?.StopCoroutine(coroutine);
+                Coroutiner.StopCoroutine(coroutine);
             }
+        }
+
+        public static void StopAndNullifyCoroutine(ref Coroutine coroutine)
+        {
+            if (!isQuitting && Coroutiner != null && coroutine != null)
+            {
+                Coroutiner.StopCoroutine(coroutine);
+                coroutine = null;
+            }
+        }
+
+        public static void ReplaceCoroutine(ref Coroutine coroutine, Coroutine val)
+        {
+            StopAndNullifyCoroutine(ref coroutine);
+            coroutine = val;
+        }
+
+        public static void ReplaceCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
+        {
+            StopAndNullifyCoroutine(ref coroutine);
+            coroutine = StartCoroutine(enumerator);
         }
     }
 }
