@@ -21,7 +21,7 @@ namespace HHG.Common.Runtime
                 transform.rotation = target.rotation;
             }
 
-            if (syncPosition)
+            if (syncLocalScale)
             {
                 transform.localScale = target.localScale;
             }
