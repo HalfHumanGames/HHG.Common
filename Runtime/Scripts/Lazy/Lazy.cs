@@ -16,6 +16,8 @@ namespace HHG.Common.Runtime
         public T FromComponentInParent(Component comp) => component ??= comp.GetComponentInParent<T>();
         public T FromComponentInParent(GameObject gameObject) => component ??= gameObject.GetComponentInParent<T>();
         public T FromFindObjectOfType() => component ??= ObjectUtil.FindObjectOfType<T>();
+        public T FromGameObjectFind(string name, bool add = false) => component ??= GameObject.Find(name).GetOrAddComponent<T>(add);
+        public T FromGameObjectCreate(string name) => component ??= new GameObject(name).GetOrAddComponent<T>(); // Get in case getting Transform
         public T[] From(Func<T[]> getter) => components ??= getter();
         public T[] FromComponentsInChildren(Component comp) => components ??= comp.GetComponentsInChildren<T>();
         public T[] FromComponentsInChildren(GameObject gameObject) => components ??= gameObject.GetComponentsInChildren<T>();
