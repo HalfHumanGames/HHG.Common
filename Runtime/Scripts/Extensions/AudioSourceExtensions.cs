@@ -41,7 +41,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            yield return TweenUtil.TweenAsync(() => source.volume, v => source.volume = v, target, duration, ease);
+            yield return TweenUtil.TweenAsync(() => source.volume, v => source.volume = v, target, duration, TimeScale.Unscaled, ease);
 
             if (target <= 0f)
             {
