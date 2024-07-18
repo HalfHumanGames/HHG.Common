@@ -155,7 +155,12 @@ namespace HHG.Common.Runtime
             {
                 (int x, int y) current = queue.Dequeue();
 
-                VisitIndex(current);
+                if (isFill)
+                {
+                    fill.Area.Add(bounds.GetPosition(current));
+                }
+
+                EnqueueAdjacentPositions(current);
 
                 if (isSearch && search.IsSuccess)
                 {
@@ -202,17 +207,6 @@ namespace HHG.Common.Runtime
         private float GetDistance((int x, int y) pos)
         {
             return distance > 0f ? Mathf.Sqrt(Mathf.Pow(pos.x - start.x, 2f) + Mathf.Pow(pos.y - start.y, 2f)) : distance;
-        }
-
-        private void VisitIndex((int x, int y) pos)
-        {
-            if (isFill)
-            {
-                fill.Area.Add(bounds.GetPosition(pos));
-            }
-
-            EnqueueAdjacentPositions(pos);
-
         }
 
         private void EnqueueAdjacentPositions((int x, int y) pos)
