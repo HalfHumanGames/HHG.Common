@@ -215,25 +215,29 @@ namespace HHG.Common.Runtime
             {
                 (int x, int y) adjacent = (pos.x + offsets[i].x, pos.y + offsets[i].y);
 
-                if (CanEnqueuePosition(adjacent))
+                if (IsValidPosition(adjacent))
                 {
                     if (isSearch)
                     {
                         parents[adjacent] = pos;
 
-                        if (TryCompleteSearch(pos))
+                        if (TryCompleteSearch(adjacent))
                         {
                             return;
                         }
                     }
 
-                    queue.Enqueue(adjacent);
+                    if (CanEnqueuePosition(adjacent))
+                    {
+                        queue.Enqueue(adjacent);
+                    }
+
                     visited[adjacent.x, adjacent.y] = true;
                 }
             }
         }
 
-        private bool CanEnqueuePosition((int x, int y) adj)
+        private bool IsValidPosition((int x, int y) adj)
         {
             bool outOfBounds = bounds.IsOutOfBounds(adj);
 
@@ -242,7 +246,12 @@ namespace HHG.Common.Runtime
                 fill.AreaBordersEdge = true;
             }
 
-            return !outOfBounds && !visited[adj.x, adj.y] && (isSearch || !IsIndexObstacle(adj)) && !SurpassedMaxDistance(GetDistance(adj));
+            return !outOfBounds && !visited[adj.x, adj.y];
+        }
+
+        private bool CanEnqueuePosition((int x, int y) adj)
+        {
+             return !IsIndexObstacle(adj) && !SurpassedMaxDistance(GetDistance(adj));
         }
 
         private bool TryCompleteSearch((int x, int y) pos)
