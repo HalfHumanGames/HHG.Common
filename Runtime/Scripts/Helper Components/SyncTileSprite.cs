@@ -24,17 +24,11 @@ namespace HHG.Common.Runtime
         {
             if (map == tilemap)
             {
-                foreach (Tilemap.SyncTile syncTile in syncTiles)
-                {
-                    if (syncTile.position == position)
-                    {
-                        spriteRenderer.sprite = syncTile.tileData.sprite;
-                    }
-                }
+                spriteRenderer.sprite = tilemap.GetSprite(position);
             }
         }
 
-        private void LateUpdate()
+        private void OnDestroy()
         {
             Tilemap.tilemapTileChanged -= OnTileChanged;
         }
