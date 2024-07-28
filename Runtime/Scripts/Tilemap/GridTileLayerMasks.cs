@@ -94,7 +94,7 @@ namespace HHG.Common.Runtime
 
         public bool HasTileLayer(Vector3Int position, int layer)
         {
-            return data.GetData(position).HasFlag(layer);
+            return data.GetData(position).HasFlag(1 << layer);
         }
 
         public int GetTileLayerMask(Vector3Int position)
@@ -109,12 +109,12 @@ namespace HHG.Common.Runtime
 
         public void AddTileLayer(Vector3Int position, int layer)
         {
-            data.SetData(position, data.GetData(position).WithFlag(layer));
+            data.SetData(position, data.GetData(position).WithFlag(1 << layer));
         }
 
         public void RemoveTileLayer(Vector3Int position, int layer)
         {
-            data.SetData(position, data.GetData(position).WithoutFlag(layer));
+            data.SetData(position, data.GetData(position).WithoutFlag(1 << layer));
         }
     }
 }
