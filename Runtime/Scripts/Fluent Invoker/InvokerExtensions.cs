@@ -52,7 +52,7 @@ namespace HHG.Common.Runtime
 
         public static ICanDo Forever(this Invoker invoker)
         {
-            return invoker.Forever();
+            return invoker.RepeatForever();
         }
 
         public static ICanDo Repeat(this Invoker invoker, int repetitions)
@@ -117,7 +117,7 @@ namespace HHG.Common.Runtime
 
         public static Coroutine Forever(this Invoker invoker, Action<object[]> func)
         {
-            return invoker.Forever().Do(func);
+            return invoker.RepeatForever().Do(func);
         }
 
         public static Coroutine Repeat(this Invoker invoker, int repetitions, Action<object[]> func)

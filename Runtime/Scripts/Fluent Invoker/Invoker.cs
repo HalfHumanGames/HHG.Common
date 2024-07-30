@@ -19,7 +19,7 @@ namespace HHG.Common.Runtime
 
         private enum InvokeDelayer { None, Seconds, SecondsRealtime, Frame, Fixed, When }
         private enum InvokeFrequency { Every, EachFrame, EachFixed }
-        private enum InvokeTerminator { Once, Repeat, While, Until }
+        private enum InvokeTerminator { Once, Repeat, RepeatForever, While, Until }
 
         public Invoker(MonoBehaviour mono)
         {
@@ -94,10 +94,9 @@ namespace HHG.Common.Runtime
             return this;
         }
 
-        public ICanDo Forever()
+        public ICanDo RepeatForever()
         {
-            terminator = InvokeTerminator.Repeat;
-            repetitions = -1;
+            terminator = InvokeTerminator.RepeatForever;
             return this;
         }
 
@@ -124,6 +123,7 @@ namespace HHG.Common.Runtime
 
         public Coroutine Every(float seconds, Action<object[]> func)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             return Do(func);
@@ -131,6 +131,7 @@ namespace HHG.Common.Runtime
 
         public Coroutine Every(float seconds, bool real, Action<object[]> func)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             realtime = real;
@@ -139,6 +140,7 @@ namespace HHG.Common.Runtime
 
         public Coroutine EveryRealtime(float seconds, Action<object[]> func)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             realtime = true;
@@ -147,20 +149,15 @@ namespace HHG.Common.Runtime
 
         public Coroutine EachFixed(Action<object[]> func)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.EachFixed;
             return Do(func);
         }
 
         public Coroutine EachFrame(Action<object[]> func)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.EachFrame;
-            return Do(func);
-        }
-
-        public Coroutine Forever(Action<object[]> func)
-        {
-            terminator = InvokeTerminator.Repeat;
-            repetitions = -1;
             return Do(func);
         }
 
@@ -168,6 +165,12 @@ namespace HHG.Common.Runtime
         {
             terminator = InvokeTerminator.Repeat;
             repetitions = num;
+            return Do(func);
+        }
+
+        public Coroutine RepeatForever(Action<object[]> func)
+        {
+            terminator = InvokeTerminator.RepeatForever;
             return Do(func);
         }
 
@@ -242,6 +245,8 @@ namespace HHG.Common.Runtime
             {
                 case InvokeTerminator.Repeat:
                     return repetitions == -1f || repetitions > 0;
+                case InvokeTerminator.RepeatForever:
+                    return true;
                 case InvokeTerminator.Until:
                     return !check();
                 case InvokeTerminator.While:
