@@ -50,7 +50,7 @@ namespace HHG.Common.Runtime
             return invoker.EachFixed();
         }
 
-        public static ICanDo Forever(this Invoker invoker)
+        public static ICanDo RepeatForever(this Invoker invoker)
         {
             return invoker.RepeatForever();
         }
@@ -115,7 +115,7 @@ namespace HHG.Common.Runtime
             return invoker.EachFixed().Do(func);
         }
 
-        public static Coroutine Forever(this Invoker invoker, Action<object[]> func)
+        public static Coroutine RepeatForever(this Invoker invoker, Action<object[]> func)
         {
             return invoker.RepeatForever().Do(func);
         }
