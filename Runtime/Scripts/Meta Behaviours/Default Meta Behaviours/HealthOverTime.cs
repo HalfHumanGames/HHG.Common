@@ -4,7 +4,8 @@ namespace HHG.Common.Runtime
 {
     public class HealthOverTime : MetaBehaviour, IAggregatable, IAggregatable<HealthOverTime>
     {
-        [SerializeField] private float frequency;
+        public float Amount => amount;
+
         [SerializeField] private float amount;
 
         private IHealth health;
@@ -18,7 +19,7 @@ namespace HHG.Common.Runtime
         {
             if (health != null)
             {
-                float actual = 1f / frequency * amount * Time.deltaTime;
+                float actual = amount * Time.deltaTime;
                 if (actual < 0f)
                 {
                     // Negate since can't take negative damage
