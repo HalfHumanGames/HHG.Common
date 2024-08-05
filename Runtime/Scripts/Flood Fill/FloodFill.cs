@@ -60,10 +60,7 @@ namespace HHG.Common.Runtime
 
         public bool TryFill(Vector3Int start, FloodFillResult fillResult)
         {
-            op = FloodFillOperation.Fill;
-            distance = -1;
-            result = fillResult;
-            return TryFillSearchInternal(start);
+            return TryFill(start, -1, fillResult);
         }
 
         public bool TryFill(Vector3Int start, float maxDistance, FloodFillResult fillResult)
@@ -74,40 +71,25 @@ namespace HHG.Common.Runtime
             return TryFillSearchInternal(start);
         }
 
+        public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, FloodFillSearchResult fillResult)
+        {
+            return TrySearch(start, p => targets.Contains(p), -1, fillResult);
+        }
+
+        public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, float maxDistance, FloodFillSearchResult fillResult)
+        {
+            return TrySearch(start, p => targets.Contains(p), maxDistance, fillResult);
+        }
+
         public bool TrySearch(Vector3Int start, Func<Vector3Int, bool> searchFunc, FloodFillSearchResult fillResult)
         {
-            op = FloodFillOperation.Search;
-            found = searchFunc;
-            distance = -1;
-            result = fillResult;
-            ClearVisited();
-            return TryFillSearchInternal(start);
+            return TrySearch(start, searchFunc, -1, fillResult);
         }
 
         public bool TrySearch(Vector3Int start, Func<Vector3Int, bool> searchFunc, float maxDistance, FloodFillSearchResult fillResult)
         {
             op = FloodFillOperation.Search;
             found = searchFunc;
-            distance = maxDistance;
-            result = fillResult;
-            ClearVisited();
-            return TryFillSearchInternal(start);
-        }
-
-        public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, FloodFillSearchResult fillResult)
-        {
-            op = FloodFillOperation.Search;
-            found = p => targets.Contains(p);
-            distance = -1;
-            result = fillResult;
-            ClearVisited();
-            return TryFillSearchInternal(start);
-        }
-
-        public bool TrySearch(Vector3Int start, IEnumerable<Vector3Int> targets, float maxDistance, FloodFillSearchResult fillResult)
-        {
-            op = FloodFillOperation.Search;
-            found = p => targets.Contains(p);
             distance = maxDistance;
             result = fillResult;
             ClearVisited();
