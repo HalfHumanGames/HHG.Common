@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class BoundsData<T>
+    public class BoundsData<T> : ICloneable<BoundsData<T>>
     {
         public int Width => width;
         public int Height => height;
@@ -21,8 +21,13 @@ namespace HHG.Common.Runtime
             get => GetData(position);
             set => SetData(position, value);
         }
-        
+
         public BoundsData(BoundsInt bounds, T initial = default)
+        {
+            Initialize(bounds, initial);
+        }
+
+        public void Initialize(BoundsInt bounds, T initial = default)
         {
             width = bounds.size.x;
             height = bounds.size.y;
@@ -112,6 +117,32 @@ namespace HHG.Common.Runtime
         public void SetData((int x, int y) pos, T value)
         {
             data[pos.x, pos.y] = value;
+        }
+
+        public void CopyDataFrom(BoundsData<T> other, BoundsInt bounds)
+        {
+            Initialize(bounds);
+            foreach (Vector3Int position in bounds.allPositionsWithin)
+            {
+                SetData(position, other.GetData(position));
+            }
+        }
+
+        public BoundsData<T> Clone()
+        {
+            BoundsData<T> clone = (BoundsData<T>)MemberwiseClone();
+            clone.data = (T[,]) data.Clone();
+            return clone;
+        }
+
+        public BoundsData<T> Clone(BoundsInt bounds)
+        {
+            BoundsData<T> data = new BoundsData<T>(bounds);
+            foreach (Vector3Int position in bounds.allPositionsWithin)
+            {
+                data.SetData(position, GetData(position));
+            }
+            return data;
         }
 
         public override string ToString()
