@@ -5,8 +5,6 @@ namespace HHG.Common.Runtime
 {
     public class SpriteFlash : MonoBehaviour
     {
-        private const string flashShaderName = "Sprites/Flash";
-
         [SerializeField] private Color color = Color.white;
         [SerializeField] private float duration = 1f;
         [SerializeField] private int loops;
@@ -14,16 +12,16 @@ namespace HHG.Common.Runtime
         [SerializeField] private float cooldown;
         [SerializeField] private bool unscaledTime;
 
-        private Material material;
-        private Shader originalShader;
-        private Shader flashShader;
+        private Renderer spriteRenderer;
+        private MaterialPropertyBlock block;
         private Coroutine coroutine;
 
         private void Awake()
         {
-            material = GetComponent<Renderer>().material;
-            originalShader = material.shader;
-            flashShader = Shader.Find(flashShaderName);
+            block = new MaterialPropertyBlock();
+            spriteRenderer = GetComponent<Renderer>();
+            spriteRenderer.GetPropertyBlock(block);
+            SetFlashAmount(0);
         }
 
         private void OnEnable()
@@ -37,6 +35,7 @@ namespace HHG.Common.Runtime
             Cleanup();
         }
 
+        [ContextMenu("Flash")]
         public void Flash()
         {
             if (!isActiveAndEnabled)
@@ -52,9 +51,7 @@ namespace HHG.Common.Runtime
 
         private IEnumerator FlashAsync()
         {
-
-            material.shader = flashShader;
-            material.SetColor("_FlashColor", color);
+            block.SetColor("_FlashColor", color);
 
             for (int i = 0; loops < 0 || i <= loops; i++)
             {
@@ -78,14 +75,14 @@ namespace HHG.Common.Runtime
 
         private void SetFlashAmount(float amount)
         {
-            material.SetFloat("_FlashAmount", amount);
+            block.SetFloat("_FlashAmount", amount);
+            spriteRenderer.SetPropertyBlock(block);
         }
 
         private void Cleanup()
         {
             StopAllCoroutines();
             SetFlashAmount(0);
-            material.shader = originalShader;
             coroutine = null;
         }
     }
