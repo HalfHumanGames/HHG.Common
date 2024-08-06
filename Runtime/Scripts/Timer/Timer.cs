@@ -1,4 +1,5 @@
-using System;
+using UnityEngine;
+using Action = System.Action;
 
 namespace HHG.Common.Runtime
 {
@@ -73,6 +74,16 @@ namespace HHG.Common.Runtime
             }
 
             time = duration;
+        }
+
+        public void StartRandom(bool trigger = false)
+        {
+            if (trigger)
+            {
+                onTimer?.Invoke();
+            }
+
+            time = Random.Range(0f, duration);
         }
 
         public void Stop()
