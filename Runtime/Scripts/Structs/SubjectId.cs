@@ -49,5 +49,10 @@ namespace HHG.Common.Runtime
         {
             return !left.Equals(right);
         }
+
+        public override string ToString()
+        {
+            return $"SubjectId(Type = {Type.Name}, Id = {Id})";
+        }
     }
 }
