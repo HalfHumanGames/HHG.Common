@@ -12,27 +12,12 @@ namespace HHG.Common.Runtime
         private Action onTimer;
         private Action onTimerDone;
 
-        public Timer(float seconds = 0f, Action timerDone = null)
+        public Timer(float seconds, Action timerDone) : this(seconds, 0, null, timerDone)
         {
-            Setup(seconds, timerDone);
+           
         }
 
         public Timer(float seconds, int repetitions, Action timer, Action timerDone = null)
-        {
-            Setup(seconds, repetitions, timer, timerDone);
-        }
-
-        public void Setup(float seconds, Action timerDone)
-        {
-            repetitionCount = 0;
-            time = 0f;
-            duration = seconds;
-            repeatCount = 0;
-            onTimer = null;
-            onTimerDone = timerDone;
-        }
-
-        public void Setup(float seconds, int repetitions, Action timer, Action timerDone = null)
         {
             repetitionCount = 0;
             time = 0f;
@@ -40,6 +25,11 @@ namespace HHG.Common.Runtime
             repeatCount = repetitions;
             onTimer = timer;
             onTimerDone = timerDone;
+        }
+
+        public void SetTime(float newTime)
+        {
+            time = newTime;
         }
 
         public void Update(float deltaTime)
