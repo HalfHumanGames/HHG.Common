@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HHG.Common.Runtime
 {
@@ -6,18 +7,18 @@ namespace HHG.Common.Runtime
     {
         public MetaBehaviour Behaviour => behaviour;
 
-        [SerializeReference, SerializeReferenceDropdown] private MetaBehaviour _behaviour;
+        [SerializeReference, SerializeReferenceDropdown, FormerlySerializedAs("_behaviour")] private MetaBehaviour behaviour;
 
-        protected MetaBehaviour behaviour => _behaviour?.EnsureAttached(this);
-
-        internal MetaBehaviour AttachBehaviour(MetaBehaviour metaBehaviour)
+        internal MetaBehaviour SetBehaviour(MetaBehaviour metaBehaviour)
         {
-            _behaviour = metaBehaviour;
-            return behaviour; // Use getter to ensure attached
+            behaviour = metaBehaviour;
+            behaviour.SetRunner(this);
+            return behaviour;
         }
 
         private void Awake()
         {
+            behaviour?.SetRunner(this);
             behaviour?.Awake();
         }
 

@@ -50,17 +50,16 @@ namespace HHG.Common.Runtime
 
                 if (time <= 0)
                 {
-                    onTimer?.Invoke();
-
                     if (repeatCount >= 0 && ++repetitionCount >= repeatCount)
                     {
                         time = 0;
-
+                        onTimer?.Invoke();
                         onTimerDone?.Invoke();
                     }
                     else
                     {
                         time = duration;
+                        onTimer?.Invoke();
                     }
                 }
             }
@@ -83,7 +82,7 @@ namespace HHG.Common.Runtime
                 onTimer?.Invoke();
             }
 
-            time = Random.Range(0f, duration);
+            time = Random.Range(.01f, duration);
         }
 
         public void Stop()

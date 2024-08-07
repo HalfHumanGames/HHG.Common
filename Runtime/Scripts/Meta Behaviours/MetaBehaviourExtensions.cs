@@ -16,7 +16,7 @@ namespace HHG.Common.Runtime
         {
             bool wasActive = gameObject.activeSelf;
             gameObject.SetActive(false);
-            MetaBehaviour instance = gameObject.AddComponent<MetaBehaviourRunner>().AttachBehaviour(metaBehaviour.Clone());
+            MetaBehaviour instance = gameObject.AddComponent<MetaBehaviourRunner>().SetBehaviour(metaBehaviour.Clone());
             gameObject.SetActive(wasActive);
             return (T)instance;
         }
@@ -30,7 +30,7 @@ namespace HHG.Common.Runtime
             int i = 0;
             foreach (T metaBehaviour in metaBehaviours)
             {
-                instances[i++] = (T)gameObject.AddComponent<MetaBehaviourRunner>().AttachBehaviour(metaBehaviour.Clone());
+                instances[i++] = (T)gameObject.AddComponent<MetaBehaviourRunner>().SetBehaviour(metaBehaviour.Clone());
             }
             gameObject.SetActive(wasActive);
             return instances;

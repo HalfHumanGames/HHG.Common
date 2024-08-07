@@ -21,7 +21,7 @@ namespace HHG.Common.Runtime
         protected GameObject gameObject;
         protected Transform transform;
 
-        internal MetaBehaviour EnsureAttached(MetaBehaviourRunner metaBehaviourRunner)
+        internal MetaBehaviour SetRunner(MetaBehaviourRunner metaBehaviourRunner)
         {
             runner = metaBehaviourRunner;
             gameObject = metaBehaviourRunner.gameObject;
