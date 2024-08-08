@@ -6,9 +6,9 @@ namespace HHG.Common.Runtime
 {
     public class GhostSprites : MonoBehaviour
     {
-
         private static Lazy<Transform> _container = new Lazy<Transform>();
         private static Transform container => _container.FromGameObjectCreate("Ghost Sprites");
+        private static SpriteRenderer template;
 
         [SerializeField] private int ghostCount = 10;
         [SerializeField] private float spacing = .1f;
@@ -17,46 +17,66 @@ namespace HHG.Common.Runtime
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Material material;
 
-        private List<GameObject> ghostList = new List<GameObject>();
+        private GameObjectPool<SpriteRenderer> pool;
+        private Queue<SpriteRenderer> ghosts;
+        private SpriteRenderer ghostsTail;
+        private SortingGroup sortingGroup;
         private Color startColor;
         private float fadeSpeed;
 
         private void Start()
         {
+            if (template == null)
+            {
+                CreateTemplate();
+            }
+
+            pool = GameObjectPool.GetPool(nameof(GhostSprites), template, container, Debug.isDebugBuild);
+            ghosts = new Queue<SpriteRenderer>(ghostCount);
+
             if (spriteRenderer == null)
             {
-                spriteRenderer = gameObject.GetComponentInChildren<SpriteRenderer>(true);
+                spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
             }
 
-            for (int i = 0; i < ghostCount; i++)
-            {
-                AddNewGhost(transform.position);
-            }
+            sortingGroup = GetComponentInChildren<SortingGroup>(true);
 
-            UpdateVariables();
+            ReinitializeVariables();
         }
 
-        private void UpdateVariables()
+        private void CreateTemplate()
+        {
+            template = new GameObject("Ghost Template").AddComponent<SpriteRenderer>();
+            SetupGhost(template, default);
+            template.gameObject.SetActive(false);
+        }
+
+        private void ReinitializeVariables()
         {
             spacing = Mathf.Max(spacing, .01f);
             fadeDuration = Mathf.Max(fadeDuration, .01f);
             startColor = spriteRenderer.color.WithA(color.a * spriteRenderer.color.a);
             fadeSpeed = 1f / fadeDuration * startColor.a;
+
+            // For if change in Editor during Play Mode via the Inspector
+            if (ghosts.Count > ghostCount)
+            {
+                ClearTrail();
+                ghosts = new Queue<SpriteRenderer>(ghostCount);
+            }
         }
 
         public void ClearTrail()
         {
-            if (ghostList == null || ghostList.Count == 0)
+            if (ghosts == null)
             {
                 return;
             }
 
-            foreach (GameObject ghost in ghostList)
+            while (ghosts.Count > 0)
             {
-                Destroy(ghost);
+                ReleaseGhost();
             }
-
-            ghostList.Clear();
         }
 
         private void OnDisable()
@@ -73,96 +93,81 @@ namespace HHG.Common.Runtime
         {
 
 #if UNITY_EDITOR
-            UpdateVariables();
+            ReinitializeVariables();
 #endif
 
-            if (ghostCount < ghostList.Count)
-            {
-                for (int i = ghostCount; i < ghostList.Count - 1; i++)
-                {
-                    GameObject toDestroy = ghostList[i];
-                    Destroy(toDestroy);
-                    ghostList.RemoveAt(i);
-                }
-            }
+            Vector3 currentPosition = transform.position;
 
-            Vector3 ghostPosition = transform.position;
-
-            if (ghostList.Count > 0)
+            if (ghosts.Count > 0)
             {
-                Vector3 previousPosition = ghostList[ghostList.Count - 1].transform.position;
-                float distance = Vector3.Distance(previousPosition, transform.position);
+                Vector3 previousPosition = ghostsTail.transform.position;
+                float distance = Vector3.Distance(previousPosition, currentPosition);
 
                 while (distance > spacing)
                 {
-                    ghostPosition = previousPosition + (transform.position - previousPosition).normalized * spacing;
-                    AddGhost(ghostPosition);
-                    previousPosition = ghostPosition;
+                    currentPosition = previousPosition + (currentPosition - previousPosition).normalized * spacing;
+                    RetrieveGhost(currentPosition);
+                    previousPosition = currentPosition;
                     distance -= spacing;
                 }
             }
-            else
+            else if (ghosts.Count < ghostCount)
             {
-                AddGhost(ghostPosition);
+                RetrieveGhost(currentPosition);
             }
 
-            for (int i = 0; i < ghostList.Count; i++)
+            int release = 0;
+            foreach (SpriteRenderer ghost in ghosts)
             {
-                SpriteRenderer ghostSprite = ghostList[i].GetComponent<SpriteRenderer>();
-                Color color = ghostSprite.color;
+                Color color = ghost.color;
                 color.a -= fadeSpeed * Time.deltaTime;
-                ghostSprite.color = color;
-            }
-        }
+                ghost.color = color;
 
-        private void AddGhost(Vector3 position)
-        {
-            if (ghostList.Count < ghostCount)
+                if (color.a <= 0f)
+                {
+                    release++;
+                }
+            }
+
+            for (int i = 0; i < release; i++)
             {
-                AddNewGhost(position);
-            }
-            else
-            {
-                AddExistingGhost(position);
+                ReleaseGhost();
             }
         }
 
-        private void AddNewGhost(Vector3 position)
+        private void RetrieveGhost(Vector3 ghostPosition)
         {
-            GameObject ghost = new GameObject(gameObject.name + " - GhostSprite");
-            ghost.AddComponent<SpriteRenderer>();
-            SetupGhost(ghost, position);
+            SpriteRenderer ghost = pool.Get();
+            SetupGhost(ghost, ghostPosition);
+            ghost.gameObject.SetActive(true);
+            ghosts.Enqueue(ghost);
+            ghostsTail = ghost;
         }
 
-        private void AddExistingGhost(Vector3 position)
+        private void ReleaseGhost()
         {
-            GameObject recycle = ghostList[0];
-            ghostList.RemoveAt(0);
-            SetupGhost(recycle, position);
+            SpriteRenderer ghost = ghosts.Dequeue();
+            ghost.gameObject.SetActive(false);
+            pool.Release(ghost);
         }
 
-        private void SetupGhost(GameObject ghost, Vector3 position)
+        private void SetupGhost(SpriteRenderer ghost, Vector3 position)
         {
             ghost.transform.SetParent(container);
-            ghost.transform.position = position;
             ghost.transform.SetGlobalScale(transform.lossyScale);
+            ghost.transform.position = position;
             ghost.transform.rotation = transform.rotation;
-
-            SortingGroup sortingGroup = this.spriteRenderer.GetComponent<SortingGroup>();
-            SpriteRenderer spriteRenderer = ghost.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = startColor;
-            spriteRenderer.sprite = this.spriteRenderer.sprite;
-            spriteRenderer.sortingLayerID = sortingGroup == null ? this.spriteRenderer.sortingLayerID : sortingGroup.sortingLayerID;
-            spriteRenderer.sortingOrder = sortingGroup == null ? this.spriteRenderer.sortingOrder - 1 : sortingGroup.sortingOrder - 1;
-            spriteRenderer.flipX = this.spriteRenderer.flipX;
-            spriteRenderer.flipY = this.spriteRenderer.flipY;
+            ghost.color = startColor;
+            ghost.sprite = spriteRenderer.sprite;
+            ghost.sortingLayerID = sortingGroup == null ? spriteRenderer.sortingLayerID : sortingGroup.sortingLayerID;
+            ghost.sortingOrder = sortingGroup == null ? spriteRenderer.sortingOrder - 1 : sortingGroup.sortingOrder - 1;
+            ghost.flipX = spriteRenderer.flipX;
+            ghost.flipY = spriteRenderer.flipY;
 
             if (material != null)
             {
-                spriteRenderer.material = material;
+                ghost.material = material;
             }
-
-            ghostList.Add(ghost);
         }
 
         private void OnValidate()
@@ -177,5 +182,4 @@ namespace HHG.Common.Runtime
             }
         }
     }
-
 }
