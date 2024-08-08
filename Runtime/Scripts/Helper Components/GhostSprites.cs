@@ -96,24 +96,29 @@ namespace HHG.Common.Runtime
             ReinitializeVariables();
 #endif
 
-            Vector3 currentPosition = transform.position;
+            Vector3 position = transform.position;
+            Vector3 ghostPosition = position;
 
             if (ghosts.Count > 0)
             {
                 Vector3 previousPosition = ghostsTail.transform.position;
-                float distance = Vector3.Distance(previousPosition, currentPosition);
+                float distance = Vector3.Distance(previousPosition, position);
 
                 while (distance > spacing)
                 {
-                    currentPosition = previousPosition + (currentPosition - previousPosition).normalized * spacing;
-                    RetrieveGhost(currentPosition);
-                    previousPosition = currentPosition;
+                    ghostPosition = previousPosition + (position - previousPosition).normalized * spacing;
+                    if (ghosts.Count >= ghostCount)
+                    {
+                        ReleaseGhost();
+                    }
+                    RetrieveGhost(ghostPosition);
+                    previousPosition = ghostPosition;
                     distance -= spacing;
                 }
             }
-            else if (ghosts.Count < ghostCount)
+            else
             {
-                RetrieveGhost(currentPosition);
+                RetrieveGhost(ghostPosition);
             }
 
             int release = 0;
@@ -147,8 +152,13 @@ namespace HHG.Common.Runtime
         private void ReleaseGhost()
         {
             SpriteRenderer ghost = ghosts.Dequeue();
-            ghost.gameObject.SetActive(false);
-            pool.Release(ghost);
+
+            // Can be null when application is quitting
+            if (ghost != null)
+            {
+                ghost.gameObject.SetActive(false);
+                pool.Release(ghost);
+            }
         }
 
         private void SetupGhost(SpriteRenderer ghost, Vector3 position)
