@@ -11,7 +11,7 @@ namespace HHG.Common.Runtime
     {
         public List<IActionBase> Actions => actions;
 
-        [SerializeReference, SerializeReferenceDropdown] private List<IActionBase> actions = new List<IActionBase>();
+        [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
 
         private event Action invokedEvent;
         private UnityEvent invokedUnityEvent;
