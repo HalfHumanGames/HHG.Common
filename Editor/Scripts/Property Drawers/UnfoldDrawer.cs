@@ -1,34 +1,54 @@
 using HHG.Common.Runtime;
 using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace HHG.Common.Editor
 {
-    [CustomPropertyDrawer(typeof(UnfoldAttribute))]
+    [CustomPropertyDrawer(typeof(UnfoldAttribute), true)]
     public class UnfoldDrawer : PropertyDrawer
     {
         private UnfoldAttribute unfold => attribute as UnfoldAttribute;
 
-        // TODO: Make auto do child if child count is 1 or full otherwise
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        private float totalHeight;
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            VisualElement container = new VisualElement();
+            // Force expand so children are visible
+            property.isExpanded = true;
+
             SerializedProperty childProperty = property.Copy();
             SerializedProperty endProperty = property.GetEndProperty();
             childProperty.NextVisible(true);
+
+            UnfoldName unfoldName = unfold.Name;
+
+            if (unfoldName == UnfoldName.Auto)
+            {
+                unfoldName = property.Copy().CountInProperty() - 1 == 1 ? UnfoldName.Parent : UnfoldName.Child;
+            }
+
+            totalHeight = 0f;
             do
             {
-                string name = unfold.Name switch {
+                string name = unfoldName switch
+                {
                     UnfoldName.Child => childProperty.displayName,
                     UnfoldName.Parent => property.displayName,
-                    _ => $"{property.displayName} {childProperty.displayName}",
+                    UnfoldName.Full => $"{property.displayName} {childProperty.displayName}",
+                    _ => string.Empty
                 };
-                PropertyField field = new PropertyField(childProperty, name);
-                field.Bind(childProperty.serializedObject);
-                container.Add(field);
+
+                EditorGUI.PropertyField(position, childProperty, new GUIContent(name), true);
+                float height = EditorGUI.GetPropertyHeight(childProperty, true) + EditorGUIUtility.standardVerticalSpacing;
+                position.y += height;
+                totalHeight += height;
+
             } while (childProperty.NextVisible(false) && !SerializedProperty.EqualContents(childProperty, endProperty));
-            return container;
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return totalHeight - EditorGUIUtility.standardVerticalSpacing;
         }
     }
 }

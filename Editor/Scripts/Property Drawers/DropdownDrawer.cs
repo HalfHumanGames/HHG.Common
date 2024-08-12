@@ -2,13 +2,12 @@ using HHG.Common.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
 {
-    [CustomPropertyDrawer(typeof(DropdownAttribute))]
+    [CustomPropertyDrawer(typeof(DropdownAttribute), true)]
     public class DropdownDrawer : PropertyDrawer
     {
         private static Dictionary<Type, List<Object>> assetCache = new Dictionary<Type, List<Object>>();
@@ -18,38 +17,43 @@ namespace HHG.Common.Editor
         private List<Object> assets = new List<Object>();
         private List<string> names = new List<string>();
 
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            VisualElement container = new VisualElement();
-
             if (property.propertyType != SerializedPropertyType.ObjectReference)
             {
-                PropertyField propertyField = new PropertyField(property);
-                container.Add(propertyField);
+                EditorGUI.PropertyField(position, property, label);
             }
             else
             {
-                RefreshDropdownValues(property);
-                DropdownField dropdownField = new DropdownField(property.displayName, names, 0);
-                dropdownField.AddToClassList(BaseField<string>.alignedFieldUssClassName);
-                dropdownField.AddManipulator(CreateDropdownContextMenu(dropdownField));
-                dropdownField.UnregisterValueChangedCallback(OnSpawnDropdownChanged);
-                dropdownField.RegisterValueChangedCallback(OnSpawnDropdownChanged);
-                dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
-                dropdownField.userData = property;
-                container.Add(dropdownField);
-            }
+                TryRefreshDropdownValues(property);
 
-            return container;
+                int currentIndex = names.IndexOf(property.objectReferenceValue?.name ?? "None");
+
+                if (currentIndex == -1) currentIndex = 0; // Default to "None"
+
+                EditorGUI.BeginProperty(position, label, property);
+
+                int selectedIndex = EditorGUI.Popup(position, label.text, currentIndex, names.ToArray());
+
+                if (selectedIndex != currentIndex)
+                {
+                    property.objectReferenceValue = selectedIndex >= 0 && selectedIndex < assets.Count ? assets[selectedIndex] : null;
+                    property.serializedObject.ApplyModifiedProperties();
+                    TryRefreshDropdownValues(property, true);
+                }
+
+                EditorGUI.EndProperty();
+            }
         }
 
-        private void RefreshDropdownValues(SerializedProperty property, bool force = false)
+        private void TryRefreshDropdownValues(SerializedProperty property, bool force = false)
         {
             Type type = filter.Type ?? property.GetPropertyType();
+
             if (!force && assetCache.ContainsKey(type) && nameCache.ContainsKey(type))
             {
                 assets = assetCache[type];
-                names = nameCache[type];     
+                names = nameCache[type];
             }
             else
             {
@@ -59,25 +63,12 @@ namespace HHG.Common.Editor
                 assetCache[type] = assets;
                 nameCache[type] = names;
             }
-        }
 
-        private ContextualMenuManipulator CreateDropdownContextMenu(VisualElement visualElement) => new ContextualMenuManipulator((evt) =>
-        {
-            evt.menu.AppendAction("Refresh", (x) => RefreshDropdownValues((SerializedProperty)visualElement.userData, true), DropdownMenuAction.AlwaysEnabled, visualElement);
-        });
-
-        private void OnSpawnDropdownChanged(ChangeEvent<string> evt)
-        {
-            DropdownField dropdownField = evt.currentTarget as DropdownField;
-            SerializedProperty property = dropdownField.userData as SerializedProperty;
-            int i = names.IndexOf(evt.newValue);
-
-            // For some reason this event triggers for the label change as well
-            if (i != -1)
+            // Add "None" option
+            if (!names.Contains("None"))
             {
-                property.objectReferenceValue = assets[i];
-                property.serializedObject.ApplyModifiedProperties();
-                dropdownField.SetValueWithoutNotify(property.objectReferenceValue?.name ?? "None");
+                names.Insert(0, "None");
+                assets.Insert(0, null);
             }
         }
     }

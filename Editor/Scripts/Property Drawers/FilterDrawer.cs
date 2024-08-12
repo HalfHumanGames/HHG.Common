@@ -1,25 +1,21 @@
 using HHG.Common.Runtime;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace HHG.Common.Editor
 {
-    [CustomPropertyDrawer(typeof(FilterAttribute))]
+    [CustomPropertyDrawer(typeof(FilterAttribute), true)]
     public class FilterDrawer : PropertyDrawer
     {
         private FilterAttribute filter => attribute as FilterAttribute;
 
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            VisualElement container = new VisualElement();
-            ObjectField field = new ObjectField(property.displayName);
-            field.AddToClassList(BaseField<Object>.alignedFieldUssClassName);
-            field.objectType = filter.Type;
-            field.BindProperty(property);
-            container.Add(field);
-            return container;
+            EditorGUI.BeginProperty(position, label, property);
+
+            property.objectReferenceValue = EditorGUI.ObjectField(position, label, property.objectReferenceValue, filter.Type, true);
+
+            EditorGUI.EndProperty();
         }
     }
 }
