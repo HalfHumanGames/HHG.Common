@@ -5,6 +5,9 @@ namespace HHG.Common.Runtime
 {
     public class SpriteFlash : MonoBehaviour
     {
+        private static readonly int flashColor = Shader.PropertyToID("_FlashColor");
+        private static readonly int flashAmount = Shader.PropertyToID("_FlashAmount");
+
         [SerializeField] private Color color = Color.white;
         [SerializeField] private float duration = 1f;
         [SerializeField] private int loops;
@@ -12,15 +15,15 @@ namespace HHG.Common.Runtime
         [SerializeField] private float cooldown;
         [SerializeField] private bool unscaledTime;
 
-        private Renderer spriteRenderer;
+        private Renderer flashRenderer;
         private MaterialPropertyBlock block;
         private Coroutine coroutine;
 
         private void Awake()
         {
             block = new MaterialPropertyBlock();
-            spriteRenderer = GetComponent<Renderer>();
-            spriteRenderer.GetPropertyBlock(block);
+            flashRenderer = GetComponent<Renderer>();
+            flashRenderer.GetPropertyBlock(block);
             SetFlashAmount(0);
         }
 
@@ -51,7 +54,7 @@ namespace HHG.Common.Runtime
 
         private IEnumerator FlashAsync()
         {
-            block.SetColor("_FlashColor", color);
+            block.SetColor(flashColor, color);
 
             for (int i = 0; loops < 0 || i <= loops; i++)
             {
@@ -75,8 +78,8 @@ namespace HHG.Common.Runtime
 
         private void SetFlashAmount(float amount)
         {
-            block.SetFloat("_FlashAmount", amount);
-            spriteRenderer.SetPropertyBlock(block);
+            block.SetFloat(flashAmount, amount);
+            flashRenderer.SetPropertyBlock(block);
         }
 
         private void Cleanup()
