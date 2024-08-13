@@ -27,9 +27,7 @@ namespace HHG.Common.Editor
             {
                 TryRefreshDropdownValues(property);
 
-                int currentIndex = names.IndexOf(property.objectReferenceValue?.name ?? "None");
-
-                if (currentIndex == -1) currentIndex = 0; // Default to "None"
+                int currentIndex = Mathf.Max(assets.IndexOf(property.objectReferenceValue), 0);
 
                 EditorGUI.BeginProperty(position, label, property);
 
@@ -37,7 +35,7 @@ namespace HHG.Common.Editor
 
                 if (selectedIndex != currentIndex)
                 {
-                    property.objectReferenceValue = selectedIndex >= 0 && selectedIndex < assets.Count ? assets[selectedIndex] : null;
+                    property.objectReferenceValue = assets[selectedIndex];
                     property.serializedObject.ApplyModifiedProperties();
                     TryRefreshDropdownValues(property, true);
                 }

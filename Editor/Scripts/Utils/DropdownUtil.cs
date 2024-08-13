@@ -82,8 +82,10 @@ namespace HHG.Common.Runtime
         {
             // Make sure to replace " - " but not "-" since we don't 
             // want to split for hyphenated words or negative numbers
+            // Also replace with " / " with a space on each side since
+            // extra spaces get removed anyways and it'll look nicer
             return Regex.Replace(choice.
-                       ReplaceMany(new string[] { " - ", ",", "[", "(", "{" }, "/").
+                       ReplaceMany(new string[] { " - ", ",", "[", "(", "{" }, " / ").
                        ReplaceMany(new string[] { "]", ")", "}" }, string.Empty), @"\s+", " ");
         }
     }
