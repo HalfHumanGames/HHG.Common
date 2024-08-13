@@ -26,8 +26,7 @@ namespace HHG.Common.Runtime
 
         private void Awake()
         {
-            position = mode == Mode.Local ? transform.localPosition : transform.position;
-            rotation = mode == Mode.Local ? transform.localRotation : transform.rotation;
+            Initialize();
         }
 
         private void LateUpdate()
@@ -42,6 +41,12 @@ namespace HHG.Common.Runtime
                 if (targets.HasFlag(Targets.Position)) transform.position = position;
                 if (targets.HasFlag(Targets.Rotation)) transform.rotation = rotation;
             }
+        }
+
+        public void Initialize()
+        {
+            position = mode == Mode.Local ? transform.localPosition : transform.position;
+            rotation = mode == Mode.Local ? transform.localRotation : transform.rotation;
         }
     }
 }
