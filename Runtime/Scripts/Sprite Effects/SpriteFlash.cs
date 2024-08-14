@@ -5,6 +5,7 @@ namespace HHG.Common.Runtime
 {
     public class SpriteFlash : MonoBehaviour
     {
+        private static readonly int mainTex = Shader.PropertyToID("_MainTex");
         private static readonly int flashColor = Shader.PropertyToID("_FlashColor");
         private static readonly int flashAmount = Shader.PropertyToID("_FlashAmount");
 
@@ -54,8 +55,6 @@ namespace HHG.Common.Runtime
 
         private IEnumerator FlashAsync()
         {
-            block.SetColor(flashColor, color);
-
             for (int i = 0; loops < 0 || i <= loops; i++)
             {
                 float time = 0;
@@ -78,6 +77,8 @@ namespace HHG.Common.Runtime
 
         private void SetFlashAmount(float amount)
         {
+            flashRenderer.GetPropertyBlock(block);
+            block.SetColor(flashColor, color);
             block.SetFloat(flashAmount, amount);
             flashRenderer.SetPropertyBlock(block);
         }
