@@ -22,6 +22,7 @@ namespace HHG.Common.Runtime
         {
             Position,
             Rotation,
+            Both = Position | Rotation
         }
 
         private void Awake()
@@ -41,6 +42,13 @@ namespace HHG.Common.Runtime
                 if (targets.HasFlag(Targets.Position)) transform.position = position;
                 if (targets.HasFlag(Targets.Rotation)) transform.rotation = rotation;
             }
+        }
+
+        public void Initialize(Mode mode, Targets targets)
+        {
+            this.mode = mode;
+            this.targets = targets;
+            Initialize();
         }
 
         public void Initialize()
