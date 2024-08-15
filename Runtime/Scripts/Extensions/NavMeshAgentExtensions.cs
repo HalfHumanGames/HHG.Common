@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
         private const float agentDrift = .0001f;
 
         // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
-        public static void SetDestinationFix(this NavMeshAgent agent, Vector3 destination)
+        public static bool SetDestinationFix(this NavMeshAgent agent, Vector3 destination)
         {
             if (Mathf.Abs(agent.transform.position.x - destination.x) < agentDrift)
             {
@@ -17,7 +17,7 @@ namespace HHG.Common.Runtime
 
             }
 
-            agent.SetDestination(destination);
+            return agent.SetDestination(destination);
         }
 
         public static bool HasReachedDestination(this NavMeshAgent agent)
