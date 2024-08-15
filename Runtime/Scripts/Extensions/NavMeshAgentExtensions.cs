@@ -20,6 +20,11 @@ namespace HHG.Common.Runtime
             return agent.SetDestination(destination);
         }
 
+        public static bool CalculatePathSafe(this NavMeshAgent agent, Vector2 target, NavMeshPath path)
+        {
+            return NavMesh.SamplePosition(target, out NavMeshHit hit, float.MaxValue, agent.areaMask) && agent.CalculatePath(hit.position, path);
+        }
+
         public static bool HasReachedDestination(this NavMeshAgent agent)
         {
             return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f);
