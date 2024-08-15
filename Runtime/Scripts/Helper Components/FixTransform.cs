@@ -1,12 +1,12 @@
-using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HHG.Common.Runtime
 {
     public class FixTransform : MonoBehaviour
     {
-        [SerializeField] private Mode mode;
-        [SerializeField] private Targets targets;
+        [SerializeField, FormerlySerializedAs("mode")] private Mode fixPosition;
+        [SerializeField] private Mode fixRotation;
 
         private Vector3 position;
         private Quaternion rotation;
@@ -14,15 +14,8 @@ namespace HHG.Common.Runtime
         public enum Mode
         {
             Local,
-            Global
-        }
-
-        [Flags]
-        public enum Targets
-        {
-            Position,
-            Rotation,
-            Both = Position | Rotation
+            Global,
+            None
         }
 
         private void Awake()
@@ -32,29 +25,25 @@ namespace HHG.Common.Runtime
 
         private void LateUpdate()
         {
-            if (mode == Mode.Local)
-            {
-                if (targets.HasFlag(Targets.Position)) transform.position = transform.parent.position + position;
-                if (targets.HasFlag(Targets.Rotation)) transform.rotation = transform.parent.rotation * rotation;
-            }
-            else if (mode == Mode.Global)
-            {
-                if (targets.HasFlag(Targets.Position)) transform.position = position;
-                if (targets.HasFlag(Targets.Rotation)) transform.rotation = rotation;
-            }
+            if (fixPosition == Mode.Local) transform.position = transform.parent.position + position;
+            else if (fixPosition == Mode.Global) transform.position = position;
+
+            if (fixRotation == Mode.Local) transform.rotation = transform.parent.rotation * rotation;
+            else if (fixRotation == Mode.Global) transform.rotation = rotation;
         }
 
-        public void Initialize(Mode mode, Targets targets)
+        public void Initialize(Mode fixPosition, Mode fixRotation)
         {
-            this.mode = mode;
-            this.targets = targets;
+            this.fixPosition = fixPosition;
+            this.fixRotation = fixRotation;
             Initialize();
         }
 
+        [ContextMenu("Initialize")]
         public void Initialize()
         {
-            position = mode == Mode.Local ? transform.localPosition : transform.position;
-            rotation = mode == Mode.Local ? transform.localRotation : transform.rotation;
+            position = fixPosition == Mode.Local ? transform.localPosition : transform.position;
+            rotation = fixRotation == Mode.Local ? transform.localRotation : transform.rotation;
         }
     }
 }
