@@ -32,7 +32,7 @@ namespace HHG.Common.Runtime
 
         public static GameObjectPool GetPool(object id, GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000)
         {
-            SubjectId subjectId = new SubjectId(null, id);
+            SubjectId subjectId = new SubjectId(typeof(GameObject), id);
 
             if (!pools.TryGetValue(subjectId, out object pool))
             {
@@ -87,7 +87,7 @@ namespace HHG.Common.Runtime
 
         public static void ClearPool(object id)
         {
-            SubjectId subjectId = new SubjectId(null, id);
+            SubjectId subjectId = new SubjectId(typeof(GameObject), id);
 
             if (pools.TryGetValue(subjectId, out object pool))
             {
@@ -102,7 +102,7 @@ namespace HHG.Common.Runtime
 
         public static void ClearPool<T>(object id) where T : Component
         {
-            SubjectId subjectId = new SubjectId(null, id);
+            SubjectId subjectId = new SubjectId(typeof(T), id);
 
             if (pools.TryGetValue(subjectId, out object pool))
             {
