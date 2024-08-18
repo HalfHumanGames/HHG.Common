@@ -54,16 +54,19 @@ namespace HHG.Common.Runtime
 
         private void OnDrawGizmos()
         {
+            behaviour?.SetRunner(this);
             behaviour?.OnDrawGizmos();
         }
 
         private void OnDrawGizmosSelected()
         {
+            behaviour?.SetRunner(this);
             behaviour?.OnDrawGizmosSelected();
         }
 
         private void OnValidate()
         {
+            behaviour?.SetRunner(this);
             behaviour?.OnValidate();
         }
 
