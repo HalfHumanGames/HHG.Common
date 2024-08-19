@@ -22,8 +22,7 @@ namespace HHG.Common.Runtime
             float perc = source.HealthPerc;
             float scaleX = perc * scale;
             bool isVisible = perc < 1f;
-            fill.gameObject.SetActive(isVisible);
-            background.gameObject.SetActive(isVisible);
+            gameObject.SetActive(isVisible);
             fill.transform.localScale = fill.transform.localScale.WithX(scaleX);
         }
     }
