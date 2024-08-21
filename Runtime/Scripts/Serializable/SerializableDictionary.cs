@@ -11,7 +11,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private List<TKey> keys = new List<TKey>();
         [SerializeField] private List<TValue> values = new List<TValue>();
 
-        [SerializeField, HideInInspector] private List<int> ToAdd = new List<int>();
+        [SerializeField, HideInInspector] private List<int> toAdd = new List<int>();
         [SerializeField, HideInInspector] private List<TKey> keysToAdd = new List<TKey>();
         [SerializeField, HideInInspector] private List<TValue> valuesToAdd = new List<TValue>();
 
@@ -48,6 +48,21 @@ namespace HHG.Common.Runtime
                 values[index] = value.Value;
                 OnAfterDeserialize();
             }
+        }
+
+        public SerializableDictionary()
+        {
+
+        }
+
+        public SerializableDictionary(IEnumerable<TKey> keys, IEnumerable<TValue> values)
+        {
+            this.keys.Clear();
+            this.keys.AddRange(keys);
+            this.values.Clear();
+            this.values.AddRange(values);
+
+            OnAfterDeserialize();
         }
 
         public int Add(object item)
@@ -158,9 +173,9 @@ namespace HHG.Common.Runtime
             int added = 0;
             foreach (KeyValuePair<TKey, TValue> pair in this)
             {
-                if (ToAdd.Contains(i))
+                if (toAdd.Contains(i))
                 {
-                    int index = ToAdd.IndexOf(i);
+                    int index = toAdd.IndexOf(i);
                     keys.Add(keysToAdd[index]);
                     values.Add(valuesToAdd[index]);
                     added++;
@@ -172,7 +187,7 @@ namespace HHG.Common.Runtime
                 i++;
             }
 
-            for (i = added; i < ToAdd.Count; i++)
+            for (i = added; i < toAdd.Count; i++)
             {
                 keys.Add(keysToAdd[i]);
                 values.Add(valuesToAdd[i]);
@@ -183,11 +198,15 @@ namespace HHG.Common.Runtime
         {
             Clear();
 
-            ToAdd.Clear();
+            toAdd.Clear();
             keysToAdd.Clear();
             valuesToAdd.Clear();
 
-            if (keys.Count != values.Count)
+            if (keys.Count < values.Count)
+            {
+                keys.Resize(values.Count);
+            }
+            else if (values.Count < keys.Count)
             {
                 values.Resize(keys.Count);
             }
@@ -196,7 +215,7 @@ namespace HHG.Common.Runtime
             {
                 if (keys[i] == null || !TryAdd(keys[i], values[i]))
                 {
-                    ToAdd.Add(i);
+                    toAdd.Add(i);
                     keysToAdd.Add(keys[i]);
                     valuesToAdd.Add(values[i]);
                 }
