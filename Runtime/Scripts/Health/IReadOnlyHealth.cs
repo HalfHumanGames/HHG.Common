@@ -11,8 +11,10 @@ namespace HHG.Common.Runtime
         public float PreviousHealthPerc { get; }
         public float PreviousHealthValue { get; }
         public float PreviousHealthValueDelta { get; }
-
+        public bool IsAlive { get; }
+        public bool IsDead { get; }
     }
+
     public interface IReadOnlyHealthWithEvents : IReadOnlyHealth
     {
         public UnityEvent<IHealth> OnHit { get; }

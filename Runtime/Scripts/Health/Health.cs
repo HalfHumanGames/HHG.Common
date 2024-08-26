@@ -13,6 +13,8 @@ namespace HHG.Common.Runtime
         public float PreviousHealthPerc => maxHealth == 0f ? 1f : previousHealthValue / maxHealth;
         public float PreviousHealthValue => previousHealthValue;
         public float PreviousHealthValueDelta => previousHealthValueDelta;
+        public bool IsAlive => health > 0f;
+        public bool IsDead => health <= 0f;
         public UnityEvent<IHealth> OnHit => onHit;
         public UnityEvent<IHealth> OnHeal => onHeal;
         public UnityEvent<IHealth> OnDied => onDied;

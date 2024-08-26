@@ -11,6 +11,8 @@ namespace HHG.Common.Runtime
         public float PreviousHealthPerc => root.PreviousHealthPerc;
         public float PreviousHealthValue => root.PreviousHealthValue;
         public float PreviousHealthValueDelta => root.PreviousHealthValueDelta;
+        public bool IsAlive => root.IsAlive;
+        public bool IsDead => root.IsDead;
         public UnityEvent<IHealth> OnHit => root.OnHit;
         public UnityEvent<IHealth> OnHeal => root.OnHeal;
         public UnityEvent<IHealth> OnDied => root.OnDied;
