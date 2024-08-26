@@ -15,6 +15,7 @@ namespace HHG.Common.Editor
         {
             // Force expand so children are visible
             property.isExpanded = true;
+            position.height = EditorGUIUtility.singleLineHeight;
 
             SerializedProperty childProperty = property.Copy();
             SerializedProperty endProperty = property.GetEndProperty();
