@@ -40,7 +40,7 @@ namespace HHG.Common.Runtime
                 T newValue = lerp(start, end, easedT);
                 setter(newValue);
                 onUpdate?.Invoke();
-                yield return null;
+                yield return new WaitForEndOfFrame();
             }
 
             setter(end);
