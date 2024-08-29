@@ -21,9 +21,7 @@ namespace HHG.Common.Runtime
                     destination += new Vector3(agentDrift, 0f, 0f);
                 }
 
-                agent.SetDestination(destination);
-
-                return true;
+                return agent.SetDestination(destination);
             }
 
             return false;
