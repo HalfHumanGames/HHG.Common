@@ -8,21 +8,25 @@ namespace HHG.Common.Runtime
         private const float sampleDistance = 1000f;
         private const float agentDrift = .0001f;
 
-        // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
-        public static bool SetDestinationFix(this NavMeshAgent agent, Vector3 destination)
+        public static bool SetDestinationSafe(this NavMeshAgent agent, Vector3 destination)
         {
-            if (Mathf.Abs(agent.transform.position.x - destination.x) < agentDrift)
+            // Not sampling position first tends to cause setting the destination to fail for whatever reason
+            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, float.MaxValue, agent.areaMask))
             {
-                destination += new Vector3(agentDrift, 0f, 0f);
+                destination = hit.position;
 
+                // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
+                if (Mathf.Abs(agent.transform.position.x - destination.x) < agentDrift)
+                {
+                    destination += new Vector3(agentDrift, 0f, 0f);
+                }
+
+                agent.SetDestination(destination);
+
+                return true;
             }
 
-            return agent.SetDestination(destination);
-        }
-
-        public static bool CalculatePathSafe(this NavMeshAgent agent, Vector2 target, NavMeshPath path)
-        {
-            return NavMesh.SamplePosition(target, out NavMeshHit hit, float.MaxValue, agent.areaMask) && agent.CalculatePath(hit.position, path);
+            return false;
         }
 
         public static bool HasReachedDestination(this NavMeshAgent agent)
