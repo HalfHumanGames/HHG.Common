@@ -8,7 +8,7 @@ namespace HHG.Common.Runtime
         private const float sampleDistance = 1000f;
         private const float agentDrift = .0001f;
 
-        public static bool SetDestionationSample(this NavMeshAgent agent, Vector3 destination)
+        public static bool SetDestinationSample(this NavMeshAgent agent, Vector3 destination)
         {
             // Not sampling position first tends to cause setting the destination to fail for whatever reason
             if (NavMesh.SamplePosition(destination, out NavMeshHit hit, sampleDistance, agent.areaMask))
