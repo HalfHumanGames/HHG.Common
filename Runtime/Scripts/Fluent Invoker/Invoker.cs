@@ -206,10 +206,10 @@ namespace HHG.Common.Runtime
                     if (startDelay > 0f) yield return new WaitForSecondsRealtime(startDelay);
                     break;
                 case InvokeDelayer.Frame:
-                    yield return WaitFor.EndOfFrame;
+                    yield return null;
                     break;
                 case InvokeDelayer.Fixed:
-                    yield return WaitFor.FixedUpdate;
+                    yield return new WaitForFixedUpdate();
                     break;
                 case InvokeDelayer.When:
                     if (!when()) yield return new WaitUntil(when);
@@ -226,11 +226,11 @@ namespace HHG.Common.Runtime
                         break;
                     case InvokeFrequency.EachFrame:
                         action(args);
-                        yield return WaitFor.EndOfFrame;
+                        yield return null;
                         break;
                     case InvokeFrequency.EachFixed:
                         action(args);
-                        yield return WaitFor.FixedUpdate;
+                        yield return new WaitForFixedUpdate();
                         break;
                 }
 

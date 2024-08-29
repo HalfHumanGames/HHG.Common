@@ -31,5 +31,23 @@ namespace HHG.Common.Runtime
             Quaternion rotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
             return (rotation * direction).normalized * distance;
         }
+
+        public static Vector3 InsideBounds(Bounds bounds)
+        {
+            return new Vector3(
+                Random.Range(bounds.min.x, bounds.max.x),
+                Random.Range(bounds.min.y, bounds.max.y),
+                Random.Range(bounds.min.z, bounds.max.z)
+            );
+        }
+
+        public static Vector3Int InsideBounds(BoundsInt bounds)
+        {
+            return new Vector3Int(
+                Random.Range(bounds.min.x, bounds.max.x),
+                Random.Range(bounds.min.y, bounds.max.y),
+                Random.Range(bounds.min.z, bounds.max.z)
+            );
+        }
     }
 }
