@@ -11,11 +11,11 @@ namespace HHG.Common.Runtime
         public static bool SetDestinationSafe(this NavMeshAgent agent, Vector3 destination)
         {
             // Not sampling position first tends to cause setting the destination to fail for whatever reason
-            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, float.MaxValue, agent.areaMask))
+            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, float.MaxValue, -1))
             {
                 destination = hit.position;
 
-                // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
+                //Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
                 if (Mathf.Abs(agent.transform.position.x - destination.x) < agentDrift)
                 {
                     destination += new Vector3(agentDrift, 0f, 0f);
