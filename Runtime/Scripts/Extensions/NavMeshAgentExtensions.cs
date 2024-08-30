@@ -8,6 +8,11 @@ namespace HHG.Common.Runtime
         private const float sampleDistance = 1000f;
         private const float agentDrift = .0001f;
 
+        public static bool CalculatePathSafe(this NavMeshAgent agent, Vector2 target, NavMeshPath path)
+        {
+            return NavMesh.SamplePosition(target, out NavMeshHit hit, sampleDistance, agent.areaMask) && agent.CalculatePath(hit.position, path);
+        }
+
         public static bool SetDestinationSample(this NavMeshAgent agent, Vector3 destination)
         {
             // Not sampling position first tends to cause setting the destination to fail for whatever reason
