@@ -1,27 +1,29 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public class RendererGroup : MonoBehaviour
     {
-        private bool isEnabled;
+        private List<Renderer> renderers = new List<Renderer>();
 
-        public void Enable()
+        private void Awake()
         {
-            Enable(true);
+            GetComponentsInChildren(true, renderers);
         }
 
-        public void Disable()
+        public void OnEnable()
         {
-            Enable(false);
+            SetRenderersEnabled(true);
         }
 
-        public void Enable(bool enable)
+        public void OnDisable()
         {
-            isEnabled = enable;
+            SetRenderersEnabled(false);
+        }
 
-            Renderer[] renderers = GetComponentsInChildren<Renderer>();
-
+        private void SetRenderersEnabled(bool enable)
+        {
             foreach (Renderer renderer in renderers)
             {
                 renderer.enabled = enable;
@@ -30,7 +32,7 @@ namespace HHG.Common.Runtime
 
         private void OnTransformChildrenChanged()
         {
-            Enable(isEnabled);
+            SetRenderersEnabled(enabled);
         }
     } 
 }
