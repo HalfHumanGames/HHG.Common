@@ -25,8 +25,9 @@ namespace HHG.Common.Runtime
             Vector3[] corners = path.corners;
 
             float totalDistance = 0f;
+            int len = corners.Length;
 
-            for (int i = 0; i < corners.Length - 1; i++)
+            for (int i = 0; i < len - 1; i++)
             {
                 float segmentDistance = Vector3.Distance(corners[i], corners[i + 1]);
 
@@ -46,7 +47,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            return corners.Length > 0 ? corners[0] : default;
+            return corners.Length > 0 ? corners[len - 1] : default;
         }
 
         public static Vector3 EvaluateDirection(this NavMeshPath path, float distance)
@@ -54,8 +55,9 @@ namespace HHG.Common.Runtime
             Vector3[] corners = path.corners;
 
             float totalDistance = 0f;
+            int len = corners.Length;
 
-            for (int i = 0; i < corners.Length - 1; i++)
+            for (int i = 0; i < len - 1; i++)
             {
                 float segmentDistance = Vector3.Distance(corners[i], corners[i + 1]);
 
@@ -69,7 +71,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            return default;
+            return corners[len - 1] - corners[len - 2];
         }
     }
 }

@@ -33,7 +33,7 @@ namespace HHG.Common.Runtime
             // Fixes a known issue: https://github.com/h8man/NavMeshPlus/wiki/HOW-TO#known-issues
             if (Mathf.Abs(agent.transform.position.x - destination.x) < agentDrift)
             {
-                destination += new Vector3(agentDrift, 0f, 0f);
+                agent.Warp(agent.transform.position + new Vector3(agentDrift, 0f, 0f));
             }
 
             return agent.SetDestination(destination);
@@ -41,7 +41,12 @@ namespace HHG.Common.Runtime
 
         public static bool HasReachedDestination(this NavMeshAgent agent)
         {
-            return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f);
+            return !agent.pathPending && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f || agent.remainingDistance <= agent.stoppingDistance || Vector3.Distance(agent.transform.position, agent.destination) <= agent.stoppingDistance);
+        }
+
+        public static bool HasPathOrPendingPath(this NavMeshAgent agent)
+        {
+            return agent.hasPath || agent.pathPending;
         }
 
         public static Vector3 GetDirection(this NavMeshAgent agent)
