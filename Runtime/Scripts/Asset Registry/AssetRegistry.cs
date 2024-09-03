@@ -19,6 +19,9 @@ namespace HHG.Common.Runtime
             public string Filter;
         }
 
+        public static bool LoadBeforeBuild => Instance.loadBeforeBuild;
+
+        [SerializeField] private bool loadBeforeBuild;
         [SerializeField] private AssetFolder[] folders;
         [SerializeField] private SerializableDictionary<string, Object> assets = new SerializableDictionary<string, Object>();
 

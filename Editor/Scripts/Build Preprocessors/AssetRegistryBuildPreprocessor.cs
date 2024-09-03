@@ -10,7 +10,10 @@ namespace HHG.Common.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            AssetRegistry.EditorLoad();
+            if (AssetRegistry.LoadBeforeBuild)
+            {
+                AssetRegistry.EditorLoad();
+            }
         }
     }
 }
