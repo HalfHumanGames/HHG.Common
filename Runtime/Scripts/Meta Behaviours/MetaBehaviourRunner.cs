@@ -9,11 +9,11 @@ namespace HHG.Common.Runtime
 
         [SerializeReference, SubclassSelector, FormerlySerializedAs("_behaviour")] private MetaBehaviour behaviour;
 
-        internal MetaBehaviour SetBehaviour(MetaBehaviour metaBehaviour)
+        internal T SetBehaviour<T>(T metaBehaviour) where T : MetaBehaviour
         {
             behaviour = metaBehaviour;
             behaviour.SetRunner(this);
-            return behaviour;
+            return metaBehaviour;
         }
 
         private void Awake()
