@@ -1,48 +1,113 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
 {
-    public partial class GameObjectPool : GameObjectPoolBase<GameObject>
+    public partial class GameObjectPool
     {
-        public GameObjectPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm)
-        {
+        private static Dictionary<SubjectId, object> pools = new Dictionary<SubjectId, object>();
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        private static void Initialize()
+        {
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
-        protected override GameObject Create(GameObject template, Transform parent)
+        private static void OnSceneUnloaded(Scene scene)
         {
-            bool wasActive = template.activeSelf;
-            template.SetActive(false);
-            GameObject item = Object.Instantiate(template, parent);
-            template.SetActive(wasActive);
-            return item;
+            pools.Clear();
         }
 
-        protected override void Destroy(GameObject item)
+        public static GameObjectPool GetPool(object id = null)
         {
-            Object.Destroy(item);
-        }
-    }
-
-    public class GameObjectPool<T> : GameObjectPoolBase<T> where T : Component
-    {
-        public GameObjectPool(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm)
-        {
-
+            return GetPool(id, null);
         }
 
-        protected override T Create(T template, Transform parent)
+        public static GameObjectPool GetPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false)
         {
-            bool wasActive = template.gameObject.activeSelf;
-            template.gameObject.SetActive(false);
-            T item = Object.Instantiate(template, parent);
-            template.gameObject.SetActive(wasActive);
-            return item;
+            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
         }
 
-        protected override void Destroy(T item)
+        public static GameObjectPool GetPool(object id, GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false)
         {
-            Object.Destroy(item.gameObject);
+            SubjectId subjectId = new SubjectId(typeof(GameObject), id);
+
+            if (!pools.TryGetValue(subjectId, out object pool))
+            {
+                if (template != null)
+                {
+                    pool = new GameObjectPool(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
+                    pools[subjectId] = pool;
+                }
+                else
+                {
+                    Debug.LogError($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
+                }
+            }
+
+            return pool as GameObjectPool;
+        }
+
+        public static GameObjectPool<T> GetPool<T>(object id = null) where T : Component
+        {
+            return GetPool<T>(id, null);
+        }
+
+        public static GameObjectPool<T> GetPool<T>(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) where T : Component
+        {
+            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
+        }
+
+        public static GameObjectPool<T> GetPool<T>(object id, T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) where T : Component
+        {
+            SubjectId subjectId = new SubjectId(typeof(T), id);
+
+            if (!pools.TryGetValue(subjectId, out object pool))
+            {
+                if (template != null)
+                {
+                    pool = new GameObjectPool<T>(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
+                    pools[subjectId] = pool;
+                }
+                else
+                {
+                    Debug.LogError($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
+                }
+            }
+
+            return pool as GameObjectPool<T>;
+        }
+
+        public static void ClearPool()
+        {
+            ClearPool(null);
+        }
+
+        public static void ClearPool(object id)
+        {
+            SubjectId subjectId = new SubjectId(typeof(GameObject), id);
+
+            if (pools.TryGetValue(subjectId, out object pool))
+            {
+                (pool as GameObjectPool).Clear();
+            }
+        }
+
+        public static void ClearPool<T>() where T : Component
+        {
+            ClearPool<T>(null);
+        }
+
+        public static void ClearPool<T>(object id) where T : Component
+        {
+            SubjectId subjectId = new SubjectId(typeof(T), id);
+
+            if (pools.TryGetValue(subjectId, out object pool))
+            {
+                (pool as GameObjectPool<T>).Clear();
+            }
         }
     }
 }

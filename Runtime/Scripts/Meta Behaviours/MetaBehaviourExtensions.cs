@@ -14,26 +14,46 @@ namespace HHG.Common.Runtime
 
         public static T AddMetaBehaviour<T>(this GameObject gameObject, T metaBehaviour) where T : MetaBehaviour
         {
-            bool wasActive = gameObject.activeSelf;
-            gameObject.SetActive(false);
-            MetaBehaviour instance = gameObject.AddComponent<MetaBehaviourRunner>().SetBehaviour(metaBehaviour.Clone());
-            gameObject.SetActive(wasActive);
-            return (T)instance;
+            MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
+            if (gameObject.activeInHierarchy)
+            {
+                runner.enabled = false;
+            }
+            T behaviour = (T)runner.SetBehaviour(metaBehaviour.Clone());
+            if (gameObject.activeInHierarchy)
+            {
+                behaviour.Awake();
+                behaviour.enabled = true;
+            }
+            return behaviour;
         }
 
         public static T[] AddMetaBehaviours<T>(this GameObject gameObject, IEnumerable<T> metaBehaviours) where T : MetaBehaviour
         {
-            bool wasActive = gameObject.activeSelf;
-            gameObject.SetActive(false);
             int count = metaBehaviours.Count();
-            T[] instances = new T[count];
+            T[] behaviours = new T[count];
+
             int i = 0;
             foreach (T metaBehaviour in metaBehaviours)
             {
-                instances[i++] = (T)gameObject.AddComponent<MetaBehaviourRunner>().SetBehaviour(metaBehaviour.Clone());
+                MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
+                if (gameObject.activeInHierarchy)
+                {
+                    runner.enabled = false;
+                }
+                behaviours[i++] = (T)runner.SetBehaviour(metaBehaviour.Clone());
             }
-            gameObject.SetActive(wasActive);
-            return instances;
+
+            if (gameObject.activeInHierarchy)
+            {
+                foreach (T behaviour in behaviours)
+                {
+                    behaviour.Awake();
+                    behaviour.enabled = true;
+                }
+            }
+
+            return behaviours;
         }
 
         public static T GetMetaBehaviour<T>(this GameObject gameObject) where T : MetaBehaviour
