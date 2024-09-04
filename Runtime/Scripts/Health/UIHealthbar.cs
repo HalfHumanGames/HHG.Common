@@ -37,7 +37,10 @@ namespace HHG.Common.Runtime
                 rendererGroup.enabled = isVisible;
             }
 
-            fill.transform.localScale = fill.transform.localScale.WithX(scaleX);
+            if (isVisible)
+            {
+                fill.transform.localScale = fill.transform.localScale.WithX(scaleX);
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
         private int lastCheck;
         private bool isDirty;
 
-        public GameObjectPoolBase(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000) : base(() => default)
+        public GameObjectPoolBase(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) : base(() => default)
         {
             list = new List<T>(defaultCapacity);
             create = () => CheckDelayedReleasesThenCreate(template, parent);
@@ -18,6 +18,16 @@ namespace HHG.Common.Runtime
             onRelease = null;
             destroy = Destroy;
             collectionCheck = collectionCheckEnabled;
+
+            if (prewarm)
+            {
+                countAll = list.Capacity;
+
+                for (int i = 0; i < countAll; i++)
+                {
+                    list.Add(create());
+                }
+            }
         }
 
         protected abstract T Create(T template, Transform parent);

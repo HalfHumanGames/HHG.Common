@@ -4,7 +4,7 @@ namespace HHG.Common.Runtime
 {
     public partial class GameObjectPool : GameObjectPoolBase<GameObject>
     {
-        public GameObjectPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize)
+        public GameObjectPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm)
         {
 
         }
@@ -26,7 +26,7 @@ namespace HHG.Common.Runtime
 
     public class GameObjectPool<T> : GameObjectPoolBase<T> where T : Component
     {
-        public GameObjectPool(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize)
+        public GameObjectPool(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) : base(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm)
         {
 
         }

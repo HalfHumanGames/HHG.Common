@@ -31,7 +31,7 @@ namespace HHG.Common.Runtime
                 CreateTemplate();
             }
 
-            pool = GameObjectPool.GetPool(nameof(GhostSprites), template, container, Debug.isDebugBuild);
+            pool = GameObjectPool.GetPool(nameof(GhostSprites), template, container, Debug.isDebugBuild, ghostCount, 10000, true);
             ghosts = new Queue<SpriteRenderer>(ghostCount);
 
             if (spriteRenderer == null)

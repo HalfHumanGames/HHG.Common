@@ -25,12 +25,12 @@ namespace HHG.Common.Runtime
             return GetPool(id, null);
         }
 
-        public static GameObjectPool GetPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000)
+        public static GameObjectPool GetPool(GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false)
         {
-            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize);
+            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
         }
 
-        public static GameObjectPool GetPool(object id, GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000)
+        public static GameObjectPool GetPool(object id, GameObject template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false)
         {
             SubjectId subjectId = new SubjectId(typeof(GameObject), id);
 
@@ -38,7 +38,7 @@ namespace HHG.Common.Runtime
             {
                 if (template != null)
                 {
-                    pool = new GameObjectPool(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize);
+                    pool = new GameObjectPool(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
                     pools[subjectId] = pool;
                 }
                 else
@@ -55,12 +55,12 @@ namespace HHG.Common.Runtime
             return GetPool<T>(id, null);
         }
 
-        public static GameObjectPool<T> GetPool<T>(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000) where T : Component
+        public static GameObjectPool<T> GetPool<T>(T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) where T : Component
         {
-            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize);
+            return GetPool(null, template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
         }
 
-        public static GameObjectPool<T> GetPool<T>(object id, T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000) where T : Component
+        public static GameObjectPool<T> GetPool<T>(object id, T template, Transform parent = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false) where T : Component
         {
             SubjectId subjectId = new SubjectId(typeof(T), id);
 
@@ -68,7 +68,7 @@ namespace HHG.Common.Runtime
             {
                 if (template != null)
                 {
-                    pool = new GameObjectPool<T>(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize);
+                    pool = new GameObjectPool<T>(template, parent, collectionCheckEnabled, defaultCapacity, maxPoolSize, prewarm);
                     pools[subjectId] = pool;
                 }
                 else
