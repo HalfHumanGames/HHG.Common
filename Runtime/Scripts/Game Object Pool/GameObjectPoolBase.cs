@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace HHG.Common.Runtime
 {
@@ -25,7 +26,7 @@ namespace HHG.Common.Runtime
 
                 for (int i = 0; i < countAll; i++)
                 {
-                    list.Add(create());
+                    list.Add(Create(template, parent));
                 }
             }
         }
