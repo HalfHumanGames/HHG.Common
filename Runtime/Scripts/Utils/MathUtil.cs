@@ -71,5 +71,25 @@ namespace HHG.Common.Runtime
             int y = a.y - b.y;
             return x * x + y * y;
         }
+
+        public static int RoundToMultiple(int value, int multiple)
+        {
+            if (multiple == 0)
+            {
+                return value;
+            }
+
+            return Mathf.RoundToInt((float)value / multiple) * multiple;
+        }
+
+        public static float RoundToMultiple(float value, int multiple)
+        {
+            if (multiple == 0)
+            {
+                return value;
+            }
+
+            return Mathf.Round(value / multiple) * multiple;
+        }
     }
 }
