@@ -104,7 +104,7 @@ namespace HHG.Common.Runtime
                     string id = AssetDatabase.AssetPathToGUID(path);
                     if (assets.ContainsKey(id))
                     {
-                        Debug.LogError("Asset registry already contains asset: " + path, obj);
+                        DebugUtil.LogException("Asset registry already contains asset: " + path, obj);
                         continue;
                     }
                     assets.Add(id, obj);

@@ -42,7 +42,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+                Debug.LogException(e);
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+                Debug.LogException(e);
 				return false;
 			}
 		}
@@ -67,7 +67,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+                Debug.LogException(e);
 				return new byte[0];
 			}
 		}
@@ -80,7 +80,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+                Debug.LogException(e);
 			}
 		}
 

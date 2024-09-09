@@ -43,7 +43,7 @@ namespace HHG.Common.Runtime
                 }
                 else
                 {
-                    Debug.LogError($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
+                    DebugUtil.LogException($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
                 }
             }
 
@@ -73,7 +73,7 @@ namespace HHG.Common.Runtime
                 }
                 else
                 {
-                    Debug.LogError($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
+                    DebugUtil.LogException($"Pool with subject id '{subjectId}' does not exist and cannot be created since template is null.");
                 }
             }
 

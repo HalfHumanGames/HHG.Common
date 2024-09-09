@@ -70,7 +70,7 @@ namespace HHG.Common.Runtime
                 }
                 else
                 {
-                    Debug.LogError($"State '{current}' not found.", gameObject);
+                    DebugUtil.LogException($"State '{current}' not found.", gameObject);
                 }
             }
         }

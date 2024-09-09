@@ -76,7 +76,7 @@ namespace HHG.Common.Runtime
                     if (element == list[i])
                     {
                         string elementName = element is Object elementGO ? elementGO.name : element.ToString();
-                        Debug.LogError($"Trying to release an object that has already been released to the pool: {elementName}", element as Object);
+                        DebugUtil.LogException($"Trying to release an object that has already been released to the pool: {elementName}", element as Object);
                         return;
                     }
                 }
