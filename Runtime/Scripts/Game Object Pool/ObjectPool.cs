@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Pool;
+using Object = UnityEngine.Object;
 
 namespace HHG.Common.Runtime
 {
@@ -73,7 +75,9 @@ namespace HHG.Common.Runtime
                 {
                     if (element == list[i])
                     {
-                        throw new InvalidOperationException("Trying to release an object that has already been released to the pool.");
+                        string elementName = element is Object elementGO ? elementGO.name : element.ToString();
+                        Debug.LogError($"Trying to release an object that has already been released to the pool: {elementName}", element as Object);
+                        return;
                     }
                 }
             }
