@@ -1,3 +1,4 @@
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,7 +18,16 @@ namespace HHG.Common.Runtime
             {
                 if (instance == null || instance.Equals(null))
                 {
-                    instance = Resources.Load<T>(string.Empty);
+                    // Resources.Load does NOT work with string.Empty
+                    instance = Resources.Load<T>(resourcePath);
+                    
+                    if (instance == null)
+                    {
+                        // LoadAll DOES work with string.Empty
+                        // This searches all Resources folders
+                        instance = Resources.LoadAll<T>(string.Empty).FirstOrDefault();
+                    }
+
 #if UNITY_EDITOR
                     if (instance == null)
                     {
