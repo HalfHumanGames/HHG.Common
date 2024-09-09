@@ -47,7 +47,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            return corners.Length > 0 ? corners[len - 1] : default;
+            return len > 0 ? corners[len - 1] : default;
         }
 
         public static Vector3 EvaluateDirection(this NavMeshPath path, float distance)
@@ -71,7 +71,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            return corners[len - 1] - corners[len - 2];
+            return len >= 2 ? corners[len - 1] - corners[len - 2] : default;
         }
     }
 }
