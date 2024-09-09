@@ -22,7 +22,7 @@ namespace HHG.Common.Runtime
         protected bool collectionCheck;
         protected int countAll;
 
-        public ObjectPool(Func<T> createFunc, Action<T> actionOnGet = null, Action<T> actionOnRelease = null, Action<T> actionOnDestroy = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000)
+        public ObjectPool(Func<T> createFunc, Action<T> actionOnGet = null, Action<T> actionOnRelease = null, Action<T> actionOnDestroy = null, bool collectionCheckEnabled = true, int defaultCapacity = 10, int maxPoolSize = 10000, bool prewarm = false)
         {
             if (createFunc == null)
             {
@@ -41,6 +41,23 @@ namespace HHG.Common.Runtime
             onRelease = actionOnRelease;
             destroy = actionOnDestroy;
             collectionCheck = collectionCheckEnabled;
+
+            if (prewarm)
+            {
+                Prewarm();
+            }
+        }
+
+        public virtual void Prewarm()
+        {
+            int add = Mathf.Max(list.Capacity - countAll, 0);
+
+            for (int i = 0; i < add; i++)
+            {
+                list.Add(create());
+            }
+
+            countAll += add;
         }
 
         public T Get()
