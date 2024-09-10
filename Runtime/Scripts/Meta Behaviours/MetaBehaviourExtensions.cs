@@ -28,40 +28,70 @@ namespace HHG.Common.Runtime
             return behaviour;
         }
 
-        public static T[] AddMetaBehaviours<T>(this GameObject gameObject, IEnumerable<T> metaBehaviours) where T : MetaBehaviour
+        public static T[] AddMetaBehaviours<T>(this GameObject gameObject, IEnumerable<T> behaviours) where T : MetaBehaviour
         {
-            int count = metaBehaviours.Count();
-            T[] behaviours = new T[count];
+            int count = behaviours.Count();
+            T[] addedBehaviours = new T[count];
 
             int i = 0;
-            foreach (T metaBehaviour in metaBehaviours)
+            foreach (T metaBehaviour in behaviours)
             {
                 MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
                 if (gameObject.activeInHierarchy)
                 {
                     runner.enabled = false;
                 }
-                behaviours[i++] = (T)runner.SetBehaviour(metaBehaviour.Clone());
+                addedBehaviours[i++] = (T)runner.SetBehaviour(metaBehaviour.Clone());
             }
 
             if (gameObject.activeInHierarchy)
             {
-                foreach (T behaviour in behaviours)
+                foreach (T behaviour in addedBehaviours)
                 {
                     behaviour.Awake();
                     behaviour.enabled = true;
                 }
             }
 
-            return behaviours;
+            return addedBehaviours;
+        }
+
+        public static void AddMetaBehaviours<T>(this GameObject gameObject, IEnumerable<T> behaviours, List<T> addedBehaviours, MetaBehaviourAddMode mode = MetaBehaviourAddMode.ClearList) where T : MetaBehaviour
+        {
+            if (mode == MetaBehaviourAddMode.ClearList)
+            {
+                addedBehaviours.Clear();
+            }
+
+            foreach (T metaBehaviour in behaviours)
+            {
+                MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
+                if (gameObject.activeInHierarchy)
+                {
+                    runner.enabled = false;
+                }
+
+                T clone = (T)metaBehaviour.Clone();
+                addedBehaviours.Add(clone);
+                runner.SetBehaviour(clone);
+            }
+
+            if (gameObject.activeInHierarchy)
+            {
+                foreach (T behaviour in addedBehaviours)
+                {
+                    behaviour.Awake();
+                    behaviour.enabled = true;
+                }
+            }
         }
 
         public static T GetMetaBehaviour<T>(this GameObject gameObject) where T : MetaBehaviour
         {
-            return (T) gameObject.GetMetaBehaviour(typeof(T));
+            return (T)gameObject.GetMetaBehaviour(typeof(T));
         }
 
-        public static MetaBehaviour GetMetaBehaviour(this GameObject gameObject, Type type) 
+        public static MetaBehaviour GetMetaBehaviour(this GameObject gameObject, Type type)
         {
             return gameObject.GetComponents<MetaBehaviourRunner>().FirstOrDefault(r => type.IsAssignableFrom(r.Behaviour.GetType()))?.Behaviour;
         }
