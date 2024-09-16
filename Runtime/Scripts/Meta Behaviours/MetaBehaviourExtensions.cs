@@ -15,12 +15,12 @@ namespace HHG.Common.Runtime
         public static T AddMetaBehaviour<T>(this GameObject gameObject, T metaBehaviour) where T : MetaBehaviour
         {
             MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
-            if (gameObject.activeInHierarchy)
+            if (gameObject.activeInHierarchy && Application.isPlaying)
             {
                 runner.enabled = false;
             }
             T behaviour = (T)runner.SetBehaviour(metaBehaviour.Clone());
-            if (gameObject.activeInHierarchy)
+            if (gameObject.activeInHierarchy && Application.isPlaying)
             {
                 behaviour.Awake();
                 behaviour.enabled = true;
@@ -37,14 +37,14 @@ namespace HHG.Common.Runtime
             foreach (T metaBehaviour in behaviours)
             {
                 MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
-                if (gameObject.activeInHierarchy)
+                if (gameObject.activeInHierarchy && Application.isPlaying)
                 {
                     runner.enabled = false;
                 }
                 addedBehaviours[i++] = (T)runner.SetBehaviour(metaBehaviour.Clone());
             }
 
-            if (gameObject.activeInHierarchy)
+            if (gameObject.activeInHierarchy && Application.isPlaying)
             {
                 foreach (T behaviour in addedBehaviours)
                 {
@@ -66,7 +66,7 @@ namespace HHG.Common.Runtime
             foreach (T metaBehaviour in behaviours)
             {
                 MetaBehaviourRunner runner = gameObject.AddComponent<MetaBehaviourRunner>();
-                if (gameObject.activeInHierarchy)
+                if (gameObject.activeInHierarchy && Application.isPlaying)
                 {
                     runner.enabled = false;
                 }
@@ -76,7 +76,7 @@ namespace HHG.Common.Runtime
                 runner.SetBehaviour(clone);
             }
 
-            if (gameObject.activeInHierarchy)
+            if (gameObject.activeInHierarchy && Application.isPlaying)
             {
                 foreach (T behaviour in addedBehaviours)
                 {
