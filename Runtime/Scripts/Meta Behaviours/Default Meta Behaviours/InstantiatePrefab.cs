@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
+    [System.Serializable]
     public class InstantiatePrefab : MetaBehaviour
     {
         [SerializeField] private bool parent;

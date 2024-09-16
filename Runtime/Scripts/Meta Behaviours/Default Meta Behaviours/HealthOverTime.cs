@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
+    [System.Serializable]
     public class HealthOverTime : MetaBehaviour, IAggregatable, IAggregatable<HealthOverTime>
     {
         public float Amount => amount;

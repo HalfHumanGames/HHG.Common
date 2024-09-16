@@ -9,8 +9,6 @@ namespace HHG.Common.Editor
     [CustomGridBrush(true, true, true, "Smart Brush")]
     public class SmartBrush : GridBrush
     {
-        private const string paletteParentName = "Tile Palette";
-
         public bool Log;
 
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
@@ -149,7 +147,7 @@ namespace HHG.Common.Editor
 
         private bool IsBrushTargetSceneTilemap(GameObject brushTarget)
         {
-            return brushTarget.transform.parent?.name != paletteParentName;
+            return brushTarget.scene.name != "Preview Scene";
         }
 
         [CustomEditor(typeof(SmartBrush))]

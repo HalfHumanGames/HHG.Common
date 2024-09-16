@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     {
         private void Update()
         {
-            transform.LookAt(new Vector3(transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z));
+            transform.forward = transform.position - new Vector3(transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
         }
     }
 }
