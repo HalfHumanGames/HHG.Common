@@ -41,7 +41,9 @@ namespace HHG.Common.Runtime
 
         public static bool HasReachedDestination(this NavMeshAgent agent)
         {
-            return !agent.pathPending && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f || agent.remainingDistance <= agent.stoppingDistance || Vector3.Distance(agent.transform.position, agent.destination) <= agent.stoppingDistance);
+            // Do not check velocity magnitude or square magnitude since it's
+            // possible that these are 0 if the navmesh agant just started moving
+            return !agent.pathPending && (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance || Vector3.Distance(agent.transform.position, agent.destination) <= agent.stoppingDistance);
         }
 
         public static bool HasPathOrPendingPath(this NavMeshAgent agent)
