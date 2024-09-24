@@ -6,7 +6,18 @@ namespace HHG.Common.Runtime
     {
         public const string DefaultFileID = "0";
 
-        public static string FileId { get => Instance.fileId ?? DefaultFileID; set => Instance.fileId = value ?? DefaultFileID; }
+        public static string FileId
+        {
+            get => Instance.fileId ?? DefaultFileID;
+            set
+            {
+                if (Instance.fileId != value)
+                {
+                    Instance.Log($"Changing file id from '{Instance.fileId}' to '{value}'");
+                    Instance.fileId = value ?? DefaultFileID;
+                }
+            }
+        }
         public static bool HasStagedChanges => Instance.mutations.Count > 0;
         public static TState DefaultState => Instance.defaultState;
         public static TState ReadOnlyState => Instance.readOnlyState;
@@ -39,8 +50,8 @@ namespace HHG.Common.Runtime
         public static void Stage(Action<TState> mutation) => Instance.stage(mutation);
         public static void SaveStagedChanges() => Instance.saveStagedChanges();
         public static void ClearStagedChanges() => Instance.clearStagedChanges();
-        public static void OnBeforeClose() => Instance.io.OnBeforeClose();
-        public static void OnClose() => Instance.io.OnClose();
+        public static void OnBeforeClose() => Instance.onBeforeClose();
+        public static void OnClose() => Instance.onClose();
         public static void UseDefaultFile() => Instance.useDefaultFile();
         public static void IssueStateUpdated() => Instance.issueStateUpdated();
         public static bool FileExists(string fileId) => Instance.fileExists(fileId);

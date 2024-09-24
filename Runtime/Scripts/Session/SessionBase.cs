@@ -32,6 +32,8 @@ namespace HHG.Common.Runtime
         private string fileId = DefaultFileID;
         private GetSetMap getterSetterMap = new GetSetMap(typeof(TState));
 
+        protected virtual bool logsEnabled => false;
+
         private TState defaultState
         {
             get
@@ -48,7 +50,7 @@ namespace HHG.Common.Runtime
             {
                 if (state == null)
                 {
-                    Load();
+                    load();
                 }
                 if (stagedState == null || isStagedStateDirty)
                 {
@@ -78,9 +80,11 @@ namespace HHG.Common.Runtime
                 fileId = FileId;
             }
 
+            Log($"Saving file: {fileId}");
+
             if (state == null)
             {
-                Load(fileId);
+                load(fileId);
                 return;
             }
 
@@ -100,6 +104,8 @@ namespace HHG.Common.Runtime
                 fileId = FileId;
             }
 
+            Log($"Loading file: {fileId}");
+
             loadFromDisk(fileId);
             mutate(fileId, saveFile => saveFile.OnAfterLoad());
             isStagedStateDirty = true;
@@ -117,6 +123,8 @@ namespace HHG.Common.Runtime
                 fileId = FileId;
             }
 
+            Log($"Clearing file: {fileId}");
+
             io.Clear(getFileName(fileId));
 
             if (fileId == FileId)
@@ -129,13 +137,17 @@ namespace HHG.Common.Runtime
 
         private void save(Action<TState> mutation)
         {
+            Log($"Saving mutation for file: {fileId}");
+
             mutate(FileId, mutation);
             isStagedStateDirty = true;
-            Save();
+            save();
         }
 
         private void stage(Action<TState> mutation)
         {
+            Log($"Staging mutation for file: {fileId}");
+
             mutations.Add(mutation);
             isStagedStateDirty = true;
             issueStateUpdated();
@@ -143,16 +155,30 @@ namespace HHG.Common.Runtime
 
         private void saveStagedChanges()
         {
+            Log($"Saving staged changes for file: {fileId}");
+
             if (!HasStagedChanges) return;
             state = ReadOnlyState;
             clearStagedChangesNoCallback();
-            Save();
+            save();
         }
 
         private void clearStagedChanges()
         {
+            Log($"Clearing staged changes for file: {fileId}");
+
             clearStagedChangesNoCallback();
             issueStateUpdated();
+        }
+
+        private void onBeforeClose()
+        {
+            io.OnBeforeClose();
+        }
+
+        private void onClose()
+        {
+            io.OnClose();
         }
 
         private void clearStagedChangesNoCallback()
@@ -207,7 +233,7 @@ namespace HHG.Common.Runtime
 
         private void useDefaultFile()
         {
-            fileId = DefaultFileID;
+            FileId = DefaultFileID;
         }
 
         private void issueStateUpdated()
@@ -229,6 +255,14 @@ namespace HHG.Common.Runtime
         private string getJson()
         {
             return JsonUtility.ToJson(Instance.state);
+        }
+
+        private void Log(string message)
+        {
+            if (logsEnabled)
+            {
+                Debug.Log($"{typeof(TState)}: {message}");
+            }
         }
 
         public IBindable Bindable => instance;
