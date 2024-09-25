@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +5,7 @@ namespace HHG.Common.Runtime
 {
     public static class ListExtensions
     {
-        public static void Remove<T>(this IList<T> list, Func<T, bool> func)
+        public static void Remove<T>(this IList<T> list, System.Func<T, bool> func)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -18,7 +17,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static void RemoveAll<T>(this IList<T> list, Func<T, bool> func)
+        public static void RemoveAll<T>(this IList<T> list, System.Func<T, bool> func)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -53,15 +52,28 @@ namespace HHG.Common.Runtime
             {
                 list.Clear();
             }
-            
+
             while (list.Count > size)
             {
                 list.RemoveAt(list.Count - 1);
             }
-            
+
             while (list.Count < size)
             {
                 list.Add(default);
+            }
+        }
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            int count = list.Count;
+            int last = count - 1;
+            for (int i = 0; i < last; ++i)
+            {
+                int rand = Random.Range(i, count);
+                T temp = list[i];
+                list[i] = list[rand];
+                list[rand] = temp;
             }
         }
     }
