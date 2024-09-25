@@ -64,6 +64,9 @@ namespace HHG.Common.Runtime
             }
         }
 
+        // Shuffle affects the list itself while Shuffled
+        // returns a new IEnumerable, but does not affect
+        // the source list itself
         public static void Shuffle<T>(this IList<T> list)
         {
             int count = list.Count;

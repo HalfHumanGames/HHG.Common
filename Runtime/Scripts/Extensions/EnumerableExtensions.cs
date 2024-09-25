@@ -42,19 +42,22 @@ namespace HHG.Common.Runtime
             return source.Aggregate((max, current) => Comparer<TKey>.Default.Compare(selector(current), selector(max)) > 0 ? current : max);
         }
 
-        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable)
+        // Shuffle affects the list itself while Shuffled
+        // returns a new IEnumerable, but does not affect
+        // the source list itself
+        public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.OrderBy(x => Random.Range(0, int.MaxValue));
         }
 
         public static T GetRandom<T>(this IEnumerable<T> enumerable)
         {
-            return enumerable.Shuffle().FirstOrDefault();
+            return enumerable.Shuffled().FirstOrDefault();
         }
 
         public static IEnumerable<T> GetRandom<T>(this IEnumerable<T> enumerable, int take)
         {
-            return enumerable.Shuffle().Take(take);
+            return enumerable.Shuffled().Take(take);
         }
 
         public static IEnumerable<T> NotNull<T>(this IEnumerable<T> enumerable)
