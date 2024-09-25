@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,15 +9,19 @@ namespace HHG.Common.Runtime
     {
         [SerializeField, Dropdown] private SceneNameAsset sceneName;
 
-        public ActionLoadSceneAsync(SceneNameAsset scene)
+        private Action onLoaded;
+
+        public ActionLoadSceneAsync(SceneNameAsset sceneName, Action onLoaded = null)
         {
-            sceneName = scene;
+            this.sceneName = sceneName;
+            this.onLoaded = onLoaded;
         }
 
         public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
             while (!op.isDone) yield return new WaitForEndOfFrame();
+            onLoaded?.Invoke();
         }
     }
 }
