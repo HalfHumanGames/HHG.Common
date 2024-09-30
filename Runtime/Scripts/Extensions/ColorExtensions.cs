@@ -122,5 +122,15 @@ namespace HHG.Common.Runtime
             Color.RGBToHSV(color, out _, out _, out float v);
             return v;
         }
+
+        public static string ToHtmlStringRGB(this Color color)
+        {
+            return $"#{ColorUtility.ToHtmlStringRGB(color)}";
+        }
+
+        public static string ToHtmlStringRGBA(this Color color)
+        {
+            return $"#{ColorUtility.ToHtmlStringRGBA(color)}";
+        }
     }
 }
