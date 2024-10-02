@@ -60,9 +60,11 @@ namespace HHG.Common.Runtime
         {
             objectFilter ??= _ => true;
             typeFilter ??= _ => true;
+
             List<T> objectsRetval = new List<T>() { null };
             List<string> optionsRetval = new List<string>();
-            var types = typeof(UnityEngine.Object).FindSubclasses().Where(typeFilter);
+            IEnumerable<Type> types = typeof(UnityEngine.Object).FindSubclasses().Where(typeFilter);
+
             foreach (var type in types)
             {
 #if UNITY_EDITOR
@@ -74,6 +76,7 @@ namespace HHG.Common.Runtime
 #endif
                 objectsRetval.AddRange(objs);
             }
+
             objects = objectsRetval;
             options = objects.Select(e => e == null ? "None" : FormatChoiceText(e.name));
         }

@@ -10,64 +10,73 @@ namespace HHG.Common.Editor
     [CustomPropertyDrawer(typeof(DropdownAttribute), true)]
     public class DropdownDrawer : PropertyDrawer
     {
-        private static Dictionary<Type, List<Object>> assetCache = new Dictionary<Type, List<Object>>();
-        private static Dictionary<Type, List<string>> nameCache = new Dictionary<Type, List<string>>();
+        private static Dictionary<Type, Object[]> assetCache = new Dictionary<Type, Object[]>();
+        private static Dictionary<Type, string[]> nameCache = new Dictionary<Type, string[]>();
 
         private DropdownAttribute filter => attribute as DropdownAttribute;
-        private List<Object> assets = new List<Object>();
-        private List<string> names = new List<string>();
+        private Object[] assets = new Object[0];
+        private string[] names = new string[0];
+        private int currentIndex;
+        private bool initialized;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (!initialized)
+            {
+                Initialize(property);
+            }
+
             if (property.propertyType != SerializedPropertyType.ObjectReference)
             {
                 EditorGUI.PropertyField(position, property, label);
             }
             else
             {
-                TryRefreshDropdownValues(property);
-
-                int currentIndex = Mathf.Max(assets.IndexOf(property.objectReferenceValue), 0);
-
                 EditorGUI.BeginProperty(position, label, property);
 
-                int selectedIndex = EditorGUI.Popup(position, label.text, currentIndex, names.ToArray());
+                int selectedIndex = EditorGUI.Popup(position, label.text, currentIndex, names);
 
                 if (selectedIndex != currentIndex)
                 {
-                    property.objectReferenceValue = assets[selectedIndex];
+                    currentIndex = selectedIndex;
+                    property.objectReferenceValue = assets[currentIndex];
                     property.serializedObject.ApplyModifiedProperties();
-                    TryRefreshDropdownValues(property, true);
+                    RefreshDropdownValues(property);
                 }
 
                 EditorGUI.EndProperty();
             }
         }
 
-        private void TryRefreshDropdownValues(SerializedProperty property, bool force = false)
+        private void Initialize(SerializedProperty property)
         {
+            initialized = true;
+
             Type type = filter.Type ?? property.GetPropertyType();
 
-            if (!force && assetCache.ContainsKey(type) && nameCache.ContainsKey(type))
+            if (!assetCache.TryGetValue(type, out assets) || !nameCache.TryGetValue(type, out names))
             {
-                assets = assetCache[type];
-                names = nameCache[type];
-            }
-            else
-            {
-                DropdownUtil.GetChoiceList(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.filter);
+                DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.filter);
 
                 // Cache for subsequent lookups
                 assetCache[type] = assets;
                 nameCache[type] = names;
             }
 
-            // Add "None" option
-            if (!names.Contains("None"))
-            {
-                names.Insert(0, "None");
-                assets.Insert(0, null);
-            }
+            currentIndex = Mathf.Max(0, Array.IndexOf(assets, property.objectReferenceValue));
+        }
+
+        private void RefreshDropdownValues(SerializedProperty property)
+        {
+            Type type = filter.Type ?? property.GetPropertyType();
+
+            DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.filter);
+
+            // Cache for subsequent lookups
+            assetCache[type] = assets;
+            nameCache[type] = names;
+
+            currentIndex = Mathf.Max(0, Array.IndexOf(assets, property.objectReferenceValue));
         }
     }
 }
