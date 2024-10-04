@@ -68,6 +68,7 @@ namespace HHG.Common.Runtime
         }
         public sealed override bool HasAsset => current != null;
         public bool IsLoaded => isLoaded;
+        public UnityEvent OnSaved = new UnityEvent();
         public UnityEvent OnLoaded = new UnityEvent();
 
         [SerializeField] private LoadMode loadEditor;
@@ -106,6 +107,7 @@ namespace HHG.Common.Runtime
         public void Save(TAsset asset)
         {
             SaveAsset(asset);
+            OnSaved?.Invoke();
         }
 
         public void Load(TAsset asset)
@@ -121,19 +123,12 @@ namespace HHG.Common.Runtime
 
         public sealed override string ToJson()
         {
-            TAsset temp = ScriptableObject.CreateInstance<TAsset>();
-            SaveAsset(temp);
-            string json = JsonUtility.ToJson(temp);
-            DestroyImmediate(temp);
-            return json;
+            return JsonUtility.ToJson(Current);
         }
 
         public sealed override void FromJson(string json)
         {
-            TAsset temp = ScriptableObject.CreateInstance<TAsset>();
-            JsonUtility.FromJsonOverwrite(json, temp);
-            LoadAsset(temp);
-            DestroyImmediate(temp);
+            JsonUtility.FromJsonOverwrite(json, Current);
         }
 
         protected sealed override void LoadInternal()

@@ -34,12 +34,12 @@ namespace HHG.Common.Runtime
         // but these also work with interfaces while Object.FindObjectOfType methods
         // don't since they require the generic T to be of type UnityEngine.Object
 
-        public static T FindObjectOfType<T>(bool includeInactive = false)
+        public static T FindObjectOfType<T>(this Object obj, bool includeInactive = false)
         {
             return ObjectUtil.FindObjectOfType<T>(includeInactive); ;
         }
 
-        public static T[] FindObjectsOfType<T>(bool includeInactive = false)
+        public static T[] FindObjectsOfType<T>(this Object obj, bool includeInactive = false)
         {
             return ObjectUtil.FindObjectsOfType<T>(includeInactive);
         }

@@ -42,11 +42,12 @@ namespace HHG.Common.Runtime
         {
             EditorApplication.delayCall -= OnDelayCall;
 
-            if (Application.isPlaying) return;
-
-            foreach (AssetExporterBase exporter in FindExporters())
+            if (CanContinue())
             {
-                exporter.Load();
+                foreach (AssetExporterBase exporter in FindExporters())
+                {
+                    exporter.Load();
+                }
             }
         }
 
@@ -117,7 +118,7 @@ namespace HHG.Common.Runtime
 
         private static bool CanContinue()
         {
-            return !BuildPipeline.isBuildingPlayer;
+            return !BuildPipeline.isBuildingPlayer && !EditorApplication.isPlayingOrWillChangePlaymode;
         }
 
         private static IEnumerable<AssetExporterBase> FindExporters()

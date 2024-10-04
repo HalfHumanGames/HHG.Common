@@ -4,12 +4,12 @@ namespace HHG.Common.Runtime
     {
         public byte[] Serialize<T>(T value)
         {
-            return JsonUtil.ToJson(value, true);
+            return JsonUtil.ToJsonBytes(value, true);
         }
 
         public T Deserialize<T>(byte[] bytes)
         {
-            return JsonUtil.FromJson<T>(bytes);
+            return JsonUtil.FromJsonBytes<T>(bytes);
         }
     }
 }

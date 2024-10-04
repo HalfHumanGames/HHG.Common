@@ -9,12 +9,18 @@ namespace HHG.Common.Runtime
 
         protected override void SaveAsset(TilemapAsset asset)
         {
-            asset?.Serialize(tilemaps);
+            if (asset != null)
+            {
+                asset.Serialize(tilemaps);
+            }
         }
 
         protected override void LoadAsset(TilemapAsset asset)
         {
-            asset?.Deserialize(tilemaps);
+            if (asset != null)
+            {
+                asset.Deserialize(tilemaps);
+            }
 
             // Fixes weird bug where colliders don't work
             transform.root.gameObject.SetActive(false);
