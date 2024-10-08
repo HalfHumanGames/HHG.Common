@@ -14,7 +14,7 @@ namespace HHG.Common.Runtime
         [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
 
         private event Action invokedEvent;
-        private UnityEvent invokedUnityEvent;
+        private UnityEvent invokedUnityEvent = new UnityEvent();
 
         public Coroutine Invoke(MonoBehaviour invoker)
         {
@@ -25,6 +25,7 @@ namespace HHG.Common.Runtime
         {
             invokedEvent?.Invoke();
             invokedUnityEvent?.Invoke();
+
             foreach (IActionBase action in actions)
             {
                 if (action is IAction syncAction)
