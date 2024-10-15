@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
 {
+    [Serializable]
     public class ActionLoadSceneAsync : IActionAsync
     {
         [SerializeField, Dropdown] private SceneNameAsset sceneName;
