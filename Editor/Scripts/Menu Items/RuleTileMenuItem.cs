@@ -1,4 +1,3 @@
-using HHG.Common.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +10,13 @@ namespace HHG.Common.Editor
     public static class RuleTileMenuItem
     {
         [MenuItem("CONTEXT/RuleTile/Duplicate")]
-        private static void Duplicate()
+        private static void Duplicate(MenuCommand menuCommand)
         {
+            if (!menuCommand.IsContextActiveObject())
+            {
+                return;
+            }
+
             foreach (RuleTile tile in Selection.objects.OfType<RuleTile>())
             {
                 foreach (var rule in tile.m_TilingRules)
@@ -38,8 +42,13 @@ namespace HHG.Common.Editor
                 Dictionary<Sprite, Sprite> spriteMap = new Dictionary<Sprite, Sprite>();
 
                 // Process each sprite sheet
-                foreach (var spritePath in spritePaths)
+                foreach (string spritePath in spritePaths)
                 {
+                    if (string.IsNullOrEmpty(spritePath))
+                    {
+                        continue;
+                    }
+
                     string spriteDir = System.IO.Path.GetDirectoryName(spritePath);
                     string spriteName = System.IO.Path.GetFileNameWithoutExtension(spritePath);
                     string spriteExtension = System.IO.Path.GetExtension(spritePath);
