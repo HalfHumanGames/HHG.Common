@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Path = System.IO.Path;
 
 namespace HHG.Common.Editor
 {
@@ -28,8 +30,8 @@ namespace HHG.Common.Editor
                 }
 
                 string tilePath = AssetDatabase.GetAssetPath(tile);
-                string tileDir = System.IO.Path.GetDirectoryName(tilePath);
-                string tileName = System.IO.Path.GetFileNameWithoutExtension(tilePath);
+                string tileDir = Path.GetDirectoryName(tilePath);
+                string tileName = Path.GetFileNameWithoutExtension(tilePath);
                 string newTilePath = AssetDatabase.GenerateUniqueAssetPath(tileDir + "/" + tileName + "_Copy.asset");
 
                 RuleTile newTile = Object.Instantiate(tile);
@@ -49,15 +51,19 @@ namespace HHG.Common.Editor
                         continue;
                     }
 
-                    string spriteDir = System.IO.Path.GetDirectoryName(spritePath);
-                    string spriteName = System.IO.Path.GetFileNameWithoutExtension(spritePath);
-                    string spriteExtension = System.IO.Path.GetExtension(spritePath);
-                    string newSpritePath = AssetDatabase.GenerateUniqueAssetPath(spriteDir + "/" + spriteName + "_Copy" + spriteExtension);
+                    string spriteDir = Path.GetDirectoryName(spritePath);
+                    string spriteName = Path.GetFileNameWithoutExtension(spritePath);
+                    string spriteExtension = Path.GetExtension(spritePath);
+                    string spriteCopyPath = spriteDir + "/" + spriteName + "_Copy" + spriteExtension;
 
-                    AssetDatabase.CopyAsset(spritePath, newSpritePath);
-                    AssetDatabase.ImportAsset(newSpritePath, ImportAssetOptions.ForceUpdate);
+                    // Only create a new copy if it doesn't already exist yet
+                    if (!File.Exists(spriteCopyPath))
+                    {
+                        AssetDatabase.CopyAsset(spritePath, spriteCopyPath);
+                        AssetDatabase.ImportAsset(spriteCopyPath, ImportAssetOptions.ForceUpdate);
+                    }
 
-                    Sprite[] newSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(newSpritePath).OfType<Sprite>().ToArray();
+                    Sprite[] newSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(spriteCopyPath).OfType<Sprite>().ToArray();
 
                     // Map old sprites to new sprites
                     var originalSprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(spritePath).OfType<Sprite>().ToArray();
