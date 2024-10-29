@@ -12,6 +12,11 @@ namespace HHG.Common.Runtime
 
         private Action onLoaded;
 
+        public ActionLoadSceneAsync()
+        {
+
+        }
+
         public ActionLoadSceneAsync(SceneNameAsset sceneName, Action onLoaded = null)
         {
             this.sceneName = sceneName;

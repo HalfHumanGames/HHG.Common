@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
-using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
@@ -70,7 +69,7 @@ namespace HHG.Common.Runtime
 #if UNITY_EDITOR
                 string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
                 string[] paths = guids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
-                T[] objs = paths.SelectMany(p => AssetDatabase.LoadAllAssetsAtPath(p)).Cast<T>().Where(objectFilter).ToArray();
+                T[] objs = paths.SelectMany(p => GetAssetsAtPath(p, objectFilter)).ToArray();
 #else
                 var objs = Resources.LoadAll(string.Empty, type).Cast<T>().Where(objectFilter);
 #endif
@@ -79,6 +78,20 @@ namespace HHG.Common.Runtime
 
             objects = objectsRetval;
             options = objects.Select(e => e == null ? "None" : FormatChoiceText(e.name));
+        }
+
+        private static IEnumerable<T> GetAssetsAtPath<T>(string p, Func<T, bool> objectFilter) where T : UnityEngine.Object
+        {
+            // Calling AssetDatabase.LoadAllAssetsAtPath on a SceneAsset path does not work - it throws an error
+            // We need to check if the type is SceneAsset and, if so, use AssetDatabase.LoadMainAssetAtPath instead
+            if (typeof(T).IsAssignableFrom(typeof(SceneAsset)))
+            {
+                return Enumerable.Empty<T>().Append(AssetDatabase.LoadMainAssetAtPath(p)).OfType<T>().Where(objectFilter);
+            }
+            else
+            {
+                return AssetDatabase.LoadAllAssetsAtPath(p).OfType<T>().Where(objectFilter);
+            }
         }
 
         public static string FormatChoiceText(string choice)

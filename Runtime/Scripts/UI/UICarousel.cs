@@ -44,19 +44,25 @@ namespace HHG.Common.Runtime
 
         public void PageLeft()
         {
-            current = Mathf.Clamp(current - 1, 0, spriteList.Value.Count - 1);
-            Refresh();
+            if (coroutine == null)
+            {
+                current = Mathf.Clamp(current - 1, 0, spriteList.Value.Count - 1);
+                Refresh();
+            }
         }
 
         public void PageRight()
         {
-            current = Mathf.Clamp(current + 1, 0, spriteList.Value.Count - 1);
-            Refresh();
+            if (coroutine == null)
+            {
+                current = Mathf.Clamp(current + 1, 0, spriteList.Value.Count - 1);
+                Refresh();
+            }
         }
 
         public void PageTo(int index)
         {
-            if (current != index)
+            if (coroutine == null && current != index)
             {
                 current = Mathf.Clamp(index, 0, spriteList.Value.Count - 1);
                 Refresh();
