@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
-    public class UICarousel : MonoBehaviour
+    public class UICarousel : MonoBehaviour, IRefreshable<SpriteListAsset>, IRefreshable
     {
         [SerializeField] private float fadeDuration = .25f;
         [SerializeField] private SpriteListAsset spriteList;
@@ -26,7 +26,18 @@ namespace HHG.Common.Runtime
             buttonRight.onClick.AddListener(PageRight);
             buttonContinue.onClick.AddListener(Continue);
             buttonContinue.gameObject.SetActive(false);
-            image.sprite = spriteList.Value[current];
+            buttonJump.gameObject.SetActive(false);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            foreach (Button button in buttons)
+            {
+                Destroy(button.gameObject);
+            }
+
+            buttons.Clear();
 
             for (int i = 0; i < spriteList.Value.Count; i++)
             {
@@ -34,12 +45,11 @@ namespace HHG.Common.Runtime
                 Button button = Instantiate(buttonJump, buttonJump.transform.parent);
                 button.onClick.AddListener(() => PageTo(index));
                 button.interactable = i == 0;
+                button.gameObject.SetActive(true);
                 buttons.Add(button);
             }
 
-            // Update button visibility after all buttons are created
-            UpdateButtonVisibility();
-            Destroy(buttonJump.gameObject);
+            RefreshNow();
         }
 
         public void PageLeft()
@@ -69,9 +79,24 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public void PageToInstant(int index)
+        {
+            if (current != index)
+            {
+                current = Mathf.Clamp(index, 0, spriteList.Value.Count - 1);
+                RefreshNow();
+            }
+        }
+
         public void Continue()
         {
             onContinue?.Invoke(this);
+        }
+
+        public void Refresh(SpriteListAsset data)
+        {
+            spriteList = data;
+            Initialize();
         }
 
         public void Refresh()
@@ -85,14 +110,14 @@ namespace HHG.Common.Runtime
         private IEnumerator RefreshAsync()
         {
             yield return TweenUtil.TweenAsync(() => image.color, value => image.color = value, Color.white.WithA(0f), fadeDuration, TimeScale.Unscaled, EaseUtil.InOutQuad);
-            image.sprite = spriteList.Value[current];
-            UpdateButtonVisibility(); // Do in the middle of the fade animation
+            RefreshNow(); // Do in the middle of the fade animation
             yield return TweenUtil.TweenAsync(() => image.color, value => image.color = value, Color.white.WithA(1f), fadeDuration, TimeScale.Unscaled, EaseUtil.InOutQuad);
             CoroutineUtil.StopAndNullifyCoroutine(ref coroutine);
         }
 
-        private void UpdateButtonVisibility()
+        private void RefreshNow()
         {
+            image.sprite = spriteList.Value[current];
             buttons[current].interactable = true;
             buttonLeft.gameObject.SetActive(current > 0);
             buttonRight.gameObject.SetActive(current < spriteList.Value.Count - 1);
