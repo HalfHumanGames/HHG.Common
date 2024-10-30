@@ -95,8 +95,11 @@ namespace HHG.Common.Runtime
 
         public void Refresh(SpriteListAsset data)
         {
-            spriteList = data;
-            Initialize();
+            if (spriteList != data)
+            {
+                spriteList = data;
+                Initialize();
+            }
         }
 
         public void Refresh()
