@@ -1,4 +1,5 @@
 using HHG.Common.Runtime;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Tilemaps;
 using UnityEngine;
@@ -20,7 +21,8 @@ namespace HHG.Common.Editor
             
             if (Log)
             {
-                Debug.Log(position);
+                string tileName = cells.FirstOrDefault() is BrushCell cell && cell.tile is TileBase tile ? tile.name : "Empty";
+                Debug.Log($"{tileName} | {position}");
             }
 
             base.Paint(gridLayout, brushTarget, position);
