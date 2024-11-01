@@ -84,7 +84,7 @@ namespace HHG.Common.Runtime
         {
             // Calling AssetDatabase.LoadAllAssetsAtPath on a SceneAsset path does not work - it throws an error
             // We need to check if the type is SceneAsset and, if so, use AssetDatabase.LoadMainAssetAtPath instead
-            if (typeof(T).IsAssignableFrom(typeof(SceneAsset)))
+            if (typeof(SceneAsset).IsAssignableFrom(typeof(T)))
             {
                 return Enumerable.Empty<T>().Append(AssetDatabase.LoadMainAssetAtPath(p)).OfType<T>().Where(objectFilter);
             }

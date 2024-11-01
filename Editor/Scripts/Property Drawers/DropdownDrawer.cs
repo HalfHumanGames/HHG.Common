@@ -56,7 +56,7 @@ namespace HHG.Common.Editor
 
             if (!assetCache.TryGetValue(type, out assets) || !nameCache.TryGetValue(type, out names))
             {
-                DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.filter);
+                DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.Filter);
 
                 // Cache for subsequent lookups
                 assetCache[type] = assets;
@@ -70,7 +70,7 @@ namespace HHG.Common.Editor
         {
             Type type = filter.Type ?? property.GetPropertyType();
 
-            DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.filter);
+            DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.Filter);
 
             // Cache for subsequent lookups
             assetCache[type] = assets;

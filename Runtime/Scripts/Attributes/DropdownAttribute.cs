@@ -10,12 +10,33 @@ namespace HHG.Common.Runtime
         public Func<object, bool> Filter => filter;
 
         private Type type;
-        public Func<object, bool> filter;
+        private Func<object, bool> filter;
 
-        public DropdownAttribute(Type typeFilter = null, string getter = null)
+        public DropdownAttribute()
+        {
+
+        }
+
+        public DropdownAttribute(Type typeFilter)
         {
             type = typeFilter;
-            filter = !string.IsNullOrEmpty(getter) && type.GetProperty(getter)?.GetGetMethod() is MethodInfo method ? obj => (bool)method.Invoke(obj, null) : _ => true;
+        }
+
+        public DropdownAttribute(Type typeFilter, string getter) : this(typeFilter)
+        {
+            if (!string.IsNullOrEmpty(getter))
+            {
+                PropertyInfo property = type.GetProperty(getter);
+
+                if (property != null && property.GetGetMethod() is MethodInfo method)
+                {
+                    filter = obj => (bool)method.Invoke(obj, null);
+                }
+            }
+            else
+            {
+                filter = _ => true;
+            }
         }
     }
 }
