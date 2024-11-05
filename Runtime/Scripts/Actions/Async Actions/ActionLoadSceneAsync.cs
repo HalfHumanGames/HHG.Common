@@ -26,7 +26,12 @@ namespace HHG.Common.Runtime
         public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
-            while (!op.isDone) yield return new WaitForEndOfFrame();
+            op.completed += OnCompleted;
+            while (!op.isDone) yield return new WaitForEndOfFrame();  
+        }
+
+        private void OnCompleted(AsyncOperation op)
+        {
             onLoaded?.Invoke();
         }
     }
