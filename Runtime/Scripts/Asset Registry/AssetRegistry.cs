@@ -102,11 +102,13 @@ namespace HHG.Common.Runtime
                 {
                     string path = AssetDatabase.GetAssetPath(obj);
                     string id = AssetDatabase.AssetPathToGUID(path);
+
                     if (assets.ContainsKey(id))
                     {
                         DebugUtil.LogException("Asset registry already contains asset: " + path, obj);
                         continue;
                     }
+
                     assets.Add(id, obj);
                     guids.Add(obj, id);
                 }
