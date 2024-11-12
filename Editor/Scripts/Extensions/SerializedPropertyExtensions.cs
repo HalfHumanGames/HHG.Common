@@ -14,5 +14,28 @@ namespace HHG.Common.Editor
             Type type = TypeUtil.FindType(typeName);
             return type;
         }
+
+        public static int CountVisibleInProperty(this SerializedProperty property)
+        {
+            int count = 1;
+            SerializedProperty childProperty = property.Copy();
+            SerializedProperty endProperty = property.GetEndProperty();
+
+            if (childProperty.NextVisible(true))
+            {
+                do
+                {
+                    if (childProperty.propertyType == SerializedPropertyType.Generic && !childProperty.hasVisibleChildren)
+                    {
+                        continue;
+                    }
+
+                    count++;
+
+                } while (childProperty.NextVisible(false) && !SerializedProperty.EqualContents(childProperty, endProperty));
+            }
+
+            return count;
+        }
     }
 }

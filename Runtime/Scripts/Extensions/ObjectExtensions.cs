@@ -43,5 +43,22 @@ namespace HHG.Common.Runtime
         {
             return ObjectUtil.FindObjectsOfType<T>(includeInactive);
         }
+
+        public static T CloneFromJson<T>(this T obj)
+        {
+            return JsonUtility.FromJson<T>(JsonUtility.ToJson(obj));
+        }
+
+        public static List<T> CloneFromJson<T>(this IEnumerable<T> objs)
+        {
+            List<T> list = new List<T>();
+
+            foreach (T obj in objs)
+            {
+                list.Add(obj.CloneFromJson());
+            }
+
+            return list;
+        }
     }
 }

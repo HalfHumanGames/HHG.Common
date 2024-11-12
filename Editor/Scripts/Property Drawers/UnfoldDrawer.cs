@@ -13,38 +13,41 @@ namespace HHG.Common.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            // Force expand so children are visible
             property.isExpanded = true;
             position.height = EditorGUIUtility.singleLineHeight;
 
             SerializedProperty childProperty = property.Copy();
             SerializedProperty endProperty = property.GetEndProperty();
-            childProperty.NextVisible(true);
-
-            UnfoldName unfoldName = unfold.Name;
-
-            if (unfoldName == UnfoldName.Auto)
+            
+            if (childProperty.NextVisible(true) && !SerializedProperty.EqualContents(childProperty, endProperty))
             {
-                unfoldName = property.Copy().CountInProperty() - 1 == 1 ? UnfoldName.Parent : UnfoldName.Child;
-            }
+                UnfoldName unfoldName = unfold.Name;
 
-            totalHeight = 0f;
-            do
-            {
-                string name = unfoldName switch
+                if (unfoldName == UnfoldName.Auto)
                 {
-                    UnfoldName.Child => childProperty.displayName,
-                    UnfoldName.Parent => property.displayName,
-                    UnfoldName.Full => $"{property.displayName} {childProperty.displayName}",
-                    _ => string.Empty
-                };
+                    bool hasSingleChild = property.Copy().CountVisibleInProperty() - 1 == 1;
+                    unfoldName = hasSingleChild ? UnfoldName.Parent : UnfoldName.Child;
+                }
 
-                EditorGUI.PropertyField(position, childProperty, new GUIContent(name), true);
-                float height = EditorGUI.GetPropertyHeight(childProperty, true) + EditorGUIUtility.standardVerticalSpacing;
-                position.y += height;
-                totalHeight += height;
+                totalHeight = 0f;
 
-            } while (childProperty.NextVisible(false) && !SerializedProperty.EqualContents(childProperty, endProperty));
+                do
+                {
+                    string name = unfoldName switch
+                    {
+                        UnfoldName.Child => childProperty.displayName,
+                        UnfoldName.Parent => property.displayName,
+                        UnfoldName.Full => $"{property.displayName} {childProperty.displayName}",
+                        _ => string.Empty
+                    };
+
+                    EditorGUI.PropertyField(position, childProperty, new GUIContent(name), true);
+                    float height = EditorGUI.GetPropertyHeight(childProperty, true) + EditorGUIUtility.standardVerticalSpacing;
+                    position.y += height;
+                    totalHeight += height;
+
+                } while (childProperty.NextVisible(false) && !SerializedProperty.EqualContents(childProperty, endProperty));
+            }
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
