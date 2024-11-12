@@ -265,7 +265,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public IBindable Bindable => instance;
+        public IBindable Bindable => Instance;
 
         public bool TryGetValue<T>(string name, out T value)
         {
