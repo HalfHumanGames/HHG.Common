@@ -21,14 +21,20 @@ namespace HHG.Common.Runtime
 
         public void Setup()
         {
-            bindable.Updated += OnUpdated;
-            OnSetup();
-            OnUpdated();
+            if (bindable != null)
+            {
+                bindable.Updated += OnUpdated;
+                OnSetup();
+                OnUpdated();
+            }
         }
 
         public void Dispose()
         {
-            bindable.Updated -= OnUpdated;
+            if (bindable != null)
+            {
+                bindable.Updated -= OnUpdated;
+            }
         }
 
         public virtual void OnSetup() { }
@@ -43,29 +49,34 @@ namespace HHG.Common.Runtime
         {
             if (_bindable == null)
             {
-                DebugUtil.LogException("Bindable cannot be null.", mono);
+                DebugUtil.LogException($"Bindable cannot be null.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             if (bindable == null)
             {
-                DebugUtil.LogException("Bindable does not implement IBindable.", mono);
+                DebugUtil.LogException($"Bindable does not implement IBindable.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
-            if (!bindable.TryGetValue(name, out TValue value))
+            if (!bindable.TryGetValue(name, out TValue _))
             {
-                DebugUtil.LogException($"Property '{name}' not found in bindable.", mono);
+                DebugUtil.LogException($"Property '{name}' not found in bindable.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             if (source == null)
             {
-                DebugUtil.LogException("Source cannot be null.", mono);
+                DebugUtil.LogException($"Source cannot be null.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             return true;
+        }
+
+        private string GetDebugInfo()
+        {
+            return $"_bindable: {_bindable}\nbindable: {bindable}\nname: {name}\nsource: {source}";
         }
     }
 
