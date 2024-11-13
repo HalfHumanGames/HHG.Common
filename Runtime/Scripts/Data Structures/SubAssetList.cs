@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -12,6 +14,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private List<string> names = new List<string>();
         [SerializeField] private List<T> items = new List<T>();
 
+#if UNITY_EDITOR
         public void SyncSubAssetList(Object parent)
         {
             items.Clear();
@@ -52,6 +55,8 @@ namespace HHG.Common.Runtime
             }
 
             AssetDatabase.SaveAssets();
+
         }
+#endif
     }
 }
