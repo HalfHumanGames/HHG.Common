@@ -3,6 +3,14 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
+    public class BoundsData : BoundsData<object>
+    {
+        public BoundsData(BoundsInt bounds, object initial = null) : base(bounds, initial)
+        {
+
+        }
+    }
+
     public class BoundsData<T> : ICloneable<BoundsData<T>>
     {
         public int Width => width;

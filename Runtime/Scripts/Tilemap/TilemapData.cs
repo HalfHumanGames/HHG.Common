@@ -17,5 +17,10 @@ namespace HHG.Common.Runtime
         {
             tilemap.RefreshTile(position);
         }
+
+        protected override void OnUnsetData(Vector3Int position)
+        {
+            tilemap.RefreshTile(position);
+        }
     }
 }

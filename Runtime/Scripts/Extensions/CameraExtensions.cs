@@ -12,5 +12,19 @@ namespace HHG.Common.Runtime
                 max = camera.ViewportToWorldPoint(new Vector3(1f, 1f, float.MaxValue))
             };
         }
+
+        public static void SetLayerCulling(this Camera camera, string layerName, bool cull)
+        {
+            int layer = LayerMask.NameToLayer(layerName);
+
+            if (cull)
+            {
+                camera.cullingMask |= 1 << layer;
+            }
+            else
+            {
+                camera.cullingMask &= ~(1 << layer);
+            }
+        }
     }
 }

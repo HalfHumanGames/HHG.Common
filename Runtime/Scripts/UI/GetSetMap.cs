@@ -31,10 +31,21 @@ namespace HHG.Common.Runtime
 
         public bool TryGetValue<T>(object obj, string name, out T value)
         {
-            if (getters.TryGetValue(name, out Func<object, object> func) && func(obj) is T val)
+            if (getters.TryGetValue(name, out Func<object, object> func))
             {
-                value = val;
-                return true;
+                object result = func(obj);
+               
+                if (result is T val)
+                {
+                    value = val;
+                    return true;
+                }
+
+                if (Convert.ChangeType(result, typeof(T)) is T val2)
+                {
+                    value = val2;
+                    return true;
+                }
             }
 
             value = default;

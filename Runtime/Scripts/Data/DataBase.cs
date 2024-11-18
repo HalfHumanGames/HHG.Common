@@ -13,9 +13,9 @@ namespace HHG.Common.Runtime
             set => SetData(key, value);
         }
 
-        public bool TryGetData<T>(TKey position, out T value) where T : TValue
+        public bool TryGetData<T>(TKey key, out T value) where T : TValue
         {
-            if (data.TryGetValue(position, out TValue weak) && weak is T val)
+            if (data.TryGetValue(key, out TValue weak) && weak is T val)
             {
                 value = val;
                 return true;
@@ -27,9 +27,9 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public TValue GetData(TKey position)
+        public TValue GetData(TKey key)
         {
-            if (data.TryGetValue(position, out TValue weak))
+            if (data.TryGetValue(key, out TValue weak))
             {
                 return weak;
             }
@@ -37,9 +37,9 @@ namespace HHG.Common.Runtime
             return default;
         }
 
-        public T GetData<T>(TKey position) where T : TValue
+        public T GetData<T>(TKey key) where T : TValue
         {
-            if (data.TryGetValue(position, out TValue weak) && weak is T val)
+            if (data.TryGetValue(key, out TValue weak) && weak is T val)
             {
                 return val;
             }
@@ -47,24 +47,24 @@ namespace HHG.Common.Runtime
             return default;
         }
 
-        public void SetData<T>(TKey position, T value) where T : TValue
+        public void SetData<T>(TKey key, T value) where T : TValue
         {
-            data[position] = value;
-            OnSetData(position);
+            data[key] = value;
+            OnSetData(key);
         }
 
-        public void UnsetData(TKey position)
+        public void UnsetData(TKey key)
         {
-            data.Remove(position);
-            OnUnsetData(position);
+            data.Remove(key);
+            OnUnsetData(key);
         }
 
-        protected virtual void OnSetData(TKey position)
+        protected virtual void OnSetData(TKey key)
         {
 
         }
 
-        protected virtual void OnUnsetData(TKey position)
+        protected virtual void OnUnsetData(TKey key)
         {
 
         }
