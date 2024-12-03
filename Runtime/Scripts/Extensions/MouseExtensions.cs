@@ -5,14 +5,19 @@ namespace HHG.Common.Runtime
 {
     public static class MouseExtensions
     {
-        public static Vector3 GetWorldPosition(this Mouse mouse)
+        public static Vector3 GetWorldPosition3D(this Mouse mouse)
         {
-            return Camera.main.ScreenToWorldPoint(mouse.position.value);
+            return Camera.main.ScreenToWorldPoint(ScreenUtil.ClampToScreen(mouse.position.value));
         }
 
-        public static Vector3 GetWorldPosition2D(this Mouse mouse)
+        public static Vector2 GetWorldPosition2D(this Mouse mouse)
         {
-            return Camera.main.ScreenToWorldPoint(mouse.position.value).WithZ(0);
+            return Camera.main.ScreenToWorldPoint(ScreenUtil.ClampToScreen(mouse.position.value));
+        }
+
+        public static void ClampToScreen(this Mouse mouse)
+        {
+            mouse.WarpCursorPosition(ScreenUtil.ClampToScreen(mouse.position.value));
         }
     }
 }

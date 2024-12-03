@@ -7,10 +7,9 @@ namespace HHG.Common.Runtime
     {
         public Vector2 Offset;
 
-        void Update()
+        private void Update()
         {
-            transform.position = Mouse.current.GetWorldPosition2D() + (Vector3)Offset;
+            transform.position = Mouse.current.GetWorldPosition2D() + Offset;
         }
     }
-
 }

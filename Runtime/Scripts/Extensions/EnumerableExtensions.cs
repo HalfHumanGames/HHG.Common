@@ -8,6 +8,11 @@ namespace HHG.Common.Runtime
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T item)
+        {
+            return source.Where(x => !EqualityComparer<T>.Default.Equals(x, item));
+        }
+
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> func)
         {
             foreach (T item in source)
