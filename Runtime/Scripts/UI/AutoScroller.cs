@@ -15,6 +15,11 @@ public class AutoScroller : MonoBehaviour
 
     private void Update()
     {
+        if (EventSystem.current == null)
+        {
+            return;
+        }
+
         GameObject selected = EventSystem.current.currentSelectedGameObject;
 
         if (selected == null)
