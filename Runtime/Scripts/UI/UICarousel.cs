@@ -123,8 +123,22 @@ namespace HHG.Common.Runtime
         {
             image.sprite = spriteList.Value[current];
             buttons[current].interactable = true;
-            buttonLeft.gameObject.SetActive(current > 0);
-            buttonRight.gameObject.SetActive(current < spriteList.Value.Count - 1);
+
+            bool showButtonLeft = current > 0;
+            bool showButtonRight = current < spriteList.Value.Count - 1;
+
+            if (!showButtonLeft && buttonLeft.IsSelected())
+            {
+                buttonRight.Select();
+            }
+
+            if (!showButtonRight && buttonRight.IsSelected())
+            {
+                buttonContinue.Select();
+            }
+
+            buttonLeft.gameObject.SetActive(showButtonLeft);
+            buttonRight.gameObject.SetActive(showButtonRight);
 
             if (current == spriteList.Value.Count - 1)
             {

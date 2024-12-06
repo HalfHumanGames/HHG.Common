@@ -1,12 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
     public static class SelectableExtensions
     {
+        public static bool IsSelected(this Selectable selectable)
+        {
+            return EventSystem.current != null && EventSystem.current.currentSelectedGameObject == selectable.gameObject;
+        }
+
         public static void ClearNavigation(this Selectable selectable)
         {
             Navigation nav = selectable.navigation;
