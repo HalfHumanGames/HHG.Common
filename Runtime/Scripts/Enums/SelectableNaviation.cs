@@ -4,5 +4,7 @@ namespace HHG.Common.Runtime
     {
         Horizontal,
         Vertical,
+        Grid,
+        Auto
     }
 }

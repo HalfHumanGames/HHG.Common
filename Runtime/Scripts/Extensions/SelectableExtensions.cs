@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
@@ -92,16 +93,24 @@ namespace HHG.Common.Runtime
         public static void SetNavigationHorizontal(this IEnumerable<Selectable> selectables)
         {
             SetNavigation(selectables, SelectableNavigation.Horizontal);
-
         }
 
         public static void SetNavigationVertical(this IEnumerable<Selectable> selectables)
         {
             SetNavigation(selectables, SelectableNavigation.Vertical);
-
         }
 
-        public static void SetNavigation(this IEnumerable<Selectable> selectables, SelectableNavigation direction)
+        public static void SetNavigationGrid(this IEnumerable<Selectable> selectables, int columns)
+        {
+            SetNavigation(selectables, SelectableNavigation.Grid, columns);
+        }
+
+        public static void SetNavigationAuto(this IEnumerable<Selectable> selectables)
+        {
+            SetNavigation(selectables, SelectableNavigation.Auto);
+        }
+
+        public static void SetNavigation(this IEnumerable<Selectable> selectables, SelectableNavigation direction, int columns = 0)
         {
             int length = selectables.Count();
 
@@ -134,6 +143,7 @@ namespace HHG.Common.Runtime
                             nav.selectOnRight = selectables.ElementAt(i + 1);
                         }
                         break;
+
                     case SelectableNavigation.Vertical:
                         if (i == 0)
                         {
@@ -151,10 +161,59 @@ namespace HHG.Common.Runtime
                             nav.selectOnDown = selectables.ElementAt(i + 1);
                         }
                         break;
+
+                    case SelectableNavigation.Grid:
+                        int row = i / columns;
+                        int col = i % columns;
+                        nav.selectOnUp = row > 0 ? selectables.ElementAt(i - columns) : selectables.ElementAt(length - columns + col);
+                        nav.selectOnDown = row < (length - 1) / columns ? selectables.ElementAt(i + columns) : selectables.ElementAt(col);
+                        nav.selectOnLeft = col > 0 ? selectables.ElementAt(i - 1) : selectables.ElementAt(row * columns + columns - 1);
+                        nav.selectOnRight = col < columns - 1 && i + 1 < length ? selectables.ElementAt(i + 1) : selectables.ElementAt(row * columns);
+                        break;
+
+                    case SelectableNavigation.Auto:
+                        nav.selectOnUp = FindNearestSelectable(selectables, i, Vector2.up);
+                        nav.selectOnDown = FindNearestSelectable(selectables, i, Vector2.down);
+                        nav.selectOnLeft = FindNearestSelectable(selectables, i, Vector2.left);
+                        nav.selectOnRight = FindNearestSelectable(selectables, i, Vector2.right);
+                        break;
                 }
 
                 selectables.ElementAt(i).navigation = nav;
             }
+        }
+
+        private static Selectable FindNearestSelectable(IEnumerable<Selectable> selectables, int currentIndex, Vector2 direction)
+        {
+            Selectable currentSelectable = selectables.ElementAt(currentIndex);
+            Vector2 currentPosition = (currentSelectable.transform as RectTransform).anchoredPosition;
+
+            Selectable nearest = null;
+            float shortestDistance = float.MaxValue;
+
+            foreach (Selectable selectable in selectables)
+            {
+                if (selectable == currentSelectable)
+                {
+                    continue;
+                }
+
+                Vector2 position = (selectable.transform as RectTransform).anchoredPosition;
+                Vector2 offset = position - currentPosition;
+
+                if (Vector2.Dot(offset.normalized, direction) > .5f)
+                {
+                    float distance = offset.sqrMagnitude;
+
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        nearest = selectable;
+                    }
+                }
+            }
+
+            return nearest;
         }
     }
 }
