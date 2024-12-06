@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -128,7 +129,22 @@ namespace HHG.Common.Runtime
             if (current == spriteList.Value.Count - 1)
             {
                 buttonContinue.gameObject.SetActive(true);
+                buttonContinue.Select();
             }
+
+            buttonLeft.ClearNavigation();
+            buttonRight.ClearNavigation();
+            buttonContinue.ClearNavigation();
+            buttons.ClearNavigation();
+
+            buttonLeft.SetNavigationRight(buttonRight);
+            buttonLeft.SetNavigationDown(buttons.FirstOrDefault());
+            buttonRight.SetNavigationLeft(buttonLeft);
+
+            IEnumerable<Button> activeButtons = buttons.Append(buttonContinue).Where(b => b.isActiveAndEnabled && b.interactable);
+            buttonRight.SetNavigationDown(activeButtons.LastOrDefault());
+            activeButtons.SetNavigationHorizontal();
+            activeButtons.SetNavigationUp(buttonRight);
         }
     }
 }
