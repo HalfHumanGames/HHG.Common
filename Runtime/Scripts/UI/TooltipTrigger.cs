@@ -35,7 +35,7 @@ namespace HHG.Common.Runtime
             HideTooltip();
         }
 
-        private void ShowTooltip()
+        public void ShowTooltip()
         {
             if (ui && gameObject.TryGetComponent(out ITooltip tooltip))
             {
@@ -43,7 +43,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private void HideTooltip()
+        public void HideTooltip()
         {
             if (ui)
             {

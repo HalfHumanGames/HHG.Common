@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.RuleTile.TilingRuleOutput;
+using UnityEngine.UIElements;
 
 namespace HHG.Common.Runtime
 {
@@ -94,33 +96,23 @@ namespace HHG.Common.Runtime
 
         public static void ClampTransform(this RectTransform rect, RectTransform canvas, float padding = 0f)
         {
-            Vector2 position = rect.localPosition;
-            Vector3[] rectCorners = new Vector3[4];
-            Vector3[] canvasCorners = new Vector3[4];
-            rect.GetWorldCorners(rectCorners);
-            canvas.GetWorldCorners(canvasCorners);
+            Vector2 sizeDelta = rect.sizeDelta * rect.transform.localScale;
+            Vector2 anchorOffset = canvas.sizeDelta * (rect.anchorMin - Vector2.one / 2);
 
-            // Clamp right/left
-            if (rectCorners[2].x > canvasCorners[2].x)
-            {
-                position.x = (canvas.rect.width * .5f) - (rect.rect.width * (1f - rect.pivot.x)) + padding;
-            }
-            else if (rectCorners[0].x < canvasCorners[0].x)
-            {
-                position.x = (-canvas.rect.width * .5f) + (rect.rect.width * rect.pivot.x) + padding;
-            }
+            Vector2 maxPivotOffset = sizeDelta * (rect.pivot - Vector2.one / 2 * 2);
+            Vector2 minPivotOffset = sizeDelta * (Vector2.one / 2 * 2 - rect.pivot);
 
-            // Clamp top/bottom
-            if (rectCorners[2].y > canvasCorners[2].y)
-            {
-                position.y = (canvas.rect.height * .5f) - (rect.rect.height * (1f - rect.pivot.y)) + padding;
-            }
-            else if (rectCorners[0].y < canvasCorners[0].y)
-            {
-                position.y = (-canvas.rect.height * .5f) + (rect.rect.height * rect.pivot.y) + padding;
-            }
+            Vector2 position = rect.anchoredPosition;
 
-            rect.localPosition = position;
+            float minX = canvas.sizeDelta.x * -0.5f - anchorOffset.x - minPivotOffset.x + sizeDelta.x;
+            float maxX = canvas.sizeDelta.x * 0.5f - anchorOffset.x + maxPivotOffset.x;
+            float minY = canvas.sizeDelta.y * -0.5f - anchorOffset.y - minPivotOffset.y + sizeDelta.y;
+            float maxY = canvas.sizeDelta.y * 0.5f - anchorOffset.y + maxPivotOffset.y;
+
+            position.x = Mathf.Clamp(position.x, minX, maxX);
+            position.y = Mathf.Clamp(position.y, minY, maxY);
+
+            rect.anchoredPosition = position;
         }
 
         public static void RebuildLayout(this RectTransform rect)
@@ -132,7 +124,7 @@ namespace HHG.Common.Runtime
                 LayoutRebuilder.ForceRebuildLayoutImmediate(layout.GetComponent<RectTransform>());
             }
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rect.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
         }
     }
 }

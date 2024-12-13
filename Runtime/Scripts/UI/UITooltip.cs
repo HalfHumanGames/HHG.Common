@@ -35,19 +35,37 @@ namespace HHG.Common.Runtime
 
         private void Update()
         {
-            if (tooltip != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out var position))
+            if (tooltip != null)
             {
-                rect.position = canvasRect.TransformPoint(position + offset);
-                rect.ClampTransform(canvasRect, padding);
+                // Only follow mouse if the cursor is visible
+                if (Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 position))
+                {
+                    rect.position = canvasRect.TransformPoint(position + offset);
+                    rect.ClampTransform(canvasRect, padding);
+                }
             }
         }
 
-        public void Show(ITooltip tip)
+        public void Show(ITooltip nextTooltip)
         {
-            tooltip = tip;
+            tooltip = nextTooltip;
             text.text = tooltip.TooltipText;
             rect.SetAsLastSibling();
             gameObject.SetActive(true);
+
+            // Do after game object is set active
+            // Otherwise rebuild will not work
+            rect.RebuildLayout();
+
+            // And determine the clamped position
+            // after rebuilding to make sure it
+            // factors in the rebuilt tooltip size
+            if (tooltip is MonoBehaviour monoBehaviour && monoBehaviour.TryGetComponent(out RectTransform rectTransform))
+            {
+                Vector3 monoPosition = rectTransform.position;
+                rect.position = monoPosition + (Vector3)offset;
+                rect.ClampTransform(canvasRect, padding);
+            }
         }
 
         public void Hide()
