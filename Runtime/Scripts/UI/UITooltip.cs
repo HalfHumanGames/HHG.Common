@@ -49,22 +49,27 @@ namespace HHG.Common.Runtime
         public void Show(ITooltip nextTooltip)
         {
             tooltip = nextTooltip;
-            text.text = tooltip.TooltipText;
-            rect.SetAsLastSibling();
-            gameObject.SetActive(true);
 
-            // Do after game object is set active
-            // Otherwise rebuild will not work
-            rect.RebuildLayout();
-
-            // And determine the clamped position
-            // after rebuilding to make sure it
-            // factors in the rebuilt tooltip size
-            if (tooltip is MonoBehaviour monoBehaviour && monoBehaviour.TryGetComponent(out RectTransform rectTransform))
+            // Don't show if null or empty tooltip text
+            if (!string.IsNullOrEmpty(tooltip.TooltipText))
             {
-                Vector3 monoPosition = rectTransform.position;
-                rect.position = monoPosition + (Vector3)offset;
-                rect.ClampTransform(canvasRect, padding);
+                text.text = tooltip.TooltipText;
+                rect.SetAsLastSibling();
+                gameObject.SetActive(true);
+
+                // Do after game object is set active
+                // Otherwise rebuild will not work
+                rect.RebuildLayout();
+
+                // And determine the clamped position
+                // after rebuilding to make sure it
+                // factors in the rebuilt tooltip size
+                if (tooltip is MonoBehaviour monoBehaviour && monoBehaviour.TryGetComponent(out RectTransform rectTransform))
+                {
+                    Vector3 monoPosition = rectTransform.position;
+                    rect.position = monoPosition + (Vector3)offset;
+                    rect.ClampTransform(canvasRect, padding);
+                }
             }
         }
 
