@@ -76,5 +76,33 @@ namespace HHG.Common.Runtime
             int rand = Random.Range(0, source.Sum(min));
             return source.FirstOrDefault(item => (rand -= min(item)) < 0);
         }
+
+        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, Func<T, int> getter)
+        {
+            Func<T, int> min = item => Mathf.Max(getter(item), 1);
+            HashSet<T> taken = new HashSet<T>();
+            int sum = source.Sum(min);
+
+            for (int i = 0; i < amount; i++)
+            {
+                int rand = Random.Range(0, sum);
+
+                foreach (T item in source)
+                {
+                    if (taken.Contains(item))
+                    {
+                        continue;
+                    }
+
+                    if ((rand -= min(item)) < 0)
+                    {
+                        yield return item;
+                        taken.Add(item);
+                        sum -= min(item);
+                        break;
+                    }
+                }
+            }
+        }
     } 
 }
