@@ -12,9 +12,15 @@ namespace HHG.Common.Runtime
         protected override GameObject Create(GameObject template, Transform parent)
         {
             bool wasActive = template.activeSelf;
-            template.SetActive(false);
+            if (template.activeSelf)
+            {
+                template.SetActive(false);
+            }
             GameObject item = Object.Instantiate(template, parent);
-            template.SetActive(wasActive);
+            if (wasActive)
+            {
+                template.SetActive(wasActive);
+            }
             return item;
         }
 
@@ -34,9 +40,15 @@ namespace HHG.Common.Runtime
         protected override T Create(T template, Transform parent)
         {
             bool wasActive = template.gameObject.activeSelf;
-            template.gameObject.SetActive(false);
+            if (template.gameObject.activeSelf)
+            {
+                template.gameObject.SetActive(false);
+            }
             T item = Object.Instantiate(template, parent);
-            template.gameObject.SetActive(wasActive);
+            if (wasActive)
+            {
+                template.gameObject.SetActive(wasActive);
+            }
             return item;
         }
 
