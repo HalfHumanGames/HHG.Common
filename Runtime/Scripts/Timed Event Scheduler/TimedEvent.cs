@@ -4,36 +4,42 @@ namespace HHG.Common.Runtime
 {
     public class TimedEvent : IComparable<TimedEvent>
     {
-        public object Context => context;
+        public object WeakContext => weakContext;
         public bool IsExpired => timeRemaining <= 0f;
         public float TimeRemaining => timeRemaining;
 
-        private object context;
-        private float timeRemaining;
+        protected object weakContext;
+        protected float timeRemaining;
 
-        public event Action<TimedEvent> Expired;
-        public event Action<TimedEvent> Rescheduled;
+        public event Action<TimedEvent> WeakExpired;
+        public event Action<TimedEvent> WeakRescheduled;
+
+        public TimedEvent()
+        {
+
+        }
 
         public TimedEvent(float timeRemaining = 0f, object ctx = default)
         {
             Initialize(timeRemaining, ctx);
         }
 
-        // In case you want to reinitialize a
-        // timed event in order to reuse it
-        public void Initialize(float duration = 0f, object ctx = default)
+        public virtual void Initialize(float duration = 0f, object ctx = default)
         {
             timeRemaining = duration;
-            context = ctx;
-            Expired = null;
-            Rescheduled = null;
+            weakContext = ctx;
+            WeakExpired = null;
+            WeakRescheduled = null;
         }
 
         public void Update(float timeElapsed)
         {
-            // Use field since we do not want
-            // to trigger TimeRemainingUpdated
             timeRemaining -= timeElapsed;
+
+            if (timeRemaining < 0f)
+            {
+                timeRemaining = 0f;
+            }
         }
 
         public void Reschedule(float duration)
@@ -41,18 +47,89 @@ namespace HHG.Common.Runtime
             if (timeRemaining != duration)
             {
                 timeRemaining = duration;
-                Rescheduled?.Invoke(this);
+                OnReschedule();
             }
         }
 
         public void Expire()
         {
-            Expired?.Invoke(this);
+            OnExpire();   
         }
 
         public int CompareTo(TimedEvent other)
         {
             return timeRemaining.CompareTo(other.timeRemaining);
+        }
+
+        override public string ToString()
+        {
+            return $"TimedEvent: {timeRemaining:0.00}s - {weakContext}";
+        }
+
+        protected virtual void OnReschedule()
+        {
+            WeakRescheduled?.Invoke(this);
+        }
+
+        protected virtual void OnExpire()
+        {
+            WeakExpired?.Invoke(this);
+        }
+    }
+
+    public class TimedEvent<T> : TimedEvent
+    {
+        public T Context => context;
+
+        private T context;
+
+        public event Action<TimedEvent<T>> Expired;
+        public event Action<TimedEvent<T>> Rescheduled;
+
+        public TimedEvent()
+        {
+
+        }
+
+        public TimedEvent(float timeRemaining = 0f, T ctx = default)
+        {
+            Initialize(timeRemaining, ctx);
+        }
+
+        public void Initialize(float duration = 0f, T ctx = default)
+        {
+            context = ctx;
+            Expired = null;
+            Rescheduled = null;
+            base.Initialize(duration, ctx);
+        }
+
+        public override void Initialize(float duration = 0, object ctx = null)
+        {
+            if (ctx == null)
+            {
+                Initialize(duration, default);
+            }
+            else if (ctx is T typedCtx)
+            {
+                Initialize(duration, typedCtx);
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid context type: {ctx?.GetType()}");
+            }
+        }
+
+        protected override void OnReschedule()
+        {
+            base.OnReschedule();
+            Rescheduled?.Invoke(this);
+        }
+
+        protected override void OnExpire()
+        {
+            base.OnExpire();
+            Expired?.Invoke(this);
         }
     }
 }

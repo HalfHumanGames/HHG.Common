@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace HHG.Common.Runtime
 {
-    // Could further optimize by using a priority queue instead of list.sort
     public class TimedEventScheduler
     {
         public IReadOnlyList<TimedEvent> ScheduledEvents => scheduledEvents;
@@ -11,16 +11,14 @@ namespace HHG.Common.Runtime
         private HashSet<TimedEvent> scheduledEventsHash = new HashSet<TimedEvent>();
         private List<TimedEvent> scheduledEvents = new List<TimedEvent>();
         private List<TimedEvent> expiredEvents = new List<TimedEvent>();
-        private bool isDirty = false;
 
         public void Schedule(TimedEvent timedEvent)
         {
             if (!scheduledEventsHash.Contains(timedEvent))
             {
-                timedEvent.Rescheduled += OnRescheduled;
-                scheduledEvents.Add(timedEvent);
+                timedEvent.WeakRescheduled += OnRescheduled;
+                scheduledEvents.SortedInsert(timedEvent);
                 scheduledEventsHash.Add(timedEvent);
-                isDirty = true;
             }
         }
 
@@ -28,7 +26,7 @@ namespace HHG.Common.Runtime
         {
             if (scheduledEventsHash.Contains(timedEvent))
             {
-                timedEvent.Rescheduled -= OnRescheduled;
+                timedEvent.WeakRescheduled -= OnRescheduled;
                 scheduledEvents.Remove(timedEvent);
                 scheduledEventsHash.Remove(timedEvent);
             }
@@ -41,12 +39,6 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            if (isDirty)
-            {
-                scheduledEvents.Sort();
-                isDirty = false;
-            }
-
             for (int i = scheduledEvents.Count - 1; i >= 0; i--)
             {
                 TimedEvent scheduledEvent = scheduledEvents[i];
@@ -54,7 +46,7 @@ namespace HHG.Common.Runtime
 
                 if (scheduledEvent.IsExpired)
                 {
-                    scheduledEvent.Rescheduled -= OnRescheduled;
+                    scheduledEvent.WeakRescheduled -= OnRescheduled;
                     expiredEvents.Add(scheduledEvent);
                     scheduledEvents.RemoveAt(i);
                     scheduledEventsHash.Remove(scheduledEvent);
@@ -96,18 +88,27 @@ namespace HHG.Common.Runtime
         {
             foreach (TimedEvent timedEvent in scheduledEvents)
             {
-                timedEvent.Rescheduled -= OnRescheduled;
+                timedEvent.WeakRescheduled -= OnRescheduled;
             }
 
             scheduledEvents.Clear();
             scheduledEventsHash.Clear();
             expiredEvents.Clear();
-            isDirty = false;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder("TimedEventScheduler");
+            foreach (TimedEvent timedEvent in scheduledEvents)
+            {
+                sb.AppendLine($" • {timedEvent.ToString()}");
+            }
+            return sb.ToString();
         }
 
         private void OnRescheduled(TimedEvent timedEvent)
         {
-            isDirty = true;
+            scheduledEvents.ResortItem(timedEvent);
         }
     }
 }
