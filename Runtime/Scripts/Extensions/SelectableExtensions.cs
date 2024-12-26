@@ -10,7 +10,7 @@ namespace HHG.Common.Runtime
     {
         public static bool IsSelected(this Selectable selectable)
         {
-            return EventSystem.current != null && EventSystem.current.currentSelectedGameObject == selectable.gameObject;
+            return EventSystem.current.currentSelectedGameObject == selectable.gameObject;
         }
 
         public static void ClearNavigation(this Selectable selectable)
@@ -171,10 +171,10 @@ namespace HHG.Common.Runtime
                     case SelectableNavigation.Grid:
                         int row = i / columns;
                         int col = i % columns;
-                        nav.selectOnUp = row > 0 ? selectables.ElementAt(i - columns) : selectables.ElementAt(length - columns + col);
-                        nav.selectOnDown = row < (length - 1) / columns ? selectables.ElementAt(i + columns) : selectables.ElementAt(col);
-                        nav.selectOnLeft = col > 0 ? selectables.ElementAt(i - 1) : selectables.ElementAt(row * columns + columns - 1);
-                        nav.selectOnRight = col < columns - 1 && i + 1 < length ? selectables.ElementAt(i + 1) : selectables.ElementAt(row * columns);
+                        nav.selectOnUp = (row > 0 && i - columns >= 0) ? selectables.ElementAt(i - columns) : (length - columns + col < length ? selectables.ElementAt(length - columns + col) : null);
+                        nav.selectOnDown = (row < (length - 1) / columns && i + columns < length) ? selectables.ElementAt(i + columns) : (col < length ? selectables.ElementAt(col) : null);
+                        nav.selectOnLeft = (col > 0 && i - 1 >= 0) ? selectables.ElementAt(i - 1) : (row * columns + (columns - 1) < length ? selectables.ElementAt(row * columns + (columns - 1)) : null);
+                        nav.selectOnRight = (col < columns - 1 && i + 1 < length) ? selectables.ElementAt(i + 1) : (row * columns < length ? selectables.ElementAt(row * columns) : null);
                         break;
 
                     case SelectableNavigation.Auto:

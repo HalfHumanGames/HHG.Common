@@ -79,5 +79,26 @@ namespace HHG.Common.Runtime
                 list[rand] = temp;
             }
         }
+
+        public static void SortedInsert<T>(this List<T> list, T item, IComparer<T> comparer = null)
+        {
+            comparer ??= Comparer<T>.Default;
+
+            int index = list.BinarySearch(item, comparer);
+
+            if (index < 0)
+            {
+                index = ~index;
+            }
+
+            list.Insert(index, item);
+        }
+
+        public static void ResortItem<T>(this List<T> list, T item, IComparer<T> comparer = null)
+        {
+            comparer ??= Comparer<T>.Default;
+            list.Remove(item);
+            list.SortedInsert(item, comparer);
+        }
     }
 }

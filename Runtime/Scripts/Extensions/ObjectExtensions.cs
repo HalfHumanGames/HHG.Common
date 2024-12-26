@@ -46,7 +46,9 @@ namespace HHG.Common.Runtime
 
         public static T CloneFromJson<T>(this T obj)
         {
-            return JsonUtility.FromJson<T>(JsonUtility.ToJson(obj));
+            // Use this instead of the generic version since it also works in
+            // cases when T is either an abstract class or an interface
+            return (T)JsonUtility.FromJson(JsonUtility.ToJson(obj), obj.GetType());
         }
 
         public static List<T> CloneFromJson<T>(this IEnumerable<T> objs)

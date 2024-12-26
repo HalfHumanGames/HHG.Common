@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -62,6 +64,11 @@ namespace HHG.Common.Runtime
             }
 
             return component;
+        }
+
+        public static IEnumerable<GameObject> GetChildren(this GameObject gameObject)
+        {
+            return gameObject.transform.Cast<Transform>().Select(t => t.gameObject);
         }
     }
 }
