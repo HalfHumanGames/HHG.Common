@@ -1,17 +1,17 @@
-using System;
-using System.Diagnostics;
+using UnityEngine;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace HHG.Common.Runtime
 {
     public static class PerformanceUtil
     {
-        public static void MeasureDuration(string label, Action action)
+        public static void MeasureDuration(string label, System.Action action)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
             action();
             sw.Stop();
-            UnityEngine.Debug.Log($"{label}: {sw.ElapsedMilliseconds}ms");
+            Debug.Log($"{label}: {sw.ElapsedMilliseconds}ms");
         }
     }
 }

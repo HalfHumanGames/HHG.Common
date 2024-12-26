@@ -20,6 +20,11 @@ namespace HHG.Common.Runtime
             JsonUtility.FromJsonOverwrite(json, obj);
         }
 
+        public static void FromJsonOverwrite<T>(this T obj, T other)
+        {
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(other), obj);
+        }
+
         public static byte[] ToJsonBytes<T>(this T value, bool pretty = false)
         {
             return Encoding.UTF8.GetBytes(JsonUtility.ToJson(value, pretty));

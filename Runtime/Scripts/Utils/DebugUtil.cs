@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace HHG.Common.Runtime
 {
@@ -8,7 +6,7 @@ namespace HHG.Common.Runtime
     {
         public static void LogException(string message, Object context = null)
         {
-            Debug.LogException(new Exception(message), context);
+            Debug.LogException(new System.Exception(message), context);
         }
     }
 }

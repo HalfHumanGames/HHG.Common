@@ -28,7 +28,7 @@ namespace HHG.Common.Runtime
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<TSession>() ?? CreateInstance<TSession>();
+                    instance = FindAnyObjectByType<TSession>() ?? CreateInstance<TSession>();
                     instance.setup();
                 }
                 return instance;

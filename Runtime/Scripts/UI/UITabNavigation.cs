@@ -10,6 +10,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private Transform tabsContainer;
         [SerializeField] private Transform contentContainer;
 
+        private RectTransform rectTransform;
         private Lazy<Button> _tabs = new Lazy<Button>();
         private Button[] tabs => _tabs.FromComponentsInChildren(tabsContainer);
         private Lazy<GameObject> _content = new Lazy<GameObject>();
@@ -17,6 +18,8 @@ namespace HHG.Common.Runtime
 
         private void Awake()
         {
+            rectTransform = GetComponent<RectTransform>();
+
             foreach (Button tab in tabs)
             {
                 tab.onClick.AddListener(() => SelectTab(tab));
@@ -67,7 +70,7 @@ namespace HHG.Common.Runtime
 
             int index = button.transform.GetSiblingIndex();
             content[index].SetActive(true);
-            content[index].GetComponent<RectTransform>().RebuildLayout();
+            rectTransform.RebuildLayout();
         }
     }
 }
