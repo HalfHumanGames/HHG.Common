@@ -104,5 +104,41 @@ namespace HHG.Common.Runtime
                 }
             }
         }
+
+        public static int IndexOf<T>(this IEnumerable<T> source, T search)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (search == null) throw new ArgumentNullException(nameof(search));
+
+            int index = 0;
+            foreach (T element in source)
+            {
+                if (EqualityComparer<T>.Default.Equals(element, search))
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return -1;
+        }
+
+        public static int FindIndex<T>(this IEnumerable<T> source, Func<T, bool> search)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (search == null) throw new ArgumentNullException(nameof(search));
+
+            int index = 0;
+            foreach (T element in source)
+            {
+                if (search(element))
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return -1;
+        }
     } 
 }

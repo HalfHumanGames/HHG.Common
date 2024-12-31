@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HHG.Common.Runtime
 {
-    public class TimedEvent : IComparable<TimedEvent>
+    public abstract class TimedEvent : IComparable<TimedEvent>
     {
         public object WeakContext => weakContext;
         public bool IsExpired => timeRemaining <= 0f;
@@ -130,6 +132,19 @@ namespace HHG.Common.Runtime
         {
             base.OnExpire();
             Expired?.Invoke(this);
+        }
+    }
+
+    public static class TimedEventExtensions
+    {
+        public static IEnumerable<TimedEvent<T>> ByContextType<T>(this IEnumerable<TimedEvent> enumerable)
+        {
+            return enumerable.OfType<TimedEvent<T>>();
+        }
+
+        public static IEnumerable<T> Contexts<T>(this IEnumerable<TimedEvent<T>> enumerable)
+        {
+            return enumerable.Select(x => x.Context);
         }
     }
 }

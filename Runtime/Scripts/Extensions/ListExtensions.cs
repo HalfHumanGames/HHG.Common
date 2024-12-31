@@ -100,5 +100,35 @@ namespace HHG.Common.Runtime
             list.Remove(item);
             list.SortedInsert(item, comparer);
         }
+
+        public static int IndexOf<T>(this IReadOnlyList<T> list, T item)
+        {
+            int i = 0;
+            foreach (T element in list)
+            {
+                if (Equals(element, item))
+                {
+                    return i;
+                }
+                    
+                i++;
+            }
+            return -1;
+        }
+
+        public static int FindIndex<T>(this IReadOnlyList<T> list, System.Func<T, bool> check)
+        {
+            int i = 0;
+            foreach (T element in list)
+            {
+                if (check(element))
+                {
+                    return i;
+                }
+
+                i++;
+            }
+            return -1;
+        }
     }
 }
