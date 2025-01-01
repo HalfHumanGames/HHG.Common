@@ -26,10 +26,7 @@ namespace HHG.Common.Runtime
 
                 if (tab.TryGetComponent(out EventTrigger eventTrigger))
                 {
-                    EventTrigger.Entry entry = new EventTrigger.Entry();
-                    entry.eventID = EventTriggerType.Select;
-                    entry.callback.AddListener(_ => SelectTab(tab));
-                    eventTrigger.triggers.Add(entry);
+                    eventTrigger.AddTrigger(EventTriggerType.Select, () => SelectTab(tab));
                 }
             }
 
