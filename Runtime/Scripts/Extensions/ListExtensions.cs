@@ -130,5 +130,26 @@ namespace HHG.Common.Runtime
             }
             return -1;
         }
+
+        public static bool Resize<T>(this List<T> list, int size, T template, Transform parent = null) where T : MonoBehaviour
+        {
+            bool adjusted = list.Count != size;
+
+            while (list.Count < size)
+            {
+                T item = Object.Instantiate(template, parent);
+                item.gameObject.SetActive(true);
+                list.Add(item);
+            }
+
+            while (list.Count > size)
+            {
+                T item = list[list.Count - 1];
+                Object.Destroy(item.gameObject);
+                list.RemoveAt(list.Count - 1);
+            }
+
+            return adjusted;
+        }
     }
 }
