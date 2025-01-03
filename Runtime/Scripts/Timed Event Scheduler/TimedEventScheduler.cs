@@ -9,6 +9,7 @@ namespace HHG.Common.Runtime
         public IReadOnlyList<TimedEvent> ExpiredEvents => expiredEvents;
 
         private HashSet<TimedEvent> scheduledEventsHash = new HashSet<TimedEvent>();
+        private HashSet<TimedEvent> expiredEventsHash = new HashSet<TimedEvent>();
         private List<TimedEvent> scheduledEvents = new List<TimedEvent>();
         private List<TimedEvent> expiredEvents = new List<TimedEvent>();
 
@@ -32,6 +33,9 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public bool IsScheduled(TimedEvent timedEvent) => scheduledEventsHash.Contains(timedEvent);
+        public bool IsExpired(TimedEvent timedEvent) => expiredEventsHash.Contains(timedEvent);
+
         public void Update(float deltaTime)
         {
             if (scheduledEvents.Count == 0)
@@ -47,9 +51,10 @@ namespace HHG.Common.Runtime
                 if (scheduledEvent.IsExpired)
                 {
                     scheduledEvent.WeakRescheduled -= OnRescheduled;
-                    expiredEvents.Add(scheduledEvent);
                     scheduledEvents.RemoveAt(i);
                     scheduledEventsHash.Remove(scheduledEvent);
+                    expiredEvents.Add(scheduledEvent);
+                    expiredEventsHash.Add(scheduledEvent);
                 }
             }
         }
@@ -75,6 +80,7 @@ namespace HHG.Common.Runtime
                 expiredEvent = expiredEvents[index];
                 expiredEvent.Expire();
                 expiredEvents.RemoveAt(index);
+                expiredEventsHash.Remove(expiredEvent);
                 return true;
             }
             else
@@ -94,6 +100,7 @@ namespace HHG.Common.Runtime
             scheduledEvents.Clear();
             scheduledEventsHash.Clear();
             expiredEvents.Clear();
+            expiredEventsHash.Clear();
         }
 
         public override string ToString()

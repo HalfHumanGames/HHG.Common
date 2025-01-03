@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using UnityEditor;
 
 namespace HHG.Common.Runtime
 {
@@ -26,6 +27,11 @@ namespace HHG.Common.Runtime
         public static string ToTitleCase(this string s)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s);
+        }
+
+        public static string ToNicified(this string s)
+        {
+            return ObjectNames.NicifyVariableName(s);
         }
     }
 }
