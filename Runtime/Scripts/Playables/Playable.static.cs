@@ -13,7 +13,8 @@ namespace HHG.Common.Runtime
         {
             Register<Animation>(animation => animation.Play(), animation => animation.Stop());
             Register<AudioSource>(audioSource => audioSource.Play(), audioSource => audioSource.Stop());
-            Register<ParticleSystem>(particleSystem => particleSystem.Play(), particleSystem => particleSystem.Stop());
+            // Do not Play and Stop with children since it Playables also get child particle systems
+            Register<ParticleSystem>(particleSystem => particleSystem.Play(false), particleSystem => particleSystem.Stop(false));
         }
 
         public static void Register<T>(Action<T> play, Action<T> stop = null, Action<T> pause = null, Action<T> resume = null) where T : Component
