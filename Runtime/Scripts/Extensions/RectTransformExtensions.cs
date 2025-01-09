@@ -1,12 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
-using UnityEngine.UIElements;
 
 namespace HHG.Common.Runtime
 {
     public static class RectTransformExtensions
     {
+        private static HashSet<RectTransform> rebuildLayoutRects = new HashSet<RectTransform>();
+
         public static void ResetAnchoredPos(this RectTransform rect)
         {
             rect.anchoredPosition = Vector2.zero;
@@ -115,16 +116,74 @@ namespace HHG.Common.Runtime
             rect.anchoredPosition = position;
         }
 
+        // We need to use this since LayoutRebuilder.MarkLayoutForRebuild
+        // does not work for a majority of uses cases for whatever reason
+        // LayoutRebuilder.ForceRebuildLayoutImmediate also fails to rebuild
+        // children first, so it does not work for nested layout groups
         public static void RebuildLayout(this RectTransform rect)
         {
-            LayoutGroup[] layouts = rect.GetComponentsInChildren<LayoutGroup>(true);
-
-            foreach (LayoutGroup layout in layouts)
+            // Uses recursion to ensure that child rects
+            // are rebuilt before the parent rects
+            foreach (RectTransform child in rect)
             {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(layout.GetComponent<RectTransform>());
+                child.RebuildLayout();
             }
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            // We only need to rebuild the layout for rects
+            // that have a component that implements ILayoutGroup
+            if (rect.TryGetComponent<ILayoutGroup>(out _))
+            {
+                // Rebuild this rect after rebuilding it's children
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            }
+        }
+
+        // This is a custom implementation of LayoutRebuilder.MarkLayoutForRebuild
+        // that actually works using our own RebuildLayout extension method
+        // This solves issues caused by rebuilding more than once in the a frame
+        public static void MarkLayoutForRebuild(this RectTransform rect)
+        {
+            if (!rebuildLayoutRects.Contains(rect))
+            {
+                rebuildLayoutRects.Add(rect);
+                CanvasUpdateRegistry.RegisterCanvasElementForLayoutRebuild(new LayoutRebuildHelper(rect));
+            }
+        }
+
+        private class LayoutRebuildHelper : ICanvasElement
+        {
+            public Transform transform => rect;
+
+            private RectTransform rect;
+
+            public LayoutRebuildHelper(RectTransform rect)
+            {
+                this.rect = rect;
+            }
+
+            public void Rebuild(CanvasUpdate executing)
+            {
+                if (executing == CanvasUpdate.Layout)
+                {
+                    rect.RebuildLayout();
+                    rebuildLayoutRects.Remove(rect);
+                }
+            }
+
+            public bool IsDestroyed()
+            {
+                return rect == null;
+            }
+
+            public void LayoutComplete()
+            {
+                
+            }
+
+            public void GraphicUpdateComplete()
+            {
+                
+            }
         }
     }
 }
