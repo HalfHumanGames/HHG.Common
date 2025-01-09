@@ -32,9 +32,14 @@ namespace HHG.Common.Runtime
             return invoker.When(check);
         }
 
-        public static ICanAddTerminator<T> Every<T>(this Invoker<T> invoker, float seconds)
+        public static ICanAddTerminator<T> Every<T>(this Invoker<T> invoker, float seconds, bool realtime = false)
         {
-            return invoker.Every(seconds);
+            return invoker.Every(seconds, realtime);
+        }
+
+        public static ICanAddTerminator<T> EveryRealtime<T>(this Invoker<T> invoker, float seconds)
+        {
+            return invoker.Every(seconds, true);
         }
 
         public static ICanAddTerminator<T> EachFrame<T>(this Invoker<T> invoker)
@@ -102,6 +107,16 @@ namespace HHG.Common.Runtime
             return invoker.Every(seconds).Do(func, arg);
         }
 
+        public static Coroutine Every<T>(this Invoker<T> invoker, float seconds, bool realtime, Action<T> func, T arg = default)
+        {
+            return invoker.Every(seconds, realtime).Do(func, arg);
+        }
+
+        public static Coroutine EveryRealtime<T>(this Invoker<T> invoker, float seconds, Action<T> func, T arg = default)
+        {
+            return invoker.Every(seconds, true).Do(func, arg);
+        }
+
         public static Coroutine EachFrame<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
             return invoker.EachFrame().Do(func, arg);
@@ -161,9 +176,14 @@ namespace HHG.Common.Runtime
             return mono.GetInvokerFromObjectPool<T>().When(check);
         }
 
-        public static ICanAddTerminator<T> Every<T>(this MonoBehaviour mono, float seconds)
+        public static ICanAddTerminator<T> Every<T>(this MonoBehaviour mono, float seconds, bool realtime = false)
         {
-            return mono.GetInvokerFromObjectPool<T>().Every(seconds);
+            return mono.GetInvokerFromObjectPool<T>().Every(seconds, realtime);
+        }
+
+        public static ICanAddTerminator<T> EveryRealtime<T>(this MonoBehaviour mono, float seconds)
+        {
+            return mono.GetInvokerFromObjectPool<T>().Every(seconds, true);
         }
 
         public static ICanAddTerminator<T> EachFrame<T>(this MonoBehaviour mono)
@@ -231,6 +251,16 @@ namespace HHG.Common.Runtime
             return mono.GetInvokerFromObjectPool<T>().Every(seconds).Do(func, arg);
         }
 
+        public static Coroutine Every<T>(this MonoBehaviour mono, float seconds, bool realtime, Action<T> func, T arg = default)
+        {
+            return mono.GetInvokerFromObjectPool<T>().Every(seconds, realtime).Do(func, arg);
+        }
+
+        public static Coroutine EveryRealtime<T>(this MonoBehaviour mono, float seconds, Action<T> func, T arg = default)
+        {
+            return mono.GetInvokerFromObjectPool<T>().Every(seconds, true).Do(func, arg);
+        }
+
         public static Coroutine EachFrame<T>(this MonoBehaviour mono, Action<T> func, T arg = default)
         {
             return mono.GetInvokerFromObjectPool<T>().EachFrame().Do(func, arg);
@@ -290,9 +320,14 @@ namespace HHG.Common.Runtime
             return mono.GetInvokerFromObjectPool().When(check);
         }
 
-        public static ICanAddTerminator<object> Every(this MonoBehaviour mono, float seconds)
+        public static ICanAddTerminator<object> Every(this MonoBehaviour mono, float seconds, bool realtime = false)
         {
-            return mono.GetInvokerFromObjectPool().Every(seconds);
+            return mono.GetInvokerFromObjectPool().Every(seconds, realtime);
+        }
+
+        public static ICanAddTerminator<object> EveryRealtime(this MonoBehaviour mono, float seconds)
+        {
+            return mono.GetInvokerFromObjectPool().Every(seconds, true);
         }
 
         public static ICanAddTerminator<object> EachFrame(this MonoBehaviour mono)
@@ -358,6 +393,16 @@ namespace HHG.Common.Runtime
         public static Coroutine Every(this MonoBehaviour mono, float seconds, Action<object> func, object arg = default)
         {
             return mono.GetInvokerFromObjectPool().Every(seconds).Do(func, arg);
+        }
+
+        public static Coroutine Every(this MonoBehaviour mono, float seconds, bool realtime, Action<object> func, object arg = default)
+        {
+            return mono.GetInvokerFromObjectPool().Every(seconds, realtime).Do(func, arg);
+        }
+
+        public static Coroutine EveryRealtime(this MonoBehaviour mono, float seconds, Action<object> func, object arg = default)
+        {
+            return mono.GetInvokerFromObjectPool().Every(seconds, true).Do(func, arg);
         }
 
         public static Coroutine EachFrame(this MonoBehaviour mono, Action<object> func, object arg = default)
