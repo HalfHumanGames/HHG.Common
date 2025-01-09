@@ -19,6 +19,8 @@ namespace HHG.Common.Runtime
 
     public class Invoker<T> : ICanAddFrequencyOrTerminator<T>, ICanAddTerminator<T>
     {
+        protected MonoBehaviour invoker;
+        protected Action done;
         protected float startDelay;
         protected InvokeDelayer startDelayer;
         protected float delay;
@@ -28,32 +30,28 @@ namespace HHG.Common.Runtime
         protected Func<bool> check;
         protected InvokeFrequency frequency;
         protected InvokeTerminator terminator;
-        protected MonoBehaviour invoker;
+
 
         protected enum InvokeDelayer { None, Seconds, SecondsRealtime, Frame, Fixed, When }
         protected enum InvokeFrequency { Every, EachFrame, EachFixed }
         protected enum InvokeTerminator { Once, Repeat, RepeatForever, While, Until }
 
-        public event Action Done;
 
         public Invoker()
         {
 
         }
 
-        public Invoker(MonoBehaviour mono)
+        public Invoker(MonoBehaviour mono, Action onDone = null)
         {
             invoker = mono;
+            done = onDone;
         }
 
-        public void Initialize(MonoBehaviour mono)
+        public void Initialize(MonoBehaviour mono, Action onDone = null)
         {
-            Reset();
             invoker = mono;
-        }
-
-        public void Reset()
-        {
+            done = onDone;
             startDelay = 0f;
             startDelayer = InvokeDelayer.None;
             delay = 0f;
@@ -63,8 +61,6 @@ namespace HHG.Common.Runtime
             check = null;
             frequency = InvokeFrequency.Every;
             terminator = InvokeTerminator.Once;
-            invoker = null;
-            Done = null;
         }
 
         public ICanAddFrequencyOrTerminator<T> After(float seconds, bool realtime = false)
@@ -279,7 +275,7 @@ namespace HHG.Common.Runtime
 
             } while (CanContinue());
 
-            Done?.Invoke();
+            done?.Invoke();
         }
 
         private bool CanContinue()

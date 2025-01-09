@@ -48,7 +48,7 @@ namespace HHG.Common.Runtime
         {
             if (obj != null && CoroutineUtil.Coroutiner != null)
             {
-                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Object.Destroy(obj));
+                CoroutineUtil.Coroutiner.NextFrame(_ => Object.Destroy(obj));
             }
         }
 
@@ -56,7 +56,7 @@ namespace HHG.Common.Runtime
         {
             if (objects != null && CoroutineUtil.Coroutiner != null)
             {
-                CoroutineUtil.Coroutiner.Invoker().NextFrame(_ => Destroy(objects));
+                CoroutineUtil.Coroutiner.NextFrame(_ => Destroy(objects));
             }
         }
 
