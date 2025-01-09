@@ -5,134 +5,153 @@ namespace HHG.Common.Runtime
 {
     public static class InvokerExtensions
     {
-        public static Invoker Invoker(this MonoBehaviour mono)
+        public static Invoker Invoker(this MonoBehaviour mono) 
         {
-            return new Invoker(mono);
+            Invoker invoker = ObjectPool.Get<Invoker>();
+            invoker.Initialize(mono);
+            invoker.Done += () =>
+            {
+                invoker.Reset();
+                ObjectPool.Release(invoker);
+            };
+            return invoker;
         }
 
-        public static ICanAddFrequencyOrTerminator After(this Invoker invoker, float seconds, bool realtime = false)
+        public static Invoker<T> Invoker<T>(this MonoBehaviour mono)
+        {
+            Invoker<T> invoker = ObjectPool.Get<Invoker<T>>();
+            invoker.Initialize(mono);
+            invoker.Done += () =>
+            {
+                invoker.Reset();
+                ObjectPool.Release(invoker);
+            };
+            return invoker;
+        }
+
+        public static ICanAddFrequencyOrTerminator<T> After<T>(this Invoker<T> invoker, float seconds, bool realtime = false)
         {
             return invoker.After(seconds, realtime);
         }
 
-        public static ICanAddFrequencyOrTerminator AfterRealtime(this Invoker invoker, float seconds)
+        public static ICanAddFrequencyOrTerminator<T> AfterRealtime<T>(this Invoker<T> invoker, float seconds)
         {
             return invoker.After(seconds, true);
         }
 
-        public static ICanAddFrequencyOrTerminator NextFrame(this Invoker invoker)
+        public static ICanAddFrequencyOrTerminator<T> NextFrame<T>(this Invoker<T> invoker)
         {
             return invoker.NextFrame();
         }
 
-        public static ICanAddFrequencyOrTerminator NextFixed(this Invoker invoker)
+        public static ICanAddFrequencyOrTerminator<T> NextFixed<T>(this Invoker<T> invoker)
         {
             return invoker.NextFixed();
         }
 
-        public static ICanAddFrequencyOrTerminator When(this Invoker invoker, Func<bool> check)
+        public static ICanAddFrequencyOrTerminator<T> When<T>(this Invoker<T> invoker, Func<bool> check)
         {
             return invoker.When(check);
         }
 
-        public static ICanAddTerminator Every(this Invoker invoker, float seconds)
+        public static ICanAddTerminator<T> Every<T>(this Invoker<T> invoker, float seconds)
         {
             return invoker.Every(seconds);
         }
 
-        public static ICanAddTerminator EachFrame(this Invoker invoker)
+        public static ICanAddTerminator<T> EachFrame<T>(this Invoker<T> invoker)
         {
             return invoker.EachFrame();
         }
 
-        public static ICanAddTerminator EachFixed(this Invoker invoker)
+        public static ICanAddTerminator<T> EachFixed<T>(this Invoker<T> invoker)
         {
             return invoker.EachFixed();
         }
 
-        public static ICanDo RepeatForever(this Invoker invoker)
+        public static ICanDo<T> RepeatForever<T>(this Invoker<T> invoker)
         {
             return invoker.RepeatForever();
         }
 
-        public static ICanDo Repeat(this Invoker invoker, int repetitions)
+        public static ICanDo<T> Repeat<T>(this Invoker<T> invoker, int repetitions)
         {
             return invoker.Repeat(repetitions);
         }
 
-        public static ICanDo While(this Invoker invoker, Func<bool> check)
+        public static ICanDo<T> While<T>(this Invoker<T> invoker, Func<bool> check)
         {
             return invoker.While(check);
         }
 
-        public static ICanDo Until(this Invoker invoker, Func<bool> check)
+        public static ICanDo<T> Until<T>(this Invoker<T> invoker, Func<bool> check)
         {
             return invoker.Until(check);
         }
 
-        public static Coroutine After(this Invoker invoker, float seconds, Action<object[]> func)
+        public static Coroutine After<T>(this Invoker<T> invoker, float seconds, Action<T> func, T arg = default)
         {
-            return invoker.After(seconds).Do(func);
+            return invoker.After(seconds).Do(func, arg);
         }
 
-        public static Coroutine After(this Invoker invoker, float seconds, bool realtime, Action<object[]> func)
+        public static Coroutine After<T>(this Invoker<T> invoker, float seconds, bool realtime, Action<T> func, T arg = default)
         {
-            return invoker.After(seconds, realtime).Do(func);
+            return invoker.After(seconds, realtime).Do(func, arg);
         }
 
-        public static Coroutine AfterRealtime(this Invoker invoker, float seconds, Action<object[]> func)
+        public static Coroutine AfterRealtime<T>(this Invoker<T> invoker, float seconds, Action<T> func, T arg = default)
         {
-            return invoker.After(seconds, true).Do(func);
+            return invoker.After(seconds, true).Do(func, arg);
         }
 
-        public static Coroutine NextFrame(this Invoker invoker, Action<object[]> func)
+        public static Coroutine NextFrame<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
-            return invoker.NextFrame().Do(func);
+            return invoker.NextFrame().Do(func, arg);
         }
 
-        public static Coroutine NextFixed(this Invoker invoker, Action<object[]> func)
+        public static Coroutine NextFixed<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
-            return invoker.NextFixed().Do(func);
+            return invoker.NextFixed().Do(func, arg);
         }
 
-        public static Coroutine When(this Invoker invoker, Func<bool> check, Action<object[]> func)
+        public static Coroutine When<T>(this Invoker<T> invoker, Func<bool> check, Action<T> func, T arg = default)
         {
-            return invoker.When(check).Do(func);
+            return invoker.When(check).Do(func, arg);
         }
 
-        public static Coroutine Every(this Invoker invoker, float seconds, Action<object[]> func)
+        public static Coroutine Every<T>(this Invoker<T> invoker, float seconds, Action<T> func, T arg = default)
         {
-            return invoker.Every(seconds).Do(func);
+            return invoker.Every(seconds).Do(func, arg);
         }
 
-        public static Coroutine EachFrame(this Invoker invoker, Action<object[]> func)
+        public static Coroutine EachFrame<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
-            return invoker.EachFrame().Do(func);
+            return invoker.EachFrame().Do(func, arg);
         }
 
-        public static Coroutine EachFixed(this Invoker invoker, Action<object[]> func)
+        public static Coroutine EachFixed<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
-            return invoker.EachFixed().Do(func);
+            return invoker.EachFixed().Do(func, arg);
         }
 
-        public static Coroutine RepeatForever(this Invoker invoker, Action<object[]> func)
+        public static Coroutine RepeatForever<T>(this Invoker<T> invoker, Action<T> func, T arg = default)
         {
-            return invoker.RepeatForever().Do(func);
+            return invoker.RepeatForever().Do(func, arg);
         }
 
-        public static Coroutine Repeat(this Invoker invoker, int repetitions, Action<object[]> func)
+        public static Coroutine Repeat<T>(this Invoker<T> invoker, int repetitions, Action<T> func, T arg = default)
         {
-            return invoker.Repeat(repetitions).Do(func);
+            return invoker.Repeat(repetitions).Do(func, arg);
         }
 
-        public static Coroutine While(this Invoker invoker, Func<bool> check, Action<object[]> func)
+        public static Coroutine While<T>(this Invoker<T> invoker, Func<bool> check, Action<T> func, T arg = default)
         {
-            return invoker.While(check).Do(func);
+            return invoker.While(check).Do(func, arg);
         }
 
-        public static Coroutine Until(this Invoker invoker, Func<bool> check, Action<object[]> func)
+        public static Coroutine Until<T>(this Invoker<T> invoker, Func<bool> check, Action<T> func, T arg = default)
         {
-            return invoker.Until(check).Do(func);
+            return invoker.Until(check).Do(func, arg);
         }
     }
 }
