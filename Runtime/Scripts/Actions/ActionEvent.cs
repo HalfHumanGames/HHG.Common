@@ -7,24 +7,24 @@ using UnityEngine.Events;
 namespace HHG.Common.Runtime
 {
     [Serializable]
-    public class ActionEvent
+    public class ActionEvent<T> where T : MonoBehaviour
     {
         public List<IActionBase> Actions => actions;
 
         [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
 
-        private event Action invokedEvent;
-        private UnityEvent invokedUnityEvent = new UnityEvent();
+        private event Action<T> invokedEvent;
+        private UnityEvent<T> invokedUnityEvent = new UnityEvent<T>();
 
-        public Coroutine Invoke(MonoBehaviour invoker)
+        public Coroutine Invoke(T invoker)
         {
             return invoker.StartCoroutine(InvokeRoutine(invoker));
         }
 
-        public IEnumerator InvokeRoutine(MonoBehaviour invoker)
+        public IEnumerator InvokeRoutine(T invoker)
         {
-            invokedEvent?.Invoke();
-            invokedUnityEvent?.Invoke();
+            invokedEvent?.Invoke(invoker);
+            invokedUnityEvent?.Invoke(invoker);
 
             foreach (IActionBase action in actions)
             {
@@ -39,12 +39,12 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void AddListener(UnityAction call)
+        public void AddListener(UnityAction<T> call)
         {
             invokedUnityEvent.AddListener(call);
         }
 
-        public void RemoveListener(UnityAction call)
+        public void RemoveListener(UnityAction<T> call)
         {
             invokedUnityEvent.RemoveListener(call);
         }
@@ -56,7 +56,7 @@ namespace HHG.Common.Runtime
             invokedUnityEvent.RemoveAllListeners();
         }
 
-        public static ActionEvent operator +(ActionEvent actionEvent, Action action)
+        public static ActionEvent<T> operator +(ActionEvent<T> actionEvent, Action<T> action)
         {
             if (actionEvent == null)
             {
@@ -68,7 +68,7 @@ namespace HHG.Common.Runtime
             return actionEvent;
         }
 
-        public static ActionEvent operator -(ActionEvent actionEvent, Action action)
+        public static ActionEvent<T> operator -(ActionEvent<T> actionEvent, Action<T> action)
         {
             if (actionEvent == null)
             {
@@ -79,5 +79,10 @@ namespace HHG.Common.Runtime
 
             return actionEvent;
         }
+    }
+
+    public class ActionEvent : ActionEvent<MonoBehaviour>
+    {
+
     }
 }
