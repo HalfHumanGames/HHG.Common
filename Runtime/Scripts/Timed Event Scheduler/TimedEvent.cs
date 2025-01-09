@@ -146,5 +146,10 @@ namespace HHG.Common.Runtime
         {
             return enumerable.Select(x => x.Context);
         }
+
+        public static TimedEvent<T> Find<T>(this IEnumerable<TimedEvent> enumerable, T context)
+        {
+            return enumerable.ByContextType<T>().FirstOrDefault(x => x.Context.Equals(context));
+        }
     }
 }
