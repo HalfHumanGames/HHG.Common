@@ -108,7 +108,7 @@ namespace HHG.Common.Runtime
                     }
                 }
 
-                #if UNITY_6
+#if UNITY_6000_0_OR_NEWER
 
                 string key = typeof(T).Name;
 
@@ -125,7 +125,7 @@ namespace HHG.Common.Runtime
                     }
                 }
 
-                #endif
+#endif
             }
         }
     }
