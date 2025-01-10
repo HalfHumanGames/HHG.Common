@@ -7,24 +7,104 @@ using UnityEngine.Events;
 namespace HHG.Common.Runtime
 {
     [Serializable]
-    public class ActionEvent<T> where T : MonoBehaviour
+    public class ActionEvent
     {
         public List<IActionBase> Actions => actions;
 
-        [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
+        [SerializeReference, SubclassSelector] protected List<IActionBase> actions = new List<IActionBase>();
 
-        private event Action<T> invokedEvent;
-        private UnityEvent<T> invokedUnityEvent = new UnityEvent<T>();
+        protected event Action plainEvent;
+        protected UnityEvent unityEvent = new UnityEvent();
+
+        public Coroutine Invoke(MonoBehaviour invoker)
+        {
+            return invoker.StartCoroutine(InvokeAsync(invoker));
+        }
+
+        public IEnumerator InvokeAsync(MonoBehaviour invoker)
+        {
+            plainEvent?.Invoke();
+            unityEvent?.Invoke();
+
+            foreach (IActionBase action in actions)
+            {
+                if (action is IAction syncAction)
+                {
+                    syncAction.Invoke(invoker);
+                }
+                else if (action is IActionAsync asyncAction)
+                {
+                    yield return asyncAction.InvokeAsync(invoker);
+                }
+            }
+        }
+
+        public void AddListener(UnityAction call)
+        {
+            unityEvent.AddListener(call);
+        }
+
+        public void RemoveListener(UnityAction call)
+        {
+            unityEvent.RemoveListener(call);
+        }
+
+        public virtual void RemoveAllListeners()
+        {
+            actions.Clear();
+            plainEvent = null;
+            unityEvent.RemoveAllListeners();
+        }
+
+        // Since we cannot invoke the event directly
+        // in subclasses, we need to call this method
+        protected void IssuePlainEvent()
+        {
+            plainEvent?.Invoke();
+        }
+
+        public static ActionEvent operator +(ActionEvent actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.plainEvent += action;
+
+            return actionEvent;
+        }
+
+        public static ActionEvent operator -(ActionEvent actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.plainEvent -= action;
+
+            return actionEvent;
+        }
+    }
+
+    [Serializable]
+    public class ActionEvent<T> : ActionEvent where T : MonoBehaviour
+    {
+        private event Action<T> plainEvent2;
+        private UnityEvent<T> unityEvent2 = new UnityEvent<T>();
 
         public Coroutine Invoke(T invoker)
         {
-            return invoker.StartCoroutine(InvokeRoutine(invoker));
+            return invoker.StartCoroutine(InvokeAsync(invoker));
         }
 
-        public IEnumerator InvokeRoutine(T invoker)
+        public IEnumerator InvokeAsync(T invoker)
         {
-            invokedEvent?.Invoke(invoker);
-            invokedUnityEvent?.Invoke(invoker);
+            IssuePlainEvent();
+            plainEvent2?.Invoke(invoker);
+            unityEvent?.Invoke();
+            unityEvent2?.Invoke(invoker);
 
             foreach (IActionBase action in actions)
             {
@@ -41,19 +121,43 @@ namespace HHG.Common.Runtime
 
         public void AddListener(UnityAction<T> call)
         {
-            invokedUnityEvent.AddListener(call);
+            unityEvent2.AddListener(call);
         }
 
         public void RemoveListener(UnityAction<T> call)
         {
-            invokedUnityEvent.RemoveListener(call);
+            unityEvent2.RemoveListener(call);
         }
 
-        public void RemoveAllListeners()
+        public override void RemoveAllListeners()
         {
-            actions.Clear();
-            invokedEvent = null;
-            invokedUnityEvent.RemoveAllListeners();
+            base.RemoveAllListeners();
+            plainEvent2 = null;
+            unityEvent2.RemoveAllListeners();
+        }
+
+        public static ActionEvent<T> operator +(ActionEvent<T> actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.plainEvent += action;
+
+            return actionEvent;
+        }
+
+        public static ActionEvent<T> operator -(ActionEvent<T> actionEvent, Action action)
+        {
+            if (actionEvent == null)
+            {
+                throw new ArgumentNullException(nameof(actionEvent));
+            }
+
+            actionEvent.plainEvent -= action;
+
+            return actionEvent;
         }
 
         public static ActionEvent<T> operator +(ActionEvent<T> actionEvent, Action<T> action)
@@ -63,7 +167,7 @@ namespace HHG.Common.Runtime
                 throw new ArgumentNullException(nameof(actionEvent));
             }
 
-            actionEvent.invokedEvent += action;
+            actionEvent.plainEvent2 += action;
 
             return actionEvent;
         }
@@ -75,14 +179,9 @@ namespace HHG.Common.Runtime
                 throw new ArgumentNullException(nameof(actionEvent));
             }
 
-            actionEvent.invokedEvent -= action;
+            actionEvent.plainEvent2 -= action;
 
             return actionEvent;
         }
-    }
-
-    public class ActionEvent : ActionEvent<MonoBehaviour>
-    {
-
     }
 }
