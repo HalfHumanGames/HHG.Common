@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using UnityEditor;
+using System.Text.RegularExpressions;
 
 namespace HHG.Common.Runtime
 {
@@ -31,7 +31,7 @@ namespace HHG.Common.Runtime
 
         public static string ToNicified(this string s)
         {
-            return ObjectNames.NicifyVariableName(s);
+            return Regex.Replace(s, "([A-Z])", " $1", RegexOptions.Compiled).ToTitleCase().Trim();
         }
     }
 }
