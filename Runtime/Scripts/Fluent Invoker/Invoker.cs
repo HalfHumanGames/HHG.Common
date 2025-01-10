@@ -98,6 +98,7 @@ namespace HHG.Common.Runtime
 
         public ICanAddTerminator<T> Every(float seconds)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             return this;
@@ -105,6 +106,7 @@ namespace HHG.Common.Runtime
 
         public ICanAddTerminator<T> Every(float seconds, bool real = false)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             realtime = real;
@@ -113,6 +115,7 @@ namespace HHG.Common.Runtime
 
         public ICanAddTerminator<T> EveryRealtime(float seconds)
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.Every;
             delay = seconds;
             realtime = true;
@@ -121,12 +124,14 @@ namespace HHG.Common.Runtime
 
         public ICanAddTerminator<T> EachFixed()
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.EachFixed;
             return this;
         }
 
         public ICanAddTerminator<T> EachFrame()
         {
+            terminator = InvokeTerminator.RepeatForever;
             frequency = InvokeFrequency.EachFrame;
             return this;
         }

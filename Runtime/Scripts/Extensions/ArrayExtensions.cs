@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
     {
         public static T GetRandom<T>(this T[] array)
         {
-            return array[Random.Range(0, array.Length)];
+            return array.Length == 0 ? default : array[Random.Range(0, array.Length)];
         }
 
         public static T[] RotatedClockwise<T>(this T[] array, int rotation = 1)
