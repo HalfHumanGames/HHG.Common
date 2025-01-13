@@ -7,6 +7,13 @@ namespace HHG.Common.Editor
 {
     public static class SerializedPropertyExtensions
     {
+        public static SerializedProperty GetParentProperty(this SerializedProperty property)
+        {
+            int index = property.propertyPath.LastIndexOf('.');
+            string path = property.propertyPath[..index];
+            return property.serializedObject.FindProperty(path);
+        }
+
         public static Type GetPropertyType(this SerializedProperty property)
         {
             string pattern = @"PPtr<\$?(.*?)>";
