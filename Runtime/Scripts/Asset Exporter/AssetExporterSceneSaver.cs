@@ -123,7 +123,7 @@ namespace HHG.Common.Runtime
 
         private static IEnumerable<AssetExporterBase> FindExporters()
         {
-            return Object.FindObjectsByType<AssetExporterBase>(FindObjectsSortMode.None).Where(e => e.HasAsset);
+            return Object.FindObjectsByType<AssetExporterBase>(FindObjectsSortMode.None).Where(e => e.HasAsset).OrderByDescending(e => e.Priority);
         }
     }
 }

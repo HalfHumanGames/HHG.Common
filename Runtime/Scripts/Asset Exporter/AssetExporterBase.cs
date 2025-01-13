@@ -10,6 +10,7 @@ namespace HHG.Common.Runtime
     public abstract class AssetExporterBase : MonoBehaviour
     {
         public string Id => id;
+        public virtual int Priority => 0;
         public abstract bool HasAsset { get; }
 
         [SerializeField, HideInInspector] private string id => Guid.NewGuid().ToString();
