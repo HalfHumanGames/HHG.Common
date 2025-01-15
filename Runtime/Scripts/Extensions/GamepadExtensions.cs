@@ -11,6 +11,12 @@ namespace HHG.Common.Runtime
                    Mathf.Abs(gamepad.leftStick.y.ReadValue()) > 0.1f ||
                    Mathf.Abs(gamepad.rightStick.x.ReadValue()) > 0.1f ||
                    Mathf.Abs(gamepad.rightStick.y.ReadValue()) > 0.1f ||
+                   gamepad.leftStickButton.isPressed ||
+                   gamepad.rightStickButton.isPressed ||
+                   gamepad.dpad.up.isPressed ||
+                   gamepad.dpad.down.isPressed ||
+                   gamepad.dpad.left.isPressed ||
+                   gamepad.dpad.right.isPressed ||
                    gamepad.buttonSouth.isPressed ||
                    gamepad.buttonWest.isPressed ||
                    gamepad.buttonNorth.isPressed ||

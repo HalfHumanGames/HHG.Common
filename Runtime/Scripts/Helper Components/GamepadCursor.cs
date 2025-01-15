@@ -11,9 +11,20 @@ namespace HHG.Common.Runtime
 
         private Vector2 position;
 
+        private void Awake()
+        {
+            position = ScreenUtil.GetScreenCenter();
+        }
+
         private void OnEnable()
         {
             position = Mouse.current.position.ReadValue();
+            Mouse.current.WarpCursorPositionClamped(position);
+        }
+
+        private void OnDisable()
+        {
+            // Do nothing
         }
 
         private void Update()
@@ -24,12 +35,8 @@ namespace HHG.Common.Runtime
 
                 if (stick != Vector2.zero)
                 {
-                    position = ScreenUtil.ClampToScreen(position + stick * speed * Time.unscaledDeltaTime);
-                    Mouse.current.WarpCursorPosition(position);
-                }
-                else
-                {
-                    position = Mouse.current.position.ReadValue();
+                    position += stick * speed * Time.unscaledDeltaTime;
+                    Mouse.current.WarpCursorPositionClamped(position);
                 }
             }
         }
