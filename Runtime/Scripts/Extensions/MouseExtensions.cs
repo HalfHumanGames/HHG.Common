@@ -7,8 +7,9 @@ namespace HHG.Common.Runtime
     {
         public static bool HasInteraction(this Mouse mouse)
         {
-            return mouse.delta.ReadValue() != Vector2.zero ||
-                   mouse.leftButton.isPressed ||
+            // Cannot check mouse.delta since WarpToPosition causes it
+            // to be non-zero, and GamepadCursor uses WarToPosition
+            return mouse.leftButton.isPressed ||
                    mouse.rightButton.isPressed ||
                    mouse.middleButton.isPressed ||
                    mouse.forwardButton.isPressed ||

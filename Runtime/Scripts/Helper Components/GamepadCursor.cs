@@ -16,17 +16,6 @@ namespace HHG.Common.Runtime
             position = ScreenUtil.GetScreenCenter();
         }
 
-        private void OnEnable()
-        {
-            position = Mouse.current.position.ReadValue();
-            Mouse.current.WarpCursorPositionClamped(position);
-        }
-
-        private void OnDisable()
-        {
-            // Do nothing
-        }
-
         private void Update()
         {
             if (Gamepad.current != null)
