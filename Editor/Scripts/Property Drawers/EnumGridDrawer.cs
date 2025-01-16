@@ -6,9 +6,11 @@ namespace HHG.Common.Runtime
     [CustomPropertyDrawer(typeof(EnumGrid), true)]
     public class EnumGridDrawer : PropertyDrawer
     {
-        private const int CellSize = 25;
-        private const int CellPadding = 2;
-        private GUIStyle _invisibleStyle;
+        private const int cellSize = 20;
+        private const int cellPadding = 1;
+
+        private GUIStyle invisibleStyle;
+        private GUIStyleState invisibleStyleState;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -17,27 +19,8 @@ namespace HHG.Common.Runtime
             EditorGUI.BeginProperty(position, label, property);
 
             DrawLabel(ref position, label);
-
-            SerializedProperty gridProperty = property.FindPropertyRelative("grid");
-            SerializedProperty sizeProperty = property.FindPropertyRelative("size");
-            if (gridProperty == null || sizeProperty == null)
-            {
-                EditorGUI.LabelField(position, "Grid property not found");
-                EditorGUI.EndProperty();
-                return;
-            }
-
-            EnumGrid enumGrid = (EnumGrid)fieldInfo.GetValue(property.serializedObject.targetObject);
-            if (enumGrid == null)
-            {
-                EditorGUI.LabelField(position, "Grid is null");
-                EditorGUI.EndProperty();
-                return;
-            }
-
-            int newSize = DrawGridSizeField(ref position, sizeProperty, enumGrid);
-            Object targetObject = property.serializedObject.targetObject;
-            DrawGridCells(ref position, targetObject, enumGrid, newSize);
+            DrawGridSizeField(ref position, property);
+            DrawGridCells(ref position, property);
 
             if (GUI.changed)
             {
@@ -49,51 +32,67 @@ namespace HHG.Common.Runtime
 
         private void Initialize()
         {
-            _invisibleStyle ??= new GUIStyle(EditorStyles.popup)
+            invisibleStyleState ??= new GUIStyleState
             {
-                normal = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) },
-                focused = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) },
-                active = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) },
-                onNormal = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) },
-                onFocused = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) },
-                onActive = { background = Texture2D.blackTexture, textColor = new Color(0, 0, 0, 0) }
+                background = Texture2D.blackTexture,
+                textColor = Color.clear
+            };
+
+            invisibleStyle ??= new GUIStyle(EditorStyles.popup)
+            {
+                normal = invisibleStyleState,
+                focused = invisibleStyleState,
+                active = invisibleStyleState,
+                onNormal = invisibleStyleState,
+                onFocused = invisibleStyleState,
+                onActive = invisibleStyleState
             };
         }
 
         private void DrawLabel(ref Rect position, GUIContent label)
         {
-            Rect labelRect = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
-            EditorGUI.LabelField(labelRect, label);
+            Rect rect = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
+            EditorGUI.LabelField(rect, label);
             position.x += EditorGUIUtility.labelWidth;
             position.width -= EditorGUIUtility.labelWidth;
         }
 
-        private int DrawGridSizeField(ref Rect position, SerializedProperty sizeProperty, EnumGrid enumGrid)
+        private void DrawGridSizeField(ref Rect position, SerializedProperty property)
         {
-            Rect gridSizeRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+            SerializedProperty gridProperty = property.FindPropertyRelative("grid");
+            SerializedProperty sizeProperty = property.FindPropertyRelative("size");
+
+            EnumGrid enumGrid = property.boxedValue as EnumGrid;
+
+            Rect rect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
             int size = sizeProperty.intValue;
-            int newSize = EditorGUI.IntField(gridSizeRect, size);
+            int newSize = EditorGUI.IntField(rect, size);
 
             if (!enumGrid.IsInitialized || size != newSize)
             {
-                size = newSize;
-                Undo.RecordObject(sizeProperty.serializedObject.targetObject, "Change Grid Size");
+                Undo.RecordObject(property.serializedObject.targetObject, "Change Grid Size");
                 enumGrid.Initialize(newSize);
-                sizeProperty.intValue = newSize;
+                property.boxedValue = enumGrid;
+                EditorUtility.SetDirty(property.serializedObject.targetObject);
             }
 
             position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            return newSize;
         }
 
-        private void DrawGridCells(ref Rect position, Object targetObject, EnumGrid enumGrid, int size)
+        private void DrawGridCells(ref Rect position, SerializedProperty property)
         {
+            SerializedProperty gridProperty = property.FindPropertyRelative("grid");
+            SerializedProperty sizeProperty = property.FindPropertyRelative("size");
+
+            int size = sizeProperty.intValue;
+            EnumGrid enumGrid = property.boxedValue as EnumGrid;
+
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
                 {
-                    Rect rect = new Rect(position.x + x * (CellSize + CellPadding), position.y + y * (CellSize + CellPadding), CellSize, CellSize);
-                    Rect paddedRect = new Rect(rect.x + CellPadding, rect.y + CellPadding, rect.width - 2 * CellPadding, rect.height - 2 * CellPadding);
+                    Rect rect = new Rect(position.x + x * (cellSize + cellPadding), position.y + y * (cellSize + cellPadding), cellSize, cellSize);
+                    Rect paddedRect = new Rect(rect.x + cellPadding, rect.y + cellPadding, rect.width - 2 * cellPadding, rect.height - 2 * cellPadding);
 
                     int value = enumGrid.GetCellWeak(x, y);
                     Color color = enumGrid.GetColorWeak(value);
@@ -101,13 +100,14 @@ namespace HHG.Common.Runtime
                     EditorGUI.DrawRect(paddedRect, color);
 
                     System.Type enumType = enumGrid.GetType().BaseType.GetGenericArguments()[0];
-                    int newValue = System.Convert.ToInt32(EditorGUI.EnumPopup(rect, (System.Enum)System.Enum.ToObject(enumType, value), _invisibleStyle));
+                    int newValue = System.Convert.ToInt32(EditorGUI.EnumPopup(rect, (System.Enum)System.Enum.ToObject(enumType, value), invisibleStyle));
 
                     if (value != newValue)
                     {
-                        Undo.RecordObject(targetObject, "Edit Grid Cell");
+                        Undo.RecordObject(property.serializedObject.targetObject, "Edit Grid Cell");
                         enumGrid.SetCellWeak(x, y, newValue);
-                        EditorUtility.SetDirty(targetObject);
+                        property.boxedValue = enumGrid;
+                        EditorUtility.SetDirty(property.serializedObject.targetObject);
                     }
                 }
             }
@@ -115,9 +115,9 @@ namespace HHG.Common.Runtime
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            var sizeProperty = property.FindPropertyRelative("size");
+            SerializedProperty sizeProperty = property.FindPropertyRelative("size");
             int size = sizeProperty != null ? sizeProperty.intValue : 0;
-            return EditorGUIUtility.singleLineHeight * 3 + (CellSize + CellPadding) * size;
+            return EditorGUIUtility.singleLineHeight + (cellSize + cellPadding) * size;
         }
     }
 }

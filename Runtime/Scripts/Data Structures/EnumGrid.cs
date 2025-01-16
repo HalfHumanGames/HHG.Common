@@ -16,8 +16,8 @@ namespace HHG.Common.Runtime
     {
         public override bool IsInitialized => grid != null && grid.Length == size * size;
 
-        public int size;
-        public T[] grid;
+        [SerializeField] private int size;
+        [SerializeField] private T[] grid;
 
         public EnumGrid(int size)
         {
