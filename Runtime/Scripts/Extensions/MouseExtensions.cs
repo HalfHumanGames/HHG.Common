@@ -9,11 +9,16 @@ namespace HHG.Common.Runtime
         {
             // Cannot check mouse.delta since WarpToPosition causes it
             // to be non-zero, and GamepadCursor uses WarToPosition
-            return mouse.leftButton.isPressed ||
-                   mouse.rightButton.isPressed ||
-                   mouse.middleButton.isPressed ||
-                   mouse.forwardButton.isPressed ||
-                   mouse.backButton.isPressed;
+
+            bool mouseMoved = mouse.delta.ReadValue() != Vector2.zero;
+            bool gamepadMoved = Gamepad.current != null && Gamepad.current.leftStick.ReadValue() != Vector2.zero;
+
+            return (mouseMoved && !gamepadMoved) ||
+                    mouse.leftButton.isPressed ||
+                    mouse.rightButton.isPressed ||
+                    mouse.middleButton.isPressed ||
+                    mouse.forwardButton.isPressed ||
+                    mouse.backButton.isPressed;
         }
 
         public static Vector3 GetWorldPosition3D(this Mouse mouse)
