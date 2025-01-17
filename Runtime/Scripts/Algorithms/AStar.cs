@@ -18,7 +18,7 @@ namespace HHG.Common.Runtime
             new Vector3Int(-1, -1, 0)
         };
 
-        public static void FindPath(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> obstacles, List<Vector3Int> path)
+        public static bool FindPath(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> obstacles, List<Vector3Int> path)
         {
             if (obstacles == null)
             {
@@ -29,6 +29,8 @@ namespace HHG.Common.Runtime
             {
                 throw new System.ArgumentNullException(nameof(path));
             }
+
+            bool found = false;
 
             path.Clear();
 
@@ -48,6 +50,7 @@ namespace HHG.Common.Runtime
 
                 if (current == goal)
                 {
+                    found = true;
                     ReconstructPath(cameFrom, current, path);
                     break;
                 }
@@ -80,6 +83,8 @@ namespace HHG.Common.Runtime
             DictionaryPool<Vector3Int, Vector3Int>.Release(cameFrom);
             DictionaryPool<Vector3Int, float>.Release(gScore);
             DictionaryPool<Vector3Int, float>.Release(fScore);
+
+            return found;
         }
 
         private static float Heuristic(Vector3Int a, Vector3Int b)

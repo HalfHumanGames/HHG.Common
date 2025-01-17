@@ -94,7 +94,7 @@ namespace HHG.Common.Runtime
                     Rect rect = new Rect(position.x + x * (cellSize + cellPadding), position.y + y * (cellSize + cellPadding), cellSize, cellSize);
                     Rect paddedRect = new Rect(rect.x + cellPadding, rect.y + cellPadding, rect.width - 2 * cellPadding, rect.height - 2 * cellPadding);
 
-                    int value = enumGrid.GetCellWeak(x, y);
+                    int value = enumGrid.GetCellWeak(new Vector3Int(x, y));
                     Color color = enumGrid.GetColorWeak(value);
 
                     EditorGUI.DrawRect(paddedRect, color);
@@ -105,7 +105,7 @@ namespace HHG.Common.Runtime
                     if (value != newValue)
                     {
                         Undo.RecordObject(property.serializedObject.targetObject, "Edit Grid Cell");
-                        enumGrid.SetCellWeak(x, y, newValue);
+                        enumGrid.SetCellWeak(new Vector3Int(x, y), newValue);
                         property.boxedValue = enumGrid;
                         EditorUtility.SetDirty(property.serializedObject.targetObject);
                     }
