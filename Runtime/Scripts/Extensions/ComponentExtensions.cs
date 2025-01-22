@@ -28,5 +28,15 @@ namespace HHG.Common.Runtime
         {
             return mono.gameObject.GetTopmostComponent<T>();
         }
+
+        public static bool IsChild(this Component mono, Component component)
+        {
+            return component.transform.IsChildOf(mono.transform);
+        }
+
+        public static bool IsChildOf(this Component mono, Component component)
+        {
+            return mono.transform.IsChildOf(component.transform);
+        }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
@@ -49,6 +50,19 @@ namespace HHG.Common.Runtime
                 return topmost ? results[0].gameObject == gameObject : results.Any(r => r.gameObject == gameObject);
             }
             return false;
+        }
+
+        public static Selectable GetCurrentSelectable(this EventSystem eventSystem)
+        {
+            return eventSystem.currentSelectedGameObject != null ?
+                   eventSystem.currentSelectedGameObject.GetComponent<Selectable>() : null;
+        }
+
+        public static bool TryGetCurrentSelection(this EventSystem eventSystem, out Selectable selection)
+        {
+            selection = null;
+            return eventSystem.currentSelectedGameObject &&
+                   eventSystem.currentSelectedGameObject.TryGetComponent(out selection);
         }
     }
 }
