@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -9,13 +8,7 @@ namespace HHG.Common.Runtime
     {
         public static string GetPath(this GameObject gameObject)
         {
-            StringBuilder sb = new StringBuilder($"/{gameObject.name}");
-            while (gameObject.transform.parent != null)
-            {
-                gameObject = gameObject.transform.parent.gameObject;
-                sb.Insert(0, $"/{gameObject.name}");
-            }
-            return sb.ToString();
+            return gameObject.transform.GetPath();
         }
 
         public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T component, bool includeInactive = false)

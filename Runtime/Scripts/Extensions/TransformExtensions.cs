@@ -1,11 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public static class TransformExtensions
     {
+        public static string GetPath(this Transform transform)
+        {
+            StringBuilder sb = new StringBuilder($"/{transform.name}");
+            while (transform.parent != null)
+            {
+                transform = transform.parent;
+                sb.Insert(0, $"/{transform.name}");
+            }
+            return sb.ToString();
+        }
+
         public static IEnumerable<Transform> GetChildren(this Transform transform)
         {
             return transform.Cast<Transform>();

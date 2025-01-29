@@ -4,6 +4,11 @@ namespace HHG.Common.Runtime
 {
     public static class ComponentExtensions
     {
+        public static string GetPath(this Component mono)
+        {
+            return mono.transform.GetPath();
+        }
+
         public static bool TryGetComponentInChildren<T>(this Component mono, out T component) 
         {
            return mono.gameObject.TryGetComponentInChildren(out component);
