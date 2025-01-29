@@ -83,6 +83,11 @@ namespace HHG.Common.Runtime
             SetData(GetIndex(position), value);
         }
 
+        public bool TrySetData(Vector3Int position, T value)
+        {
+            return TrySetData(GetIndex(position), value);
+        }
+
         public (int x, int y) GetIndex(Vector3Int position)
         {
             return (position.x + offsetX, position.y + offsetY);
@@ -127,12 +132,40 @@ namespace HHG.Common.Runtime
             data[pos.x, pos.y] = value;
         }
 
+        public bool TrySetData((int x, int y) pos, T value)
+        {
+            if (IsInBounds(pos))
+            {
+                data[pos.x, pos.y] = value;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void CopyDataFrom(BoundsData<T> other, BoundsInt bounds)
         {
             Initialize(bounds);
+
             foreach (Vector3Int position in bounds.allPositionsWithin)
             {
-                SetData(position, other.GetData(position));
+                if (other.TryGetData(position, out T data))
+                {
+                    if (TrySetData(position, data))
+                    {
+                        // Do nothing
+                    }
+                    else
+                    {
+                        Debug.LogError($"TrySetData failed since position '{position}' is out of bounds '{bounds}'.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"'other.TryGetData' failed since position '{position}' is out of bounds '{bounds}'.");
+                }
             }
         }
 

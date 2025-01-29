@@ -49,25 +49,25 @@ namespace HHG.Common.Runtime
         {
             if (_bindable == null)
             {
-                DebugUtil.LogException($"Bindable cannot be null.\n{GetDebugInfo()}", mono);
+                Debug.LogError($"Bindable cannot be null.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             if (bindable == null)
             {
-                DebugUtil.LogException($"Bindable does not implement IBindable.\n{GetDebugInfo()}", mono);
+                Debug.LogError($"Bindable does not implement IBindable.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             if (!bindable.TryGetValue(name, out TValue _))
             {
-                DebugUtil.LogException($"Property '{name}' not found in bindable.\n{GetDebugInfo()}", mono);
+                Debug.LogError($"Property '{name}' not found in bindable.\n{GetDebugInfo()}", mono);
                 return false;
             }
 
             if (source == null)
             {
-                DebugUtil.LogException($"Source cannot be null.\n{GetDebugInfo()}", mono);
+                Debug.LogError($"Source cannot be null.\n{GetDebugInfo()}", mono);
                 return false;
             }
 

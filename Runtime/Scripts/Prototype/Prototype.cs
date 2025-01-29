@@ -84,7 +84,7 @@
 //        {
 //            if (IsOriginal)
 //            {
-//                DebugUtil.LogException("Can't return to pool because the original prototype doesn't exist. Is this prototype the original?");
+//                Debug.LogError("Can't return to pool because the original prototype doesn't exist. Is this prototype the original?");
 //                Destroy(gameObject);
 //                return;
 //            }
@@ -101,7 +101,7 @@
 //        {
 //            if (!IsOriginal)
 //            {
-//                DebugUtil.LogException("Adding " + proto.name + " to prototype pool of " + name + " but this appears to be an instance itself?");
+//                Debug.LogError("Adding " + proto.name + " to prototype pool of " + name + " but this appears to be an instance itself?");
 //            }
 
 //            proto.gameObject.SetActive(false);

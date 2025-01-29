@@ -105,7 +105,7 @@ namespace HHG.Common.Runtime
 
                     if (assets.ContainsKey(id))
                     {
-                        DebugUtil.LogException("Asset registry already contains asset: " + path, obj);
+                        Debug.LogError("Asset registry already contains asset: " + path, obj);
                         continue;
                     }
 
