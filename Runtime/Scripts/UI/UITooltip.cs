@@ -67,10 +67,8 @@ namespace HHG.Common.Runtime
                 // Otherwise rebuild will not work
                 rect.RebuildLayout();
 
-                // And determine the clamped position
-                // after rebuilding to make sure it
-                // factors in the rebuilt tooltip size
-                rect.position = position + (Vector3)offset;
+                rect.position = position;
+                rect.anchoredPosition += offset;
                 rect.ClampTransform(canvasRect, padding);
             }
         }
