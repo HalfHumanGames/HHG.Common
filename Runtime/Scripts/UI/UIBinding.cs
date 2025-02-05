@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace HHG.Common.Runtime
 {
-    public abstract class BindingBase : IDisposable
+    public abstract class BindingBase : System.IDisposable
     {
         // TODO: Make a fancy dropdown that recursively shows
         // all of the _bindable's serializable property paths
@@ -23,7 +21,7 @@ namespace HHG.Common.Runtime
         {
             if (bindable != null)
             {
-                bindable.Updated += OnUpdated;
+                bindable.stateUpdated += OnUpdated;
                 OnSetup();
                 OnUpdated();
             }
@@ -33,7 +31,7 @@ namespace HHG.Common.Runtime
         {
             if (bindable != null)
             {
-                bindable.Updated -= OnUpdated;
+                bindable.stateUpdated -= OnUpdated;
             }
         }
 
@@ -80,7 +78,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class TextBinding : BindingBase<object, TextMeshProUGUI>
     {
         protected override void OnUpdated()
@@ -92,7 +90,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class ImageBinding : BindingBase<Sprite, Image>
     {
         protected override void OnUpdated()
@@ -104,7 +102,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class SpriteRendererBinding : BindingBase<Sprite, SpriteRenderer>
     {
         protected override void OnUpdated()
@@ -116,7 +114,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class SliderBinding : BindingBase<float, Slider>
     {
         public override void OnSetup()
@@ -133,7 +131,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class DropdownBinding : BindingBase<int, TMP_Dropdown>
     {
         public override void OnSetup()
@@ -150,7 +148,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class ToggleBinding : BindingBase<bool, Toggle>
     {
         public override void OnSetup()
@@ -167,7 +165,7 @@ namespace HHG.Common.Runtime
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class InputFieldBinding : BindingBase<string, TMP_InputField>
     {
         public override void OnSetup()

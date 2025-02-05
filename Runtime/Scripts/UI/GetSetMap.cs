@@ -9,6 +9,11 @@ namespace HHG.Common.Runtime
         private Dictionary<string, Func<object, object>> getters;
         private Dictionary<string, Action<object, object>> setters;
 
+        public GetSetMap(object obj) : this(obj.GetType())
+        {
+
+        }
+
         public GetSetMap(Type type)
         {
             getters = new Dictionary<string, Func<object, object>>();
@@ -27,6 +32,16 @@ namespace HHG.Common.Runtime
                 getters[field.Name] = obj => field.GetValue(obj);
                 setters[field.Name] = (obj, value) => field.SetValue(obj, value);
             }
+        }
+
+        public T GetValue<T>(object obj, string name)
+        {
+            return (T)getters[name](obj);
+        }
+
+        public void SetValue<T>(object obj, string name, T value)
+        {
+            setters[name](obj, value);
         }
 
         public bool TryGetValue<T>(object obj, string name, out T value)

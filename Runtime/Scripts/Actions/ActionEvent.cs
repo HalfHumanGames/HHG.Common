@@ -16,6 +16,11 @@ namespace HHG.Common.Runtime
         protected event Action plainEvent;
         protected UnityEvent unityEvent = new UnityEvent();
 
+        public event Action Invoked {
+            add => plainEvent += value;
+            remove => plainEvent -= value;
+        }
+
         public Coroutine Invoke(MonoBehaviour invoker)
         {
             return invoker.StartCoroutine(InvokeAsync(invoker));
@@ -94,6 +99,12 @@ namespace HHG.Common.Runtime
         private event Action<T> plainEvent2;
         private UnityEvent<T> unityEvent2 = new UnityEvent<T>();
 
+        public event Action<T> InvokedWithArgument
+        {
+            add => plainEvent2 += value;
+            remove => plainEvent2 -= value;
+        }
+
         public Coroutine Invoke(T invoker)
         {
             return invoker.StartCoroutine(InvokeAsync(invoker));
@@ -101,6 +112,8 @@ namespace HHG.Common.Runtime
 
         public IEnumerator InvokeAsync(T invoker)
         {
+            // Since we cannot invoke the event directly
+            // in subclasses, we need to call this method
             IssuePlainEvent();
             plainEvent2?.Invoke(invoker);
             unityEvent?.Invoke();

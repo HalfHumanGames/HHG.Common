@@ -2,6 +2,6 @@ namespace HHG.Common.Runtime
 {
     public interface IEnablable
     {
-        public bool IsEnabled { get; }
+        bool IsEnabled { get; }
     }
 }

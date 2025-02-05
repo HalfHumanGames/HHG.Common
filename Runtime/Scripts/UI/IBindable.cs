@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
 	{
 		bool TryGetValue<T>(string name, out T value);
 		bool TrySetValue<T>(string name, T value);
-		event Action Updated;
+		event Action stateUpdated;
 	}
 
 	public static class IBindableExtensions
