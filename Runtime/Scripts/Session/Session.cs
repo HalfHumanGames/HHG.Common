@@ -227,7 +227,7 @@ namespace HHG.Common.Runtime
 
         public sealed override string getTempFileId(string fileId)
         {
-            return $"{fileId}.{tempFileId}";
+            return $"{fileId}.{tempFileTag}";
         }
 
         public sealed override string getMostRecentFileId()
