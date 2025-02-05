@@ -4,9 +4,9 @@ namespace HHG.Common.Runtime
 {
     public interface ISessionState
     {
-        string FileName { get; }
-        string TimestampFormatted { get; }
-        DateTime Timestamp { get; }
+        string FileName => string.Empty;
+        string TimestampFormatted => string.Empty;
+        DateTime Timestamp => default;
 
         void Reset() { }
         void OnBeforeSave() { }

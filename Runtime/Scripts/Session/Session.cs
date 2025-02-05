@@ -43,7 +43,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override string fileId
+        public sealed override string fileId
         {
             get => _fileId ?? defaultFileId;
             set
@@ -56,10 +56,13 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override ISessionState readOnlyStateWeak => readOnlyState;
-        public override bool hasStagedChanged => mutations.Count > 0;
+        public sealed override string tempFileId => getTempFileId(fileId);
+        public sealed override ISessionState readOnlyStateWeak => readOnlyState;
+        public sealed override bool hasStagedChanged => mutations.Count > 0;
+
+        // Only these properties can be overwritten in a subclass
         public override string defaultFileId => "0";
-        public override string tempFileId => "Temp";
+        public override string tempFileTag => "Temp";
         public override string[] fileIds => new string[] { defaultFileId };
         public override bool logsEnabled => false;
 
@@ -77,14 +80,14 @@ namespace HHG.Common.Runtime
 
         public event Action stateUpdated;
 
-        protected override void setup()
+        protected sealed override void setup()
         {
             sessions[GetType()] = this;
 
             Application.quitting += onApplicationQuit;
         }
 
-        protected override void log(string message)
+        protected sealed override void log(string message)
         {
             if (logsEnabled)
             {
@@ -92,7 +95,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override void saveWeak(Action<object> mutation) => save(m => mutation((TState)m));
+        public sealed override void saveWeak(Action<object> mutation) => save(m => mutation((TState)m));
         public void save(Action<TState> mutation)
         {
             log($"Saving mutation for file: {fileId}");
@@ -102,7 +105,7 @@ namespace HHG.Common.Runtime
             save();
         }
 
-        public override void stageWeak(Action<object> mutation) => stage(m => mutation((TState)m));
+        public sealed override void stageWeak(Action<object> mutation) => stage(m => mutation((TState)m));
         public void stage(Action<TState> mutation)
         {
             log($"Staging mutation for file: {fileId}");
@@ -112,7 +115,7 @@ namespace HHG.Common.Runtime
             issueStateUpdated();
         }
 
-        public override void save(string fileId = null)
+        public sealed override void save(string fileId = null)
         {
             if (fileId == null)
             {
@@ -136,7 +139,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override void load(string fileId = null)
+        public sealed override void load(string fileId = null)
         {
             if (fileId == null)
             {
@@ -155,7 +158,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override void clear(string fileId = null)
+        public sealed override void clear(string fileId = null)
         {
             if (fileId == null)
             {
@@ -174,7 +177,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override void saveStagedChanges()
+        public sealed override void saveStagedChanges()
         {
             log($"Saving staged changes for file: {fileId}");
 
@@ -186,7 +189,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public override void clearStagedChanges()
+        public sealed override void clearStagedChanges()
         {
             log($"Clearing staged changes for file: {fileId}");
 
@@ -194,42 +197,42 @@ namespace HHG.Common.Runtime
             issueStateUpdated();
         }
 
-        public override void onBeforeClose()
+        public sealed override void onBeforeClose()
         {
             io.OnBeforeClose();
         }
 
-        public override void onClose()
+        public sealed override void onClose()
         {
             io.OnClose();
         }
 
-        public override void useDefaultFile()
+        public sealed override void useDefaultFile()
         {
             FileId = DefaultFileId;
         }
 
-        public override void issueStateUpdated()
+        public sealed override void issueStateUpdated()
         {
             stateUpdated?.Invoke();
         }
 
-        public override bool fileExists(string fileId)
+        public sealed override bool fileExists(string fileId)
         {
             return io.Exists(getFileName(fileId));
         }
 
-        public override string getFileName(string fileId)
+        public sealed override string getFileName(string fileId)
         {
             return $"{GetType().ToString().ToLower()}.{fileId.ToLower()}.dat";
         }
 
-        public override string getTempFileId(string fileId)
+        public sealed override string getTempFileId(string fileId)
         {
             return $"{fileId}.{tempFileId}";
         }
 
-        public override string getMostRecentFileId()
+        public sealed override string getMostRecentFileId()
         {
             string id = defaultFileId;
             DateTime dt = new DateTime();
@@ -252,7 +255,7 @@ namespace HHG.Common.Runtime
             return id;
         }
 
-        public override bool anyFileExists()
+        public sealed override bool anyFileExists()
         {
             for (int i = 0; i < fileIds.Length; i++)
             {
@@ -265,7 +268,7 @@ namespace HHG.Common.Runtime
             return false;
         }
 
-        public override bool anyTempFileExists()
+        public sealed override bool anyTempFileExists()
         {
             for (int i = 0; i < fileIds.Length; i++)
             {
@@ -278,28 +281,28 @@ namespace HHG.Common.Runtime
             return false;
         }
 
-        public override bool tempFileExists(string fileId = null)
+        public sealed override bool tempFileExists(string fileId = null)
         {
             return fileExists(getTempFileId(fileId ?? this.fileId));
         }
 
-        public override string getJson()
+        public sealed override string getJson()
         {
             return JsonUtility.ToJson(readOnlyStateWeak);
         }
 
-        public override T GetValue<T>(string name) => TryGetValue(name, out T value) ? value : default;
+        public sealed override T GetValue<T>(string name) => TryGetValue(name, out T value) ? value : default;
 
-        public override void SetValue<T>(string name, T value) => TrySetValue(name, value);
+        public sealed override void SetValue<T>(string name, T value) => TrySetValue(name, value);
 
-        public override bool TryGetValue<T>(string name, out T value)
+        public sealed override bool TryGetValue<T>(string name, out T value)
         {
             getterSetterMap ??= new GetSetMap(this);
 
             return getterSetterMap.TryGetValue(readOnlyStateWeak, name, out value);
         }
 
-        public override bool TrySetValue<T>(string name, T value)
+        public sealed override bool TrySetValue<T>(string name, T value)
         {
             getterSetterMap ??= new GetSetMap(this);
 
@@ -315,7 +318,7 @@ namespace HHG.Common.Runtime
             return success;
         }
 
-        public override FileHandle handle(string fileId, bool loadFile = false)
+        public sealed override FileHandle handle(string fileId, bool loadFile = false)
         {
             FileHandle handle = ObjectPool.Get<FileHandle>();
             handle.Initialize(this, fileId, loadFile);

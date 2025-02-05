@@ -10,10 +10,11 @@ namespace HHG.Common.Runtime
         [ContextMenu("Clear")] private void _Clear() => clear();
 
         public abstract string fileId { get; set; }
+        public abstract string tempFileId { get; }
         public abstract ISessionState readOnlyStateWeak { get; }
         public abstract bool hasStagedChanged { get; }
         public abstract string defaultFileId { get; }
-        public abstract string tempFileId { get; }
+        public abstract string tempFileTag { get; }
         public abstract string[] fileIds { get; }
         public abstract bool logsEnabled { get; }
 

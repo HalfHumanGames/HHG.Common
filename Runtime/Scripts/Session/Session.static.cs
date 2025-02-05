@@ -53,10 +53,11 @@ namespace HHG.Common.Runtime
             set => Instance.fileId = value;
         }
 
+        public static string TempFileId => Instance.tempFileId;
         public static ISessionState ReadOnlyStateWeak => Instance.readOnlyStateWeak;
         public static bool HasStagedChanges => Instance.hasStagedChanged;
         public static string DefaultFileId => Instance.defaultFileId;
-        public static string TempFileId => Instance.tempFileId;
+        public static string TempFileTag => Instance.tempFileTag;
         public static string[] FileIds => Instance.fileIds;
         public static bool LogsEnabled => Instance.logsEnabled;
         public static TState DefaultState => Instance.defaultState;
