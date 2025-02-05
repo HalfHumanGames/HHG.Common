@@ -8,7 +8,7 @@ namespace HHG.Common.Editor
         [MenuItem("Half Human Games/Session")]
         private static void Open()
         {
-            Selection.activeObject = AssetDatabaseUtil.FindAsset<SessionBase>();
+            Selection.activeObject = AssetDatabaseUtil.FindAsset<Session>();
         }
     }
 }
