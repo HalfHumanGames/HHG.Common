@@ -1,13 +1,14 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace HHG.Common.Runtime
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class UITooltip : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI text;
+        [SerializeField, FormerlySerializedAs("text")] private TextMeshProUGUI label;
         [SerializeField] private float padding;
         [SerializeField] private Vector2 offset;
 
@@ -15,7 +16,7 @@ namespace HHG.Common.Runtime
         private RectTransform canvasRect;
         private Canvas canvas;
         private CanvasGroup canvasGroup;
-        private ITooltip tooltip;
+        private string tooltipText;
 
         private void Awake()
         {
@@ -35,7 +36,7 @@ namespace HHG.Common.Runtime
 
         private void Update()
         {
-            if (tooltip != null)
+            if (!string.IsNullOrEmpty(tooltipText))
             {
                 // Only follow mouse if the cursor is visible
                 if (Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 position))
@@ -46,14 +47,19 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void Show(ITooltip nextTooltip)
+        public void Show(ITooltip tooltip)
         {
-            tooltip = nextTooltip;
+            Show(tooltip.TooltipText, tooltip.TooltipPosition);
+        }
+
+        public void Show(string text, Vector3 position)
+        {
+            tooltipText = text;
 
             // Don't show if null or empty tooltip text
-            if (!string.IsNullOrEmpty(tooltip.TooltipText))
+            if (!string.IsNullOrEmpty(tooltipText))
             {
-                text.text = tooltip.TooltipText;
+                label.text = tooltipText;
                 rect.SetAsLastSibling();
                 gameObject.SetActive(true);
 
@@ -64,18 +70,14 @@ namespace HHG.Common.Runtime
                 // And determine the clamped position
                 // after rebuilding to make sure it
                 // factors in the rebuilt tooltip size
-                if (tooltip is MonoBehaviour monoBehaviour && monoBehaviour.TryGetComponent(out RectTransform rectTransform))
-                {
-                    Vector3 monoPosition = rectTransform.position;
-                    rect.position = monoPosition + (Vector3)offset;
-                    rect.ClampTransform(canvasRect, padding);
-                }
+                rect.position = position + (Vector3)offset;
+                rect.ClampTransform(canvasRect, padding);
             }
         }
 
         public void Hide()
         {
-            tooltip = null;
+            tooltipText = null;
             gameObject.SetActive(false);
         }
 
