@@ -82,8 +82,6 @@ namespace HHG.Common.Runtime
 
         protected sealed override void setup()
         {
-            sessions[GetType()] = this;
-
             Application.quitting += onApplicationQuit;
         }
 
@@ -297,18 +295,18 @@ namespace HHG.Common.Runtime
 
         public sealed override bool TryGetValue<T>(string name, out T value)
         {
-            getterSetterMap ??= new GetSetMap(this);
+            getterSetterMap ??= new GetSetMap(typeof(TState));
 
             return getterSetterMap.TryGetValue(readOnlyStateWeak, name, out value);
         }
 
         public sealed override bool TrySetValue<T>(string name, T value)
         {
-            getterSetterMap ??= new GetSetMap(this);
+            getterSetterMap ??= new GetSetMap(typeof(TState));
 
             bool success = false;
 
-            stageWeak(state =>
+            stage(state =>
             {
                 success = getterSetterMap.TrySetValue(state, name, value);
             });
