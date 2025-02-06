@@ -49,7 +49,7 @@ namespace HHG.Common.Runtime
 
         public void GoTo(TGameStateId stateId, bool force = false)
         {
-            if (!EqualityComparer<TGameStateId>.Default.Equals(current, stateId) || force)
+            if (force || !EqualityComparer<TGameStateId>.Default.Equals(current, stateId))
             {
                 previous = current;
                 current = stateId;
