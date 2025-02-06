@@ -21,6 +21,16 @@ namespace HHG.Common.Runtime
             remove => plainEvent -= value;
         }
 
+        public ActionEvent()
+        {
+
+        }
+
+        public ActionEvent(Action action)
+        {
+            plainEvent += action;
+        }
+
         public Coroutine Invoke(MonoBehaviour invoker)
         {
             return invoker.StartCoroutine(InvokeAsync(invoker));
@@ -103,6 +113,21 @@ namespace HHG.Common.Runtime
         {
             add => plainEvent2 += value;
             remove => plainEvent2 -= value;
+        }
+
+        public ActionEvent()
+        {
+
+        }
+
+        public ActionEvent(Action action)
+        {
+            plainEvent += action;
+        }
+
+        public ActionEvent(Action<T> action)
+        {
+            plainEvent2 += action;
         }
 
         public Coroutine Invoke(T invoker)
