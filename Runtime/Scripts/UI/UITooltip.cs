@@ -34,7 +34,7 @@ namespace HHG.Common.Runtime
             gameObject.SetActive(false);
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (!string.IsNullOrEmpty(tooltipText))
             {
