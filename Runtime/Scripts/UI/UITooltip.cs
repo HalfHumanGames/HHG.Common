@@ -8,6 +8,8 @@ namespace HHG.Common.Runtime
     [RequireComponent(typeof(CanvasGroup))]
     public class UITooltip : MonoBehaviour
     {
+        public ITooltip Current => current;
+
         [SerializeField, FormerlySerializedAs("text")] private TextMeshProUGUI label;
         [SerializeField] private float padding;
         [SerializeField] private Vector2 offset;
@@ -16,6 +18,7 @@ namespace HHG.Common.Runtime
         private RectTransform canvasRect;
         private Canvas canvas;
         private CanvasGroup canvasGroup;
+        private ITooltip current;
         private string tooltipText;
 
         private void Awake()
@@ -49,10 +52,17 @@ namespace HHG.Common.Runtime
 
         public void Show(ITooltip tooltip)
         {
-            Show(tooltip.TooltipText, tooltip.TooltipPosition);
+            current = tooltip;
+            ShowInternal(current.TooltipText, current.TooltipPosition);
         }
 
         public void Show(string text, Vector3 position)
+        {
+            current = null;
+            ShowInternal(text, position);
+        }
+
+        private void ShowInternal(string text, Vector3 position)
         {
             tooltipText = text;
 

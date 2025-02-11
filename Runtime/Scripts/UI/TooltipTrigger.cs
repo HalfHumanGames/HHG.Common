@@ -6,11 +6,18 @@ namespace HHG.Common.Runtime
     public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IEndDragHandler
     {
         private UITooltip ui;
+        private Lazy<ITooltip> _tooltip = new Lazy<ITooltip>();
+        private ITooltip tooltip => _tooltip.FromComponent(this);
         private bool isDragging;
 
         private void Start()
         {
             ui = Locator.Get<UITooltip>();
+        }
+
+        private void OnDisable()
+        {
+            HideTooltip();
         }
 
         private void OnMouseEnter()
@@ -49,7 +56,7 @@ namespace HHG.Common.Runtime
 
         public void ShowTooltip()
         {
-            if (ui && !isDragging && gameObject.TryGetComponent(out ITooltip tooltip))
+            if (ui && tooltip != null && !isDragging)
             {
                 ui.Show(tooltip);
             }
@@ -57,7 +64,7 @@ namespace HHG.Common.Runtime
 
         public void HideTooltip()
         {
-            if (ui)
+            if (ui && tooltip != null && ui.Current == tooltip)
             {
                 ui.Hide();
             }
