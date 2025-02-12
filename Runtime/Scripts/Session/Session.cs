@@ -354,7 +354,7 @@ namespace HHG.Common.Runtime
                 try
                 {
                     byte[] bytes = io.ReadAllBytes(getFileName(fileId));
-                    state = serializer.Deserialize<TState>(bytes);
+                    state = serializer.Deserialize<TState>(bytes) ?? defaultState;
                 }
                 catch
                 {
