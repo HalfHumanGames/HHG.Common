@@ -15,7 +15,6 @@ namespace HHG.Common.Runtime
 
 	public static class IIOX
 	{
-
 		public static string ReadAllText(this IIO io, string fileName)
 		{
 			return Encoding.UTF8.GetString(io.ReadAllBytes(fileName));

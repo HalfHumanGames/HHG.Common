@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -42,7 +43,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-                Debug.LogException(e);
+                LogExceptionWithDriveInfo(e);
 			}
 		}
 
@@ -54,7 +55,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-                Debug.LogException(e);
+                LogExceptionWithDriveInfo(e);
 				return false;
 			}
 		}
@@ -67,7 +68,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-                Debug.LogException(e);
+                LogExceptionWithDriveInfo(e);
 				return new byte[0];
 			}
 		}
@@ -80,7 +81,7 @@ namespace HHG.Common.Runtime
 			}
 			catch (Exception e)
 			{
-                Debug.LogException(e);
+                LogExceptionWithDriveInfo(e);
 			}
 		}
 
@@ -91,6 +92,30 @@ namespace HHG.Common.Runtime
 
 		public void OnBeforeClose() { /* Do nothing */ }
 		public void OnClose() { /* Do nothing */ }
+
+		private void LogExceptionWithDriveInfo(Exception e)
+		{
+			string driveLetter = Path.GetPathRoot(Application.persistentDataPath);
+            
+			if (!string.IsNullOrEmpty(driveLetter))
+			{
+                DriveInfo driveInfo = new DriveInfo(driveLetter);
+
+				if (driveInfo != null)
+				{
+                    long freeSpaceMB = driveInfo.AvailableFreeSpace / (1024 * 1024);
+
+                    StringBuilder sb = new StringBuilder(e.ToString());
+                    sb.AppendLine($"Disk: {driveLetter}");
+                    sb.AppendLine($"Available Space: {freeSpaceMB}mb");
+                    Debug.LogError(sb.ToString());
+					return;
+                }
+            }
+
+			// Fallback to just logging the exception normally
+            Debug.LogException(e);
+		}
 
 	}
 
