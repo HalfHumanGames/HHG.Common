@@ -117,7 +117,7 @@ namespace HHG.Common.Runtime
         {
             if (fileId == null)
             {
-                fileId = FileId;
+                fileId = this.fileId;
             }
 
             log($"Saving file: {fileId}");
@@ -128,10 +128,10 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            mutate(fileId, saveFile => saveFile.OnBeforeSave());
+            mutate(fileId, state => state?.OnBeforeSave());
             writeToDisk(fileId);
 
-            if (fileId == FileId)
+            if (fileId == this.fileId)
             {
                 issueStateUpdated();
             }
@@ -141,16 +141,16 @@ namespace HHG.Common.Runtime
         {
             if (fileId == null)
             {
-                fileId = FileId;
+                fileId = this.fileId;
             }
 
             log($"Loading file: {fileId}");
 
             loadFromDisk(fileId);
-            mutate(fileId, saveFile => saveFile.OnAfterLoad());
+            mutate(fileId, state => state?.OnAfterLoad());
             isStagedStateDirty = true;
 
-            if (fileId == FileId)
+            if (fileId == this.fileId)
             {
                 issueStateUpdated();
             }
@@ -160,14 +160,14 @@ namespace HHG.Common.Runtime
         {
             if (fileId == null)
             {
-                fileId = FileId;
+                fileId = this.fileId;
             }
 
             log($"Clearing file: {fileId}");
 
             io.Clear(getFileName(fileId));
 
-            if (fileId == FileId)
+            if (fileId == this.fileId)
             {
                 clearStagedChangesNoCallback();
                 state = DefaultState;
@@ -207,7 +207,7 @@ namespace HHG.Common.Runtime
 
         public sealed override void useDefaultFile()
         {
-            FileId = DefaultFileId;
+            this.fileId = DefaultFileId;
         }
 
         public sealed override void issueStateUpdated()
@@ -358,12 +358,12 @@ namespace HHG.Common.Runtime
                 }
                 catch
                 {
-                    state = DefaultState;
+                    state = defaultState;
                 }
             }
             else
             {
-                state = DefaultState;
+                state = defaultState;
             }
         }
 
