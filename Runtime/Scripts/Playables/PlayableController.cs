@@ -7,12 +7,8 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private float repeatInterval = 2f;
 
-        private Playable playable;
-
-        private void Start()
-        {
-            playable = Playable.Create(gameObject);
-        }
+        private Playable _playable;
+        private Playable playable => _playable ??= Playable.Create(gameObject);
 
         public void PlayAt(Vector3 position)
         {
