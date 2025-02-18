@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
@@ -79,7 +80,7 @@ namespace HHG.Common.Runtime
     }
 
     [System.Serializable]
-    public class TextBinding : BindingBase<object, TextMeshProUGUI>
+    public class LabelBinding : BindingBase<object, TMP_Text>
     {
         protected override void OnUpdated()
         {
@@ -184,18 +185,18 @@ namespace HHG.Common.Runtime
 
     public class UIBinding : MonoBehaviour
     {
-        [SerializeField] private TextBinding[] texts;
-        [SerializeField] private ImageBinding[] images;
-        [SerializeField] private SpriteRendererBinding[] spriteRenderers;
-        [SerializeField] private SliderBinding[] sliders;
-        [SerializeField] private DropdownBinding[] dropdowns;
-        [SerializeField] private ToggleBinding[] toggles;
-        [SerializeField] private InputFieldBinding[] inputFields;
+        [SerializeField, FormerlySerializedAs("texts")] private List<LabelBinding> labels = new List<LabelBinding>();
+        [SerializeField] private List<ImageBinding> images = new List<ImageBinding>();
+        [SerializeField] private List<SpriteRendererBinding> spriteRenderers = new List<SpriteRendererBinding>();
+        [SerializeField] private List<SliderBinding> sliders = new List<SliderBinding>();
+        [SerializeField] private List<DropdownBinding> dropdowns = new List<DropdownBinding>();
+        [SerializeField] private List<ToggleBinding> toggles = new List<ToggleBinding>();
+        [SerializeField] private List<InputFieldBinding> inputFields = new List<InputFieldBinding>();
 
         private void Start()
         {
             Validate();
-            texts.Setup();
+            labels.Setup();
             images.Setup();
             spriteRenderers.Setup();
             sliders.Setup();
@@ -206,7 +207,7 @@ namespace HHG.Common.Runtime
 
         private void OnDestroy()
         {
-            texts.Dispose();
+            labels.Dispose();
             images.Dispose();
             spriteRenderers.Dispose();
             sliders.Dispose();
@@ -219,7 +220,7 @@ namespace HHG.Common.Runtime
         // Instead we call Validate in Start
         private void Validate()
         {
-            texts.Validate(this);
+            labels.Validate(this);
             images.Validate(this);
             spriteRenderers.Validate(this);
             sliders.Validate(this);
