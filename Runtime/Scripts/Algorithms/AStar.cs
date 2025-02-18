@@ -4,7 +4,7 @@ using UnityEngine.Pool;
 
 namespace HHG.Common.Runtime
 {
-    public class AStar
+    public static class AStar
     {
         private static readonly Vector3Int[] directions = new Vector3Int[]
         {
