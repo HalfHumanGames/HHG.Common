@@ -63,6 +63,7 @@ namespace HHG.Common.Runtime
         // Only these properties can be overwritten in a subclass
         public override string defaultFileId => "0";
         public override string tempFileTag => "Temp";
+        public override string fileExtension => "sav";
         public override string[] fileIds => new string[] { defaultFileId };
         public override bool logsEnabled => false;
 
@@ -222,7 +223,7 @@ namespace HHG.Common.Runtime
 
         public sealed override string getFileName(string fileId)
         {
-            return $"{GetType().ToString().ToLower()}.{fileId.ToLower()}.dat";
+            return $"{GetType().ToString().ToLower()}.{fileId.ToLower()}.{fileExtension}";
         }
 
         public sealed override string getTempFileId(string fileId)

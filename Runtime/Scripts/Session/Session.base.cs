@@ -15,6 +15,7 @@ namespace HHG.Common.Runtime
         public abstract bool hasStagedChanged { get; }
         public abstract string defaultFileId { get; }
         public abstract string tempFileTag { get; }
+        public abstract string fileExtension { get; }
         public abstract string[] fileIds { get; }
         public abstract bool logsEnabled { get; }
 
