@@ -13,6 +13,7 @@ namespace HHG.Common.Runtime
         {
             Register<Animation>(animation => animation.Play(), animation => animation.Stop());
             Register<AudioSource>(audioSource => audioSource.Play(), audioSource => audioSource.Stop());
+            //Register<DOTweenAnimation>(t => t.RewindThenRecreateTweenAndPlay());
             // Do not Play and Stop with children since it Playables also get child particle systems
             Register<ParticleSystem>(particleSystem => particleSystem.Play(false), particleSystem => particleSystem.Stop(false));
         }
