@@ -16,11 +16,15 @@ namespace HHG.Common.Runtime
         {
             get
             {
-                if (coroutiner == null && !isQuitting)
+                if (coroutiner == null && Application.isPlaying && !isQuitting)
                 {
-                    GameObject go = new GameObject("Coroutiner");
+                    GameObject go = GameObject.Find("Coroutiner");
+                    if (go == null)
+                    {
+                        go = new GameObject("Coroutiner");
+                    }
                     Object.DontDestroyOnLoad(go);
-                    coroutiner = go.AddComponent<EmptyMonoBehaviour>();
+                    coroutiner = go.GetOrAddComponent<EmptyMonoBehaviour>();
                 }
                 return coroutiner;
             }
@@ -56,7 +60,7 @@ namespace HHG.Common.Runtime
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            return isQuitting ? null : Coroutiner?.StartCoroutine(enumerator);
+            return isQuitting || Coroutiner == null ? null : Coroutiner.StartCoroutine(enumerator);
         }
 
         public static void StopCoroutine(Coroutine coroutine)
