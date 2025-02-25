@@ -10,13 +10,13 @@ namespace HHG.Common.Runtime
 
         public static bool CalculatePathSafe(this NavMeshAgent agent, Vector2 target, NavMeshPath path)
         {
-            return NavMesh.SamplePosition(target, out NavMeshHit hit, sampleDistance, agent.areaMask) && agent.CalculatePath(hit.position, path);
+            return NavMesh.SamplePosition(target, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path);
         }
 
         public static bool SetDestinationSample(this NavMeshAgent agent, Vector3 destination)
         {
             // Not sampling position first tends to cause setting the destination to fail for whatever reason
-            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, sampleDistance, agent.areaMask))
+            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas))
             {
                 destination = hit.position;
 
