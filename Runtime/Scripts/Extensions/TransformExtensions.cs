@@ -18,6 +18,18 @@ namespace HHG.Common.Runtime
             return sb.ToString();
         }
 
+        public static Transform GetPreviousSibling(this Transform transform)
+        {
+            int index = transform.GetSiblingIndex() - 1;
+            return index >= 0 ? transform.parent.GetChild(index) : null;
+        }
+
+        public static Transform GetNextSibling(this Transform transform)
+        {
+            int index = transform.GetSiblingIndex() + 1;
+            return index < transform.parent.childCount ? transform.parent.GetChild(index) : null;
+        }
+
         public static IEnumerable<Transform> GetChildren(this Transform transform)
         {
             return transform.Cast<Transform>();
