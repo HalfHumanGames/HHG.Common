@@ -4,11 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 // TODO: localization support
 // TODO: deal with composites that have parts bound in different control schemes
-namespace Siegecaster
+namespace HHG.Common.Runtime
 {
     /// <summary>
     /// A reusable component with a self-contained UI for rebinding a single action.

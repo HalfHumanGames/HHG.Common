@@ -1,12 +1,12 @@
 #if UNITY_EDITOR
+using HHG.Common.Runtime;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-////TODO: support multi-object editing
-
-namespace Siegecaster
+// TODO: support multi-object editing
+namespace HHG.Common.Editor
 {
     /// <summary>
     /// A custom inspector for <see cref="RebindActionUI"/> which provides a more convenient way for
