@@ -1,0 +1,11 @@
+using HHG.Common.Runtime;
+using UnityEngine;
+
+namespace {{namespace}}
+{
+	[CreateAssetMenu(fileName = "Options", menuName = "{{game}}/Options", order = 1)]
+	public class Options : Session<Options, OptionsState, FileIO, GZipJsonSerializer>
+	{
+
+	}
+}

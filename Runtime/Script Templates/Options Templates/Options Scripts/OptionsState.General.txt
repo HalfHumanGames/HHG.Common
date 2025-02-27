@@ -1,0 +1,14 @@
+namespace {{namespace}}
+{
+    public partial class OptionsState
+    {
+        [System.Serializable]
+        public class GeneralState
+        {
+            public bool Blood = true;
+            public bool Vignette = true;
+            public bool ScreenShake = true;
+            public bool Vibration = true;
+        }
+    }
+}

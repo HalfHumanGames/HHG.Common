@@ -1,0 +1,35 @@
+using HHG.Common.Runtime;
+
+namespace {{namespace}}
+{
+    public partial class OptionsState
+    {
+        [System.Serializable]
+        public class GraphicsState
+        {
+            public bool Blood = true;
+            public bool Vignette = true;
+            public bool Fullscreen = true;
+
+            public int VSyncCount = 0;
+
+            public string[] VSyncCountOptions => new string[]
+            {
+                "Don't Sync",
+                "Every V Blank",
+                "Every Second V Blank"
+            };
+
+            public int ResolutionWidth = 1920;
+            public int ResolutionHeight = 1080;
+
+            public int ResolutionIndex
+            {
+                get => ResolutionUtil.GetResolutionIndex(ResolutionWidth, ResolutionHeight);
+                set => ResolutionUtil.SetResolutionIndex(value, out ResolutionWidth, out ResolutionHeight);
+            }
+
+            public string[] ResolutionIndexOptions => ResolutionUtil.ResolutionsFormatted;
+        }
+    }
+}

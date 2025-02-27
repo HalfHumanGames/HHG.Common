@@ -5,49 +5,77 @@ using UnityEngine;
 
 namespace HHG.Common.Editor
 {
-    [CreateAssetMenu(fileName = "Template Collection", menuName = "HHG/Editor Assets/Template Collection")]
-    public class TemplateCollectionAsset : ScriptableObject
+    public abstract class TemplateCollectionAsset : ScriptableObject
+    {
+        public abstract string defaultPath { get; }
+
+        public abstract void SetupMenuItems();
+    }
+
+    public abstract class TemplateCollectionAsset<T> : TemplateCollectionAsset where T : Object
     {
         [SerializeField] private bool enabled = true;
-        [SerializeField] private string path = "GameObject/HHG/";
-        [SerializeField] private List<GameObject> templates = new List<GameObject>();
+        [SerializeField] private string path;
+        [SerializeField, HideInInspector] private string previousPath;
+        [SerializeField] private List<T> templates = new List<T>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        private static void Initialize()
+        {
+            foreach (TemplateCollectionAsset templateCollection in FindObjectsByType<TemplateCollectionAsset>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                templateCollection.SetupMenuItems();
+            }
+        }
 
         private void Awake()
         {
-            EditorApplication.delayCall += VerifyTemplates;
+            EditorApplication.delayCall += SetupMenuItems;
         }
 
-        public void VerifyTemplates()
+        public override sealed void SetupMenuItems()
         {
-            foreach (GameObject prefab in templates)
+            foreach (T template in templates)
             {
-                VerifyTemplate(prefab);
+                string fullPath = $"{path}/{template.name}";
+                string previousFullPath = $"{previousPath}/{template.name}";
+                bool exists = MenuTool.MenuItemExists(fullPath);
+
+                MenuTool.RemoveMenuItem(previousFullPath);
+
+                if (!exists && enabled)
+                {
+                    MenuTool.AddMenuItem(fullPath, string.Empty, false, 0, () => Create(template), () => Validate(template));
+                }
+                else if (exists && !enabled)
+                {
+                    MenuTool.RemoveMenuItem(fullPath);
+                }
+
             }
+
+            previousPath = path;
         }
 
-        private void VerifyTemplate(GameObject template)
+        public static void Create<TCollection>(T asset) where TCollection : TemplateCollectionAsset<T>
         {
-            string fullPath = $"{path}/{template.name}";
-            var exists = MenuTool.MenuItemExists(fullPath);
-
-            if (!exists && enabled)
-            {
-                MenuTool.AddMenuItem(fullPath, string.Empty, false, 0, () => InstantiateTemplate(template), () => true);
-            }
-            else if (exists && !enabled)
-            {
-                MenuTool.RemoveMenuItem(fullPath);
-            }
+            TCollection instance = CreateInstance<TCollection>();
+            instance.Create(asset);
+            DestroyImmediate(instance);
         }
 
-        private static void InstantiateTemplate(GameObject template)
-        {
-            PrefabUtility.InstantiatePrefab(template, Selection.activeTransform);
-        }
+        protected abstract void Create(T template);
+
+        protected virtual bool Validate(T template) => true;
 
         private void OnValidate()
         {
-            EditorApplication.delayCall += VerifyTemplates;
+            if (string.IsNullOrEmpty(path))
+            {
+                path = defaultPath;
+            }
+
+            EditorApplication.delayCall += SetupMenuItems;
         }
     }
 }
