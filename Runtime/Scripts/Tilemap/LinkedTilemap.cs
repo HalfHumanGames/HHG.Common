@@ -53,6 +53,8 @@ namespace HHG.Common.Runtime
 
         public void ForceInitialize()
         {
+            initialized = true;
+
             targetTilemap.ClearAllTiles();
 
             foreach (Vector3Int position in sourceTilemap.cellBounds.allPositionsWithin)

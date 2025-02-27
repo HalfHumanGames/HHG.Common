@@ -1,23 +1,43 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
     public class UITabNavigation : MonoBehaviour
     {
-        [SerializeField] private Transform tabsContainer;
+        public Transform TabContainer => tabContainer;
+        public Transform ContentContainer => contentContainer;
+
+        [SerializeField, FormerlySerializedAs("tabsContainer")] private Transform tabContainer;
         [SerializeField] private Transform contentContainer;
 
         private RectTransform rectTransform;
         private Lazy<Button> _tabs = new Lazy<Button>();
-        private Button[] tabs => _tabs.FromComponentsInChildren(tabsContainer);
-        private Lazy<GameObject> _content = new Lazy<GameObject>();
-        private GameObject[] content => _content.From(() => contentContainer.GetChildren().Select(t => t.gameObject).ToArray());
+        private Button[] tabs => _tabs.FromComponentsInChildren(tabContainer);
+        private Lazy<GameObject> _contents = new Lazy<GameObject>();
+        private GameObject[] contents => _contents.From(() => contentContainer.GetChildren().Select(t => t.gameObject).ToArray());
 
         private void Awake()
         {
+            Initialize();
+        }
+
+        private void OnEnable()
+        {
+            if (tabs.FirstOrDefault() is Button tab)
+            {
+                SelectTab(tab);
+            }
+        }
+
+        public void Initialize()
+        {
+            _tabs.Reset();
+            _contents.Reset();
+
             rectTransform = GetComponent<RectTransform>();
 
             foreach (Button tab in tabs)
@@ -32,18 +52,18 @@ namespace HHG.Common.Runtime
 
             tabs.SetNavigationHorizontal();
 
-            int len = Mathf.Min(tabs.Length, content.Length);
+            int len = Mathf.Min(tabs.Length, contents.Length);
             for (int i = 0; i < len; i++)
             {
                 Button tab = tabs[i];
-                GameObject item = content[i];
+                GameObject item = contents[i];
 
                 // Make sure to only get the topmost selectable in each child game object
                 // since certain ui elements like dropdowns contain child selectables
                 // Also make sure to call NotNull in case a tab section has no selectables
                 var selectables = item.transform.GetChildren().Select(c => c.GetComponentInChildren<Selectable>(true)).NotNull();
                 selectables.SetNavigationVertical();
-                
+
                 if (selectables.Any())
                 {
                     Selectable first = selectables.First();
@@ -53,20 +73,26 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private void OnEnable()
-        {
-            SelectTab(tabs.FirstOrDefault());
-        }
-
         public void SelectTab(Button button)
         {
-            foreach (GameObject item in content)
+            foreach (GameObject item in contents)
             {
-                item.SetActive(false);
+                if (item)
+                {
+                    item.SetActive(false);
+                }
             }
 
             int index = button.transform.GetSiblingIndex();
-            content[index].SetActive(true);
+            
+            if (index < contents.Length)
+            {
+                if (contents[index] is GameObject content)
+                {
+                    content.SetActive(true);
+                }
+            }
+
             rectTransform.RebuildLayout();
         }
     }

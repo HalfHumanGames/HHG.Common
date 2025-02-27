@@ -40,7 +40,7 @@ namespace HHG.Common.Runtime
 
             buttons.Clear();
 
-            for (int i = 0; i < spriteList.Value.Count; i++)
+            for (int i = 0; i < spriteList.List.Count; i++)
             {
                 int index = i;
                 Button button = Instantiate(buttonJump, buttonJump.transform.parent);
@@ -57,7 +57,7 @@ namespace HHG.Common.Runtime
         {
             if (coroutine == null)
             {
-                current = Mathf.Clamp(current - 1, 0, spriteList.Value.Count - 1);
+                current = Mathf.Clamp(current - 1, 0, spriteList.List.Count - 1);
                 Refresh();
             }
         }
@@ -66,7 +66,7 @@ namespace HHG.Common.Runtime
         {
             if (coroutine == null)
             {
-                current = Mathf.Clamp(current + 1, 0, spriteList.Value.Count - 1);
+                current = Mathf.Clamp(current + 1, 0, spriteList.List.Count - 1);
                 Refresh();
             }
         }
@@ -75,7 +75,7 @@ namespace HHG.Common.Runtime
         {
             if (coroutine == null && current != index)
             {
-                current = Mathf.Clamp(index, 0, spriteList.Value.Count - 1);
+                current = Mathf.Clamp(index, 0, spriteList.List.Count - 1);
                 Refresh();
             }
         }
@@ -84,7 +84,7 @@ namespace HHG.Common.Runtime
         {
             if (current != index)
             {
-                current = Mathf.Clamp(index, 0, spriteList.Value.Count - 1);
+                current = Mathf.Clamp(index, 0, spriteList.List.Count - 1);
                 RefreshNow();
             }
         }
@@ -121,16 +121,16 @@ namespace HHG.Common.Runtime
 
         private void RefreshNow()
         {
-            image.sprite = spriteList.Value[current];
+            image.sprite = spriteList.List[current];
             buttons[current].interactable = true;
 
             bool showButtonLeft = current > 0;
-            bool showButtonRight = current < spriteList.Value.Count - 1;
+            bool showButtonRight = current < spriteList.List.Count - 1;
 
             buttonLeft.gameObject.SetActive(showButtonLeft);
             buttonRight.gameObject.SetActive(showButtonRight);
 
-            if (current == spriteList.Value.Count - 1)
+            if (current == spriteList.List.Count - 1)
             {
                 buttonContinue.gameObject.SetActive(true);
                 buttonContinue.Select();
