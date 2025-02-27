@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -32,6 +33,16 @@ namespace HHG.Common.Runtime
         public static string ToNicified(this string s)
         {
             return Regex.Replace(s, "([A-Z])", " $1", RegexOptions.Compiled).ToTitleCase().Trim();
+        }
+
+        public static string Format(this string s, IDictionary<string, string> parameters)
+        {
+            foreach (KeyValuePair<string, string> kvpair in parameters)
+            {
+                s = Regex.Replace(s, $"{{{kvpair.Key}}}", kvpair.Value);
+            }
+
+            return s;
         }
     }
 }
