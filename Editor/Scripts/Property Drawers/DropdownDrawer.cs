@@ -1,30 +1,38 @@
 using HHG.Common.Runtime;
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
 {
     [CustomPropertyDrawer(typeof(DropdownAttribute), true)]
     public class DropdownDrawer : PropertyDrawer
     {
-        private static Dictionary<Type, Object[]> assetCache = new Dictionary<Type, Object[]>();
-        private static Dictionary<Type, string[]> nameCache = new Dictionary<Type, string[]>();
+        private static Dictionary<System.Type, Object[]> assetCache = new Dictionary<System.Type, Object[]>();
+        private static Dictionary<System.Type, string[]> nameCache = new Dictionary<System.Type, string[]>();
 
         private DropdownAttribute filter => attribute as DropdownAttribute;
-        private Object[] assets = new Object[0];
-        private string[] names = new string[0];
-        private int currentIndex;
-        private bool initialized;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (!initialized)
+            System.Type type = filter.Type ?? property.GetPropertyType();
+
+            Object[] assets;
+            string[] names;
+
+            if (!assetCache.TryGetValue(type, out assets) || !nameCache.TryGetValue(type, out names))
             {
-                Initialize(property);
+                assets = new Object[0];
+                names = new string[0];
+
+                DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.Filter);
+
+                // Cache for subsequent lookups
+                assetCache[type] = assets;
+                nameCache[type] = names;
             }
+
+            int currentIndex = Mathf.Max(0, System.Array.IndexOf(assets, property.objectReferenceValue));
 
             if (property.propertyType != SerializedPropertyType.ObjectReference)
             {
@@ -40,35 +48,16 @@ namespace HHG.Common.Editor
                 {
                     currentIndex = selectedIndex;
                     property.objectReferenceValue = assets[currentIndex];
-                    property.serializedObject.ApplyModifiedProperties();
-                    RefreshDropdownValues(property);
+                    RefreshDropdownValues(property, ref assets, ref names, ref currentIndex);
                 }
 
                 EditorGUI.EndProperty();
             }
         }
 
-        private void Initialize(SerializedProperty property)
+        private void RefreshDropdownValues(SerializedProperty property, ref Object[] assets, ref string[] names, ref int currentIndex)
         {
-            initialized = true;
-
-            Type type = filter.Type ?? property.GetPropertyType();
-
-            if (!assetCache.TryGetValue(type, out assets) || !nameCache.TryGetValue(type, out names))
-            {
-                DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.Filter);
-
-                // Cache for subsequent lookups
-                assetCache[type] = assets;
-                nameCache[type] = names;
-            }
-
-            currentIndex = Mathf.Max(0, Array.IndexOf(assets, property.objectReferenceValue));
-        }
-
-        private void RefreshDropdownValues(SerializedProperty property)
-        {
-            Type type = filter.Type ?? property.GetPropertyType();
+            System.Type type = filter.Type ?? property.GetPropertyType();
 
             DropdownUtil.GetChoiceArray(ref assets, ref names, t => t.IsBaseImplementationOf(type), filter.Filter);
 
@@ -76,7 +65,7 @@ namespace HHG.Common.Editor
             assetCache[type] = assets;
             nameCache[type] = names;
 
-            currentIndex = Mathf.Max(0, Array.IndexOf(assets, property.objectReferenceValue));
+            currentIndex = Mathf.Max(0, System.Array.IndexOf(assets, property.objectReferenceValue));
         }
     }
 }

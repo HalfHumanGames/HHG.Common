@@ -23,8 +23,8 @@ namespace HHG.Common.Runtime
                     
                     if (instance == null)
                     {
-                        // LoadAll DOES work with string.Empty
-                        // This searches all Resources folders
+                        // Resources.LoadAll DOES work with string.Empty
+                        // This searches all Resources folders in the project
                         instance = Resources.LoadAll<T>(string.Empty).FirstOrDefault();
                     }
 

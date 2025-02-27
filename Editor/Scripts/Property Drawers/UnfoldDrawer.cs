@@ -13,12 +13,14 @@ namespace HHG.Common.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            totalHeight = 0f;
+
             property.isExpanded = true;
             position.height = EditorGUIUtility.singleLineHeight;
 
             SerializedProperty childProperty = property.Copy();
             SerializedProperty endProperty = property.GetEndProperty();
-            
+
             if (childProperty.NextVisible(true) && !SerializedProperty.EqualContents(childProperty, endProperty))
             {
                 UnfoldName unfoldName = unfold.Name;
@@ -28,8 +30,6 @@ namespace HHG.Common.Editor
                     bool hasSingleChild = property.Copy().CountVisibleInProperty() - 1 == 1;
                     unfoldName = hasSingleChild ? UnfoldName.Parent : UnfoldName.Child;
                 }
-
-                totalHeight = 0f;
 
                 do
                 {

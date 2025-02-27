@@ -7,11 +7,11 @@ namespace HHG.Common.Editor
     [CustomPropertyDrawer(typeof(GuidAttribute), true)]
     public class GuidDrawer : PropertyDrawer
     {
-        private string assetGuid;
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             GuidAttribute guid = (GuidAttribute)attribute;
+
+            string assetGuid = string.Empty;
 
             if (string.IsNullOrEmpty(guid.Path))
             {
@@ -46,7 +46,6 @@ namespace HHG.Common.Editor
                 if (property.stringValue != assetGuid)
                 {
                     property.stringValue = assetGuid;
-                    property.serializedObject.ApplyModifiedProperties();
                 }
             }
 

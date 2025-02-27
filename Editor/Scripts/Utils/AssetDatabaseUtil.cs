@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using Object = UnityEngine.Object;
@@ -26,6 +27,25 @@ namespace HHG.Common.Editor
             string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
             string[] paths = guids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
             return paths.Select(p => AssetDatabase.LoadAssetAtPath<T>(p)).ToArray();
+        }
+
+        public static string GetCurrentProjectWindowFolder()
+        {
+            string path = "Assets";
+
+            Object activeObject = Selection.activeObject;
+
+            if (activeObject != null)
+            {
+                path = AssetDatabase.GetAssetPath(activeObject);
+
+                if (!string.IsNullOrEmpty(path) && !AssetDatabase.IsValidFolder(path))
+                {
+                    path = Path.GetDirectoryName(path);
+                }
+            }
+
+            return path;
         }
     }
 }
