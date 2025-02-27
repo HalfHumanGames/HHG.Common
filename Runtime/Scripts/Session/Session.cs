@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HHG.Common.Runtime
 {
     [ExecuteInEditMode]
-    public abstract partial class Session<TSession, TState, TIO, TSerializer> : Session, IBindable, IBindableProvider
+    public abstract partial class Session<TSession, TState, TIO, TSerializer> : Session
         where TSession : Session<TSession, TState, TIO, TSerializer>
         where TState : class, ISessionState<TState>, new()
         where TIO : class, IIO, new()
@@ -45,7 +45,7 @@ namespace HHG.Common.Runtime
 
         public sealed override string fileId
         {
-            get => _fileId ?? defaultFileId;
+            get => !string.IsNullOrEmpty(_fileId) ? _fileId : defaultFileId;
             set
             {
                 if (_fileId != value)
@@ -67,8 +67,6 @@ namespace HHG.Common.Runtime
         public override string[] fileIds => new string[] { defaultFileId };
         public override bool logsEnabled => false;
 
-        public IBindable Bindable => Instance;
-
         [SerializeField] private TState state;
 
         private string _fileId;
@@ -77,16 +75,22 @@ namespace HHG.Common.Runtime
         private TIO io = new TIO();
         private TSerializer serializer = new TSerializer();
         private List<Action<TState>> mutations = new List<Action<TState>>();
-        private GetSetMap getterSetterMap;
 
-        public event Action stateUpdated;
-
-        protected sealed override void setup()
+        private void Awake()
         {
+            initialize();
+        }
+
+        public sealed override void initialize()
+        {
+            sessions[GetType()] = instance = (TSession)this;
+
+            // Just in case
+            Application.quitting -= onApplicationQuit;
             Application.quitting += onApplicationQuit;
         }
 
-        protected sealed override void log(string message)
+        public sealed override void log(string message)
         {
             if (logsEnabled)
             {
@@ -208,12 +212,7 @@ namespace HHG.Common.Runtime
 
         public sealed override void useDefaultFile()
         {
-            this.fileId = DefaultFileId;
-        }
-
-        public sealed override void issueStateUpdated()
-        {
-            stateUpdated?.Invoke();
+            fileId = DefaultFileId;
         }
 
         public sealed override bool fileExists(string fileId)
@@ -290,31 +289,14 @@ namespace HHG.Common.Runtime
             return JsonUtility.ToJson(readOnlyStateWeak);
         }
 
-        public sealed override T GetValue<T>(string name) => TryGetValue(name, out T value) ? value : default;
-
-        public sealed override void SetValue<T>(string name, T value) => TrySetValue(name, value);
-
-        public sealed override bool TryGetValue<T>(string name, out T value)
+        public sealed override T GetValue<T>(string name)
         {
-            getterSetterMap ??= new GetSetMap(typeof(TState));
-
-            return getterSetterMap.TryGetValue(readOnlyStateWeak, name, out value);
+            return readOnlyState.GetValueByPath<T>(name);
         }
 
-        public sealed override bool TrySetValue<T>(string name, T value)
+        public sealed override void SetValue<T>(string name, T value)
         {
-            getterSetterMap ??= new GetSetMap(typeof(TState));
-
-            bool success = false;
-
-            stage(state =>
-            {
-                success = getterSetterMap.TrySetValue(state, name, value);
-            });
-
-            _ = readOnlyStateWeak; // Force call mutation
-
-            return success;
+            stage(state => state.SetValueByPath(name, value));
         }
 
         public sealed override FileHandle handle(string fileId, bool loadFile = false)

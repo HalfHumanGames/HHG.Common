@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public abstract partial class Session :  ScriptableObject
+    public abstract partial class Session : ScriptableObject
     {
         public class FileHandle : IDisposable
         {

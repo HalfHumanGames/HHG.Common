@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +5,7 @@ namespace HHG.Common.Runtime
 {
     public abstract partial class Session : ScriptableObject
     {
-        protected static readonly Dictionary<Type, Session> sessions = new Dictionary<Type, Session>();
+        protected static readonly Dictionary<System.Type, Session> sessions = new Dictionary<System.Type, Session>();
 
         public static TSession Get<TSession>() where TSession : Session
         {
@@ -15,16 +14,14 @@ namespace HHG.Common.Runtime
 
         public static Session Get(string typeName)
         {
-            return Get(Type.GetType(typeName));
+            return Get(System.Type.GetType(typeName));
         }
 
-        public static Session Get(Type type)
+        public static Session Get(System.Type type)
         {
             if (!sessions.TryGetValue(type, out Session session))
             {
-                session = (Session)(FindAnyObjectByType(type) ?? CreateInstance(type));
-                session.setup();
-                sessions.Add(type, session);
+                session = (FindAnyObjectByType(type) is Object obj ? obj : CreateInstance(type)) as Session;
             }
 
             return session;
@@ -63,14 +60,14 @@ namespace HHG.Common.Runtime
         public static TState DefaultState => Instance.defaultState;
         public static TState ReadOnlyState => Instance.readOnlyState;
 
-        public static event Action StateUpdated
+        public static event System.Action StateUpdated
         {
             add => Instance.stateUpdated += value;
             remove => Instance.stateUpdated -= value;
         }
 
-        public static void Save(Action<TState> mutation) => Instance.save(mutation);
-        public static void Stage(Action<TState> mutation) => Instance.stage(mutation);
+        public static void Save(System.Action<TState> mutation) => Instance.save(mutation);
+        public static void Stage(System.Action<TState> mutation) => Instance.stage(mutation);
         public static void Save(string fileId = null) => Instance.save(fileId);
         public static void Load(string fileId = null) => Instance.load(fileId);
         public static void Clear(string fileId = null) => Instance.clear(fileId);
