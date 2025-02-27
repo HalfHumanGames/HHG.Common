@@ -1,33 +1,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HHG.Common.Runtime
 {
     public abstract class VariableListAssetBase : ScriptableObject
     {
-        public abstract IReadOnlyList<object> WeakValue { get; }
+        public abstract IReadOnlyList<object> WeakList { get; }
     }
 
     public abstract class VariableListAssetBase<T> : VariableListAssetBase
     {
-        public override IReadOnlyList<object> WeakValue
+        public override IReadOnlyList<object> WeakList
         {
             get
             {
-                if (weakValue == null)
+                if (weakList == null)
                 {
-                    weakValue = new List<object>(value.Cast<object>());
+                    weakList = new List<object>(list.Cast<object>());
                 }
 
-                return weakValue;
+                return weakList;
             }
         }
 
-        public IReadOnlyList<T> Value => value;
+        public IReadOnlyList<T> List => list;
 
-        [SerializeField] protected List<T> value = new List<T>();
+        [SerializeField, FormerlySerializedAs("value")] protected List<T> list = new List<T>();
 
-        private List<object> weakValue;
+        private List<object> weakList;
     }
 }
