@@ -329,6 +329,7 @@ namespace HHG.Common.Runtime
                 string text = !string.IsNullOrEmpty(rebindOperation.expectedControlType)
                     ? $"{partName}Waiting for {rebindOperation.expectedControlType} input..."
                     : $"{partName}Waiting for input...";
+
                 rebindText.text = text;
             }
 

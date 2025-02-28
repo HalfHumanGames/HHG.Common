@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -12,6 +11,8 @@ namespace HHG.Common.Editor
     {
         private static Dictionary<string, string> keywords;
 
+        protected override string defaultPath => "Assets/Create/HHG/Scripts";
+
         private void Awake()
         {
             keywords = new Dictionary<string, string>()
@@ -20,8 +21,6 @@ namespace HHG.Common.Editor
                 { "namespace", !string.IsNullOrEmpty(EditorSettings.projectGenerationRootNamespace) ? EditorSettings.projectGenerationRootNamespace : Application.productName }
             };
         }
-
-        public override string defaultPath => "Assets/Create/HHG/Scripts";
 
         protected override void Create(TextAsset template)
         {
@@ -32,9 +31,9 @@ namespace HHG.Common.Editor
             AssetDatabase.Refresh();
         }
 
-        private static string Format(string contents, IDictionary<string, string> parameters)
+        private static string Format(string contents, IDictionary<string, string> variables)
         {
-            foreach (KeyValuePair<string, string> kvpair in parameters)
+            foreach (KeyValuePair<string, string> kvpair in variables)
             {
                 contents = Regex.Replace(contents, $"{{{{{kvpair.Key}}}}}", kvpair.Value);
             }
@@ -43,4 +42,3 @@ namespace HHG.Common.Editor
         }
     }
 }
-#endif
