@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,8 +9,8 @@ namespace HHG.Common.Runtime
     {
         [SerializeField] private GameObject rebindActionPrefab;
         [SerializeField] private GameObject rebindOverlay;
-        [SerializeField] private GameObject keyboard;
-        [SerializeField] private GameObject gamepad;
+        [SerializeField] private Transform keyboard;
+        [SerializeField] private Transform gamepad;
         [SerializeField] private InputBinding.DisplayStringOptions displayStringOptions;
         [SerializeField] private List<InputActionBinding> keyboardBindings = new List<InputActionBinding>();
         [SerializeField] private List<InputActionBinding> gamepadBindings = new List<InputActionBinding>();
@@ -26,13 +25,17 @@ namespace HHG.Common.Runtime
             InitializeContainer(gamepad, gamepadBindings);
         }
 
-        private void InitializeContainer(GameObject container, List<InputActionBinding> bindings)
+        private void InitializeContainer(Transform container, List<InputActionBinding> bindings)
         {
-            this.Destroy(container.GetChildren().Skip(1));
+            // Start at 1 to skip the column header label
+            for (int i = 1; i < container.childCount; i++)
+            {
+                Destroy(container.GetChild(i).gameObject);
+            }
 
             foreach (InputActionBinding binding in bindings)
             {
-                GameObject created = Instantiate(rebindActionPrefab, container.transform);
+                GameObject created = Instantiate(rebindActionPrefab, container);
                 created.name = rebindActionPrefab.name;
 
                 if (created.TryGetComponent(out UIRebindAction rebindAction))
