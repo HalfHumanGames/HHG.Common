@@ -17,6 +17,12 @@ namespace HHG.Common.Editor
         {
             System.Type type = filter.Type ?? property.GetPropertyType();
 
+            if (type == null)
+            {
+                Debug.LogError($"Type '{property.type}' does not inherit UnityEngine.Object.");
+                return;
+            }
+
             Object[] assets;
             string[] names;
 

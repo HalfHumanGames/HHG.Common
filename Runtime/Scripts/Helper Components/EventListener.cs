@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,113 +25,201 @@ namespace HHG.Common.Runtime
         ISubmitHandler,
         IUpdateSelectedHandler
     {
-        [SerializeField, Unfold] private ActionEvent onBeginDrag = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onCancel = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onDeselect = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onDrag = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onDrop = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onEndDrag = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onInitializePotentialDrag = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onMove = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerClick = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerDown = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerEnter = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerExit = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerMove = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onPointerUp = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onScroll = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onSelect = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onSubmit = new ActionEvent();
-        [SerializeField, Unfold] private ActionEvent onUpdateSelected = new ActionEvent();
+        [Flags]
+        private enum Events
+        {
+            Awake = 1 << 0,
+            Start = 1 << 1,
+            Enable = 1 << 2,
+            Disable = 1 << 3,
+            Destroy = 1 << 4,
+            BeginDrag = 1 << 5,
+            Cancel = 1 << 6,
+            Deselect = 1 << 7,
+            Drag = 1 << 8,
+            Drop = 1 << 9,
+            EndDrag = 1 << 10,
+            InitializePotentialDrag = 1 << 11,
+            Move = 1 << 12,
+            PointerClick = 1 << 13,
+            PointerDown = 1 << 14,
+            PointerEnter = 1 << 15,
+            PointerExit = 1 << 16,
+            PointerMove = 1 << 17,
+            PointerUp = 1 << 18,
+            Scroll = 1 << 19,
+            Select = 1 << 20,
+            Submit = 1 << 21,
+            UpdateSelected = 1 << 22,
+            All = -1
+        }
+
+        private bool listenToAwake => events.HasFlag(Events.Awake);
+        private bool listenToStart => events.HasFlag(Events.Start);
+        private bool listenToEnable => events.HasFlag(Events.Enable);
+        private bool listenToDisable => events.HasFlag(Events.Disable);
+        private bool listenToDestroy => events.HasFlag(Events.Destroy);
+        private bool listenToBeginDrag => events.HasFlag(Events.BeginDrag);
+        private bool listenToCancel => events.HasFlag(Events.Cancel);
+        private bool listenToDeselect => events.HasFlag(Events.Deselect);
+        private bool listenToDrag => events.HasFlag(Events.Drag);
+        private bool listenToDrop => events.HasFlag(Events.Drop);
+        private bool listenToEndDrag => events.HasFlag(Events.EndDrag);
+        private bool listenToInitializePotentialDrag => events.HasFlag(Events.InitializePotentialDrag);
+        private bool listenToMove => events.HasFlag(Events.Move);
+        private bool listenToPointerClick => events.HasFlag(Events.PointerClick);
+        private bool listenToPointerDown => events.HasFlag(Events.PointerDown);
+        private bool listenToPointerEnter => events.HasFlag(Events.PointerEnter);
+        private bool listenToPointerExit => events.HasFlag(Events.PointerExit);
+        private bool listenToPointerMove => events.HasFlag(Events.PointerMove);
+        private bool listenToPointerUp => events.HasFlag(Events.PointerUp);
+        private bool listenToScroll => events.HasFlag(Events.Scroll);
+        private bool listenToSelect => events.HasFlag(Events.Select);
+        private bool listenToSubmit => events.HasFlag(Events.Submit);
+        private bool listenToUpdateSelected => events.HasFlag(Events.UpdateSelected);
+
+        [SerializeField] private Events events = Events.All;
+
+        // MonoBehaviour Events
+        [SerializeField, Unfold, ShowIf(nameof(listenToAwake), true)] private ActionEvent onAwake = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToStart), true)] private ActionEvent onStart = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToEnable), true)] private ActionEvent onEnable = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToDisable), true)] private ActionEvent onDisable = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToDestroy), true)] private ActionEvent onDestroy = new ActionEvent();
+
+        // UI Events
+        [SerializeField, Unfold, ShowIf(nameof(listenToBeginDrag), true)] private ActionEvent onBeginDrag = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToCancel), true)] private ActionEvent onCancel = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToDeselect), true)] private ActionEvent onDeselect = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToDrag), true)] private ActionEvent onDrag = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToDrop), true)] private ActionEvent onDrop = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToEndDrag), true)] private ActionEvent onEndDrag = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToInitializePotentialDrag), true)] private ActionEvent onInitializePotentialDrag = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToMove), true)] private ActionEvent onMove = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerClick), true)] private ActionEvent onPointerClick = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerDown), true)] private ActionEvent onPointerDown = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerEnter), true)] private ActionEvent onPointerEnter = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerExit), true)] private ActionEvent onPointerExit = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerMove), true)] private ActionEvent onPointerMove = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToPointerUp), true)] private ActionEvent onPointerUp = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToScroll), true)] private ActionEvent onScroll = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToSelect), true)] private ActionEvent onSelect = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToSubmit), true)] private ActionEvent onSubmit = new ActionEvent();
+        [SerializeField, Unfold, ShowIf(nameof(listenToUpdateSelected), true)] private ActionEvent onUpdateSelected = new ActionEvent();
+
+        private void Awake()
+        {
+            if (listenToAwake) onAwake?.Invoke(this);
+        }
+
+        private void Start()
+        {
+            if (listenToStart) onStart?.Invoke(this);
+        }
+
+        private void OnEnable()
+        {
+            if (listenToEnable) onEnable?.Invoke(this);
+        }
+
+        private void OnDisable()
+        {
+            if (listenToDisable) onDisable?.Invoke(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (listenToDestroy) onDestroy?.Invoke(this);
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            onBeginDrag?.Invoke(this);
+            if (listenToBeginDrag) onBeginDrag?.Invoke(this);
         }
 
         public void OnCancel(BaseEventData eventData)
         {
-            onCancel?.Invoke(this);
+            if (listenToCancel) onCancel?.Invoke(this);
         }
 
         public void OnDeselect(BaseEventData eventData)
         {
-            onDeselect?.Invoke(this);
+            if (listenToDeselect) onDeselect?.Invoke(this);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            onDrag?.Invoke(this);
+            if (listenToDrag) onDrag?.Invoke(this);
         }
 
         public void OnDrop(PointerEventData eventData)
         {
-            onDrop?.Invoke(this);
+            if (listenToDrop) onDrop?.Invoke(this);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            onEndDrag?.Invoke(this);
+            if (listenToEndDrag) onEndDrag?.Invoke(this);
         }
 
         public void OnInitializePotentialDrag(PointerEventData eventData)
         {
-            onInitializePotentialDrag?.Invoke(this);
+            if (listenToInitializePotentialDrag) onInitializePotentialDrag?.Invoke(this);
         }
 
         public void OnMove(AxisEventData eventData)
         {
-            onMove?.Invoke(this);
+            if (listenToMove) onMove?.Invoke(this);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            onPointerClick?.Invoke(this);
+            if (listenToPointerClick) onPointerClick?.Invoke(this);
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            onPointerDown?.Invoke(this);
+            if (listenToPointerDown) onPointerDown?.Invoke(this);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            onPointerEnter?.Invoke(this);
+            if (listenToPointerEnter) onPointerEnter?.Invoke(this);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            onPointerExit?.Invoke(this);
+            if (listenToPointerExit) onPointerExit?.Invoke(this);
         }
 
         public void OnPointerMove(PointerEventData eventData)
         {
-            onPointerMove?.Invoke(this);
+            if (listenToPointerMove) onPointerMove?.Invoke(this);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            onPointerUp?.Invoke(this);
+            if (listenToPointerUp) onPointerUp?.Invoke(this);
         }
 
         public void OnScroll(PointerEventData eventData)
         {
-            onScroll?.Invoke(this);
+            if (listenToScroll) onScroll?.Invoke(this);
         }
 
         public void OnSelect(BaseEventData eventData)
         {
-            onSelect?.Invoke(this);
+            if (listenToSelect) onSelect?.Invoke(this);
         }
 
         public void OnSubmit(BaseEventData eventData)
         {
-            onSubmit?.Invoke(this);
+            if (listenToSubmit) onSubmit?.Invoke(this);
         }
 
         public void OnUpdateSelected(BaseEventData eventData)
         {
-            onUpdateSelected?.Invoke(this);
+            if (listenToUpdateSelected) onUpdateSelected?.Invoke(this);
         }
     }
 }

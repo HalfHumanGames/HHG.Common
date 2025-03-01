@@ -8,7 +8,15 @@ namespace HHG.Common.Runtime
     [Serializable]
     public class ActionLoadSceneAsync : IActionAsync
     {
-        [SerializeField, Dropdown] private SceneNameAsset sceneName;
+        private enum Mode
+        {
+            ByName,
+            ByIndex
+        }
+
+        [SerializeField] private Mode mode;
+        [SerializeField, ShowIf(nameof(mode), Mode.ByName), Dropdown] private SceneNameAsset sceneName;
+        [SerializeField, ShowIf(nameof(mode), Mode.ByIndex)] private int sceneIndex;
 
         private Action onLoaded;
 
@@ -25,7 +33,10 @@ namespace HHG.Common.Runtime
 
         public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
-            AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+            AsyncOperation op = mode == Mode.ByName ?
+                SceneManager.LoadSceneAsync(sceneName) :
+                SceneManager.LoadSceneAsync(sceneIndex);
+
             op.completed += OnCompleted;
             while (!op.isDone) yield return new WaitForEndOfFrame();  
         }

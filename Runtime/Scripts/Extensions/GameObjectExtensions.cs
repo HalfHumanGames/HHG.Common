@@ -1,11 +1,25 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public static class GameObjectExtensions
     {
+        public static void SamrtDestroyChildren(this GameObject gameObject)
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                ObjectUtil.SmartDestroy(gameObject.transform.GetChild(i).gameObject);
+            }
+        }
+
+        public static void DestroyChildren(this GameObject gameObject)
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                Object.Destroy(gameObject.transform.GetChild(i).gameObject);
+            }
+        }
+
         public static string GetPath(this GameObject gameObject)
         {
             return gameObject.transform.GetPath();
