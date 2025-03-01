@@ -1,6 +1,6 @@
 {
   "name": "com.halfhumangames.common",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "HHG - Common",
   "description": "Common dependencies for our Unity packages",
   "unity": "2020.3",

@@ -5,7 +5,7 @@ namespace HHG.Common.Runtime
 {
     public class RequireOr : IRequirement
     {
-        [SerializeReference, SubclassSelector] private IRequirement[] requirements;
+        [SerializeReference, ReferencePicker] private IRequirement[] requirements;
 
         public bool IsRequirementMet(MonoBehaviour invoker)
         {

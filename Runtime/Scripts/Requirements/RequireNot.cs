@@ -4,7 +4,7 @@ namespace HHG.Common.Runtime
 {
     public class RequireNot : IRequirement
     {
-        [SerializeReference, SubclassSelector] private IRequirement requirement;
+        [SerializeReference, ReferencePicker] private IRequirement requirement;
 
         public bool IsRequirementMet(MonoBehaviour invoker)
         {

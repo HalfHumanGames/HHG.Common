@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     {
         public MetaBehaviour Behaviour => behaviour;
 
-        [SerializeReference, SubclassSelector, FormerlySerializedAs("_behaviour")] private MetaBehaviour behaviour;
+        [SerializeReference, ReferencePicker, FormerlySerializedAs("_behaviour")] private MetaBehaviour behaviour;
 
         internal T SetBehaviour<T>(T metaBehaviour) where T : MetaBehaviour
         {

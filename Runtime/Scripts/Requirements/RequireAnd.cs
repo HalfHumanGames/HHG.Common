@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
 {
     public class RequireAnd : IRequirement
     {
-        [SerializeReference, SubclassSelector] private List<IRequirement> requirements = new List<IRequirement>();
+        [SerializeReference, ReferencePicker] private List<IRequirement> requirements = new List<IRequirement>();
 
         public bool IsRequirementMet(MonoBehaviour invoker)
         {
