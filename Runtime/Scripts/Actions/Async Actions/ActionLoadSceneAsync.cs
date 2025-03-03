@@ -8,15 +8,7 @@ namespace HHG.Common.Runtime
     [Serializable]
     public class ActionLoadSceneAsync : IActionAsync
     {
-        private enum Mode
-        {
-            ByName,
-            ByIndex
-        }
-
-        [SerializeField] private Mode mode;
-        [SerializeField, ShowIf(nameof(mode), Mode.ByName), Dropdown] private SceneNameAsset sceneName;
-        [SerializeField, ShowIf(nameof(mode), Mode.ByIndex)] private int sceneIndex;
+        [SerializeField] private SerializedScene scene;
 
         private Action onLoaded;
 
@@ -25,18 +17,27 @@ namespace HHG.Common.Runtime
 
         }
 
-        public ActionLoadSceneAsync(SceneNameAsset sceneName, Action onLoaded = null)
+        public ActionLoadSceneAsync(SerializedScene scene, Action onLoaded = null)
         {
-            this.sceneName = sceneName;
+            this.scene = scene;
             this.onLoaded = onLoaded;
         }
 
         public IEnumerator InvokeAsync(MonoBehaviour invoker)
         {
-            AsyncOperation op = mode == Mode.ByName ?
-                SceneManager.LoadSceneAsync(sceneName) :
-                SceneManager.LoadSceneAsync(sceneIndex);
+            if (scene == null)
+            {
+                Debug.LogError("Scene cannot be null.", invoker);
+                yield break;
+            }
 
+            if (!scene.CanBeLoaded)
+            {
+                Debug.LogError("Scene cannot be loaded.", invoker);
+                yield break;
+            }
+
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene.BuildIndex);
             op.completed += OnCompleted;
             while (!op.isDone) yield return new WaitForEndOfFrame();  
         }
