@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,6 +9,9 @@ namespace HHG.Common.Runtime
 {
     public abstract class BindingBase : System.IDisposable
     {
+        public Object BindableObject => _bindable;
+        public string Name => name;
+
         // TODO: Make a fancy dropdown that recursively shows
         // all of the _bindable's serializable property paths
         // GetSetMap will also need to be updated to use paths
@@ -16,11 +20,13 @@ namespace HHG.Common.Runtime
 
         protected IBindable bindable => _bindable is IBindableProvider provider ? provider.Bindable : _bindable as IBindable;
 
+        private object value;
+
         public void Setup()
         {
-            if (bindable != null)
+            if (bindable != null && bindable.TryGetValue(name, out value))
             {
-                bindable.stateUpdated += OnUpdated;
+                bindable.stateUpdated += OnUpdatedInternal;
                 OnSetup();
                 OnUpdated();
             }
@@ -30,7 +36,7 @@ namespace HHG.Common.Runtime
         {
             if (bindable != null)
             {
-                bindable.stateUpdated -= OnUpdated;
+                bindable.stateUpdated -= OnUpdatedInternal;
             }
         }
 
@@ -38,6 +44,15 @@ namespace HHG.Common.Runtime
         public virtual bool Validate(MonoBehaviour mono) => true;
 
         protected abstract void OnUpdated();
+
+        private void OnUpdatedInternal()
+        {
+            if (bindable.TryGetValue<object>(name, out object val) && value != val)
+            {
+                value = val;
+                OnUpdated();
+            }
+        }
     }
 
     public abstract class BindingBase<TValue, TSource> : BindingBase
@@ -292,6 +307,24 @@ namespace HHG.Common.Runtime
             {
                 binding.Validate(this);
                 binding.Setup();
+            }
+        }
+
+        private void Awake()
+        {
+            foreach(BindingBase binding in Enumerable.Empty<BindingBase>().
+                Concat(labels).
+                Concat(images).
+                Concat(spriteRenderers).
+                Concat(sliders).
+                Concat(dropdowns).
+                Concat(toggles).
+                Concat(inputFields))
+            {
+                if (binding.BindableObject is Session session)
+                {
+                    session.initialize();
+                }
             }
         }
 
