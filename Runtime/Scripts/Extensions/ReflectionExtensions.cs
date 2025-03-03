@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
@@ -34,7 +35,21 @@ namespace HHG.Common.Runtime
                     throw new ArgumentException($"Field or property '{part}' not found in '{type.FullName}'");
                 }
             }
-            return obj is T t ? t : default;
+
+            try
+            {
+                // We cannot rely solely on 'obj is T' since this does not handle cases where
+                // obj is not T, but IS convertable to T, as is the case with enums and integers
+                return obj is T t ? t : (T)Convert.ChangeType(obj, typeof(T));
+            }
+            // Convert.ChangeType may throw any number of exceptions, in which case,
+            // we simply want to log the exception and return the default value
+            catch (Exception e)
+            {
+                Debug.Log(e);
+
+                return default;
+            }
         }
 
         public static void SetValueByPath(this object obj, string path, object value)
