@@ -31,8 +31,8 @@ namespace HHG.Common.Runtime
             Awake = 1 << 0,
             Start = 1 << 1,
             Enable = 1 << 2,
-            Disable = 1 << 3,
-            Destroy = 1 << 4,
+            //Disable = 1 << 3, // Cannot start coroutines on disable, for reuse
+            //Destroy = 1 << 4, // Cannot start coroutines on destroy, for reuse
             BeginDrag = 1 << 5,
             Cancel = 1 << 6,
             Deselect = 1 << 7,
@@ -57,8 +57,6 @@ namespace HHG.Common.Runtime
         private bool listenToAwake => events.HasFlag(Events.Awake);
         private bool listenToStart => events.HasFlag(Events.Start);
         private bool listenToEnable => events.HasFlag(Events.Enable);
-        private bool listenToDisable => events.HasFlag(Events.Disable);
-        private bool listenToDestroy => events.HasFlag(Events.Destroy);
         private bool listenToBeginDrag => events.HasFlag(Events.BeginDrag);
         private bool listenToCancel => events.HasFlag(Events.Cancel);
         private bool listenToDeselect => events.HasFlag(Events.Deselect);
@@ -84,8 +82,6 @@ namespace HHG.Common.Runtime
         [SerializeField, Unfold, ShowIf(nameof(listenToAwake), true)] private ActionEvent onAwake = new ActionEvent();
         [SerializeField, Unfold, ShowIf(nameof(listenToStart), true)] private ActionEvent onStart = new ActionEvent();
         [SerializeField, Unfold, ShowIf(nameof(listenToEnable), true)] private ActionEvent onEnable = new ActionEvent();
-        [SerializeField, Unfold, ShowIf(nameof(listenToDisable), true)] private ActionEvent onDisable = new ActionEvent();
-        [SerializeField, Unfold, ShowIf(nameof(listenToDestroy), true)] private ActionEvent onDestroy = new ActionEvent();
 
         // UI Events
         [SerializeField, Unfold, ShowIf(nameof(listenToBeginDrag), true)] private ActionEvent onBeginDrag = new ActionEvent();
@@ -120,16 +116,6 @@ namespace HHG.Common.Runtime
         private void OnEnable()
         {
             if (listenToEnable) onEnable?.Invoke(this);
-        }
-
-        private void OnDisable()
-        {
-            if (listenToDisable) onDisable?.Invoke(this);
-        }
-
-        private void OnDestroy()
-        {
-            if (listenToDestroy) onDestroy?.Invoke(this);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

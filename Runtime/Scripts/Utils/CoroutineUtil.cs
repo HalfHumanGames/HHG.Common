@@ -19,11 +19,14 @@ namespace HHG.Common.Runtime
                 if (coroutiner == null && Application.isPlaying && !isQuitting)
                 {
                     GameObject go = GameObject.Find("Coroutiner");
+
                     if (go == null)
                     {
                         go = new GameObject("Coroutiner");
                     }
+
                     Object.DontDestroyOnLoad(go);
+
                     coroutiner = go.GetOrAddComponent<EmptyMonoBehaviour>();
                 }
                 return coroutiner;
