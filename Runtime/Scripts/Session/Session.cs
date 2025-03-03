@@ -76,18 +76,20 @@ namespace HHG.Common.Runtime
         private TSerializer serializer = new TSerializer();
         private List<Action<TState>> mutations = new List<Action<TState>>();
 
-        private void Awake()
+        public sealed override void initialize(ref Session session)
         {
-            initialize();
-        }
+            if (!sessions.TryGetValue(typeof(TSession), out Session value) || value == null)
+            {
+                session = sessions[GetType()] = instance = (TSession)this;
 
-        public sealed override void initialize()
-        {
-            sessions[GetType()] = instance = (TSession)this;
-
-            // Just in case
-            Application.quitting -= onApplicationQuit;
-            Application.quitting += onApplicationQuit;
+                // Just in case
+                Application.quitting -= onApplicationQuit;
+                Application.quitting += onApplicationQuit;
+            }
+            else
+            {
+                session = Get<TSession>();
+            }
         }
 
         public sealed override void log(string message)

@@ -19,7 +19,7 @@ namespace HHG.Common.Runtime
         public abstract string[] fileIds { get; }
         public abstract bool logsEnabled { get; }
 
-        public abstract void initialize();
+        public abstract void initialize(ref Session session);
         public abstract void log(string message);
         public abstract void saveWeak(Action<object> mutation);
         public abstract void stageWeak(Action<object> mutation);

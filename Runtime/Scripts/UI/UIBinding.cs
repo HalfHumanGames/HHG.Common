@@ -246,7 +246,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private List<ImageBinding> images = new List<ImageBinding>();
         [SerializeField] private List<SpriteRendererBinding> spriteRenderers = new List<SpriteRendererBinding>();
         [SerializeField] private List<SliderBinding> sliders = new List<SliderBinding>();
-        [SerializeField] private List<DropdownBinding> dropdowns = new List<DropdownBinding>();
+        [SerializeField] private List<DropdownBinding> dropdowns  = new List<DropdownBinding>();
         [SerializeField] private List<ToggleBinding> toggles = new List<ToggleBinding>();
         [SerializeField] private List<InputFieldBinding> inputFields = new List<InputFieldBinding>();
 
@@ -323,7 +323,7 @@ namespace HHG.Common.Runtime
             {
                 if (binding.BindableObject is Session session)
                 {
-                    session.initialize();
+                    session.initialize(ref session);
                 }
             }
         }
