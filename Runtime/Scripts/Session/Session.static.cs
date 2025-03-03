@@ -22,6 +22,7 @@ namespace HHG.Common.Runtime
             if (!sessions.TryGetValue(type, out Session session))
             {
                 session = (FindAnyObjectByType(type) is Object obj ? obj : CreateInstance(type)) as Session;
+                session.initialize(ref session);
             }
 
             return session;
