@@ -9,41 +9,49 @@ namespace HHG.Common.Runtime
     [Serializable]
     public struct Tally : IEnumerable<int>
     {
+        private const int min = 33;
+        private const int max = 126;
+        private const int range = max - min + 1;
+
         [SerializeField] private string tally;
 
-        public Tally(string tally = null)
+        public Tally(string data = null)
         {
-            this.tally = tally ?? string.Empty;
+            tally = data ?? string.Empty;
         }
 
         public int Get(int index)
         {
-            tally ??= string.Empty;
-
-            return index < tally.Length ? tally[index] : 0;
+            return !string.IsNullOrEmpty(tally) && index < tally.Length ? tally[index] - min : 0;
         }
 
         public void Set(int index, int value)
         {
-            tally ??= string.Empty;
-
-            if (value < 0 || value > char.MaxValue)
+            if (value < 0 || value >= range)
             {
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value must be between 0 and {char.MaxValue}.");
+                throw new ArgumentOutOfRangeException(nameof(value), $"Value must be between 0 and {range - 1}.");
             }
 
-            StringBuilder sb = new StringBuilder(tally);
+            StringBuilder sb = new StringBuilder(tally ?? string.Empty);
 
             while (sb.Length <= index)
             {
-                sb.Append('\0');
+                sb.Append((char)min);
             }
 
-            sb[index] = (char)value;
+            sb[index] = (char)(min + value);
             tally = sb.ToString();
         }
 
-        public override string ToString() => tally ?? string.Empty;
+        public string ToDebugString()
+        {
+            return !string.IsNullOrEmpty(tally) ? tally.Replace((char)min, '.') : string.Empty;
+        }
+
+        public override string ToString()
+        {
+            return tally ?? string.Empty;
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -52,21 +60,18 @@ namespace HHG.Common.Runtime
 
         public IEnumerator<int> GetEnumerator()
         {
-            tally ??= string.Empty;
+            if (string.IsNullOrEmpty(tally))
+            {
+                yield break;
+            }
 
             for (int i = 0; i < tally.Length; i++)
             {
-                yield return tally[i];
+                yield return Get(i);
             }
         }
 
-        public static implicit operator string(Tally tally)
-        {
-            return tally.tally ?? string.Empty;;
-        }
-        public static implicit operator Tally(string value)
-        {
-            return new Tally(value);
-        }
+        public static implicit operator string(Tally tally) => tally.tally ?? string.Empty;
+        public static implicit operator Tally(string value) => new Tally(value);
     }
 }
