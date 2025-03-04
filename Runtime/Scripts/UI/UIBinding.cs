@@ -9,7 +9,7 @@ namespace HHG.Common.Runtime
 {
     public abstract class BindingBase : System.IDisposable
     {
-        public Object BindableObject => _bindable;
+        public Object BindableObject { get => _bindable; set => _bindable = value; }
         public string Name => name;
 
         // TODO: Make a fancy dropdown that recursively shows
@@ -324,6 +324,7 @@ namespace HHG.Common.Runtime
                 if (binding.BindableObject is Session session)
                 {
                     session.initialize(ref session);
+                    binding.BindableObject = session;
                 }
             }
         }
