@@ -45,7 +45,14 @@ namespace HHG.Common.Runtime
 
         public string ToDebugString()
         {
-            return !string.IsNullOrEmpty(tally) ? tally.Replace((char)min, '.') : string.Empty;
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < tally.Length; i++)
+            {
+                sb.AppendLine($"{i}: {Get(i)}");
+            }
+
+            return sb.ToString();
         }
 
         public override string ToString()
