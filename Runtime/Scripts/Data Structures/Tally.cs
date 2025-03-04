@@ -18,11 +18,15 @@ namespace HHG.Common.Runtime
 
         public int Get(int index)
         {
+            tally ??= string.Empty;
+
             return index < tally.Length ? tally[index] : 0;
         }
 
         public void Set(int index, int value)
         {
+            tally ??= string.Empty;
+
             if (value < 0 || value > char.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(value), $"Value must be between 0 and {char.MaxValue}.");
@@ -39,7 +43,7 @@ namespace HHG.Common.Runtime
             tally = sb.ToString();
         }
 
-        public override string ToString() => tally;
+        public override string ToString() => tally ?? string.Empty;
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -48,6 +52,8 @@ namespace HHG.Common.Runtime
 
         public IEnumerator<int> GetEnumerator()
         {
+            tally ??= string.Empty;
+
             for (int i = 0; i < tally.Length; i++)
             {
                 yield return tally[i];
@@ -56,7 +62,7 @@ namespace HHG.Common.Runtime
 
         public static implicit operator string(Tally tally)
         {
-            return tally.tally;
+            return tally.tally ?? string.Empty;;
         }
         public static implicit operator Tally(string value)
         {
