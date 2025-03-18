@@ -323,8 +323,7 @@ namespace HHG.Common.Runtime
             {
                 if (binding.BindableObject is Session session)
                 {
-                    session.initialize(ref session);
-                    binding.BindableObject = session;
+                    binding.BindableObject = session.InstanceWeak;
                 }
             }
         }

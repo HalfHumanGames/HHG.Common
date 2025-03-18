@@ -1,32 +1,10 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public abstract partial class Session : ScriptableObject
     {
-        protected static readonly Dictionary<System.Type, Session> sessions = new Dictionary<System.Type, Session>();
-
-        public static TSession Get<TSession>() where TSession : Session
-        {
-            return Get(typeof(TSession)) as TSession;
-        }
-
-        public static Session Get(string typeName)
-        {
-            return Get(System.Type.GetType(typeName));
-        }
-
-        public static Session Get(System.Type type)
-        {
-            if (!sessions.TryGetValue(type, out Session session))
-            {
-                session = (FindAnyObjectByType(type) is Object obj ? obj : CreateInstance(type)) as Session;
-                session.initialize(ref session);
-            }
-
-            return session;
-        }
+        public virtual Object InstanceWeak { get; }
     }
 
     public abstract partial class Session<TSession, TState, TIO, TSerializer>
@@ -39,11 +17,14 @@ namespace HHG.Common.Runtime
             {
                 if (instance == null)
                 {
-                    instance = Get(typeof(TSession)) as TSession;
+                    instance = CreateInstance<TSession>();
+                    instance.initialize();
                 }
                 return instance;
             }
         }
+
+        public override Object InstanceWeak => Instance;
 
         public static string FileId
         {
