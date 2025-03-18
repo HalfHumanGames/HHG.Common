@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
@@ -29,7 +30,12 @@ namespace HHG.Common.Editor
             return paths.Select(p => AssetDatabase.LoadAssetAtPath<T>(p)).ToArray();
         }
 
-        public static string GetCurrentProjectWindowFolder()
+        public static string GetProjectFolderAbsolutePath()
+        {
+            return ToAbsolutePath(GetProjectFolderAssetPath());
+        }
+
+        public static string GetProjectFolderAssetPath()
         {
             string path = "Assets";
 
@@ -46,6 +52,17 @@ namespace HHG.Common.Editor
             }
 
             return path;
+        }
+
+        public static string GetAbsolutePath(Object asset)
+        {
+            return ToAbsolutePath(AssetDatabase.GetAssetPath(asset));
+        }
+
+        public static string ToAbsolutePath(string assetPath)
+        {
+            string projectPath = Directory.GetParent(Application.dataPath).FullName;
+            return Path.Combine(projectPath, assetPath).Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }

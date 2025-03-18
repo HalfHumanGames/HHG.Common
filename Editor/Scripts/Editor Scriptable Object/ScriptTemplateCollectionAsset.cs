@@ -24,7 +24,7 @@ namespace HHG.Common.Editor
 
         protected override void Create(TextAsset template)
         {
-            string folder = AssetDatabaseUtil.GetCurrentProjectWindowFolder();
+            string folder = AssetDatabaseUtil.GetProjectFolderAssetPath();
             string path = $"{folder}/{template.name}.cs";
             string contents = Format(template.text, keywords);
             File.WriteAllText(path, contents);

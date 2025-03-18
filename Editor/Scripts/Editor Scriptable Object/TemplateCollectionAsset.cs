@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,8 +26,10 @@ namespace HHG.Common.Editor
         [SerializeField] private bool enabled = true;
         [SerializeField] private string path;
         [SerializeField] private List<T> templates = new List<T>();
-        [SerializeField, HideInInspector] private string previousPath;
 
+        private HashSet<string> currentPaths = new HashSet<string>();
+        private HashSet<string> previousPaths = new HashSet<string>();
+        
         private void Awake()
         {
             EditorApplication.delayCall += SetupMenuItems;
@@ -34,29 +37,37 @@ namespace HHG.Common.Editor
 
         protected override sealed void SetupMenuItems()
         {
+            if (this == null)
+            {
+                return;
+            }
+
+            templates.Sort((a, b) => a.name.CompareTo(b.name));
+
             foreach (T template in templates)
             {
-                string fullPath = $"{path}/{template.name}";
-                string previousFullPath = $"{previousPath}/{template.name}";
-                bool exists = MenuTool.MenuItemExists(fullPath);
-
-                if (fullPath != previousFullPath)
-                {
-                    MenuTool.RemoveMenuItem(previousFullPath);
-                }
+                string path = $"{this.path}/{template.name}";
+                bool exists = MenuTool.MenuItemExists(path);
 
                 if (!exists && enabled)
                 {
-                    MenuTool.AddMenuItem(fullPath, string.Empty, false, 0, () => Create(template), () => Validate(template));
+                    currentPaths.Add(path);
+                    MenuTool.AddMenuItem(path, string.Empty, false, 0, () => Create(template), () => Validate(template));
                 }
                 else if (exists && !enabled)
                 {
-                    MenuTool.RemoveMenuItem(fullPath);
+                    currentPaths.Remove(path);
+                    MenuTool.RemoveMenuItem(path);
                 }
-
             }
 
-            previousPath = path;
+            foreach (string path in previousPaths.Except(currentPaths))
+            {
+                MenuTool.RemoveMenuItem(path);
+            }
+
+            previousPaths.Clear();
+            previousPaths.UnionWith(currentPaths);
         }
 
         public static void Create<TCollection>(T asset) where TCollection : TemplateCollectionAsset<T>
@@ -77,7 +88,7 @@ namespace HHG.Common.Editor
                 path = defaultPath;
             }
 
-            EditorApplication.delayCall += SetupMenuItems;
+            SetupMenuItems();
         }
     }
 }
