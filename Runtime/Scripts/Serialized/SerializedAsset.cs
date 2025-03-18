@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    [SerializeField]
+    [System.Serializable]
     public class SerializedAsset<T> where T : Object
     {
         public bool HasAsset => Asset != null;
@@ -34,6 +34,6 @@ namespace HHG.Common.Runtime
         }
 
         public static implicit operator SerializedAsset<T>(T asset) => new SerializedAsset<T>(asset);
-        public static implicit operator T(SerializedAsset<T> serializedAsset) => serializedAsset.Asset;
+        public static implicit operator T(SerializedAsset<T> serializedAsset) => serializedAsset != null ? serializedAsset.Asset : null;
     }
 }
