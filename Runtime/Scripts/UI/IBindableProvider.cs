@@ -1,7 +1,7 @@
-namespace HHG.Common.Runtime
-{
-    public interface IBindableProvider
-    {
-        IBindable Bindable { get; }
-    }
-}
+//namespace HHG.Common.Runtime
+//{
+//    public interface IBindableProvider
+//    {
+//        IUpdateListener Bindable { get; }
+//    }
+//}

@@ -8,7 +8,6 @@ namespace HHG.Common.Runtime
     public partial class Delaunator
     {
         private static readonly float epsilon = Mathf.Pow(2, -52);
-        private static readonly int[] edgeStack = new int[512];
 
         public int[] Triangles { get; private set; }
         public int[] HalfEdges { get; private set; }
@@ -28,6 +27,7 @@ namespace HHG.Common.Runtime
         private readonly float[] coords;
         private readonly int hullStart;
         private readonly int hullSize;
+        private readonly int[] edgeStack = new int[512];
 
         public Delaunator(Point[] points)
         {

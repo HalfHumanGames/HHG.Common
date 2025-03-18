@@ -10,7 +10,7 @@ namespace HHG.Common.Runtime
 
         public static bool CalculatePathSafe(this NavMeshAgent agent, Vector2 target, NavMeshPath path)
         {
-            return NavMesh.SamplePosition(target, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path);
+            return agent.WarpToNavMesh() && NavMesh.SamplePosition(target, out NavMeshHit hit, sampleDistance, agent.areaMask) && agent.CalculatePath(hit.position, path);
         }
 
         public static bool SetDestinationSample(this NavMeshAgent agent, Vector3 destination)
@@ -56,15 +56,17 @@ namespace HHG.Common.Runtime
             return agent.velocity.normalized;
         }
 
-        public static void WarpToNavMesh(this NavMeshAgent agent)
+        public static bool WarpToNavMesh(this NavMeshAgent agent)
         {
             if (!agent.isOnNavMesh)
             {
-                if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, sampleDistance, agent.areaMask))
                 {
-                    agent.Warp(hit.position);
+                    return agent.Warp(hit.position);
                 }
             }
+
+            return false;
         }
     }
 }

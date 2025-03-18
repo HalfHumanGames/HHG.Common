@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
@@ -11,8 +12,9 @@ namespace HHG.Common.Runtime
         public ITooltip Current => current;
 
         [SerializeField, FormerlySerializedAs("text")] private TextMeshProUGUI label;
-        [SerializeField] private float padding;
-        [SerializeField] private Vector2 offset;
+        [SerializeField] private LayoutElement labelLayoutElement;
+        [SerializeField] private float maxWidth = 300;
+        [SerializeField] private Vector2 offset = new Vector2(32, -32);
 
         private RectTransform rect;
         private RectTransform canvasRect;
@@ -42,10 +44,10 @@ namespace HHG.Common.Runtime
             if (!string.IsNullOrEmpty(tooltipText))
             {
                 // Only follow mouse if the cursor is visible
-                if (Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 position))
+                if (Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 point))
                 {
-                    rect.position = canvasRect.TransformPoint(position + offset);
-                    rect.ClampTransform(canvasRect, padding);
+                    Vector3 position = canvasRect.TransformPoint(point);
+                    Reposition(position);
                 }
             }
         }
@@ -70,17 +72,34 @@ namespace HHG.Common.Runtime
             if (!string.IsNullOrEmpty(tooltipText))
             {
                 label.text = tooltipText;
-                rect.SetAsLastSibling();
                 gameObject.SetActive(true);
 
                 // Do after game object is set active
                 // Otherwise rebuild will not work
-                rect.RebuildLayout();
-
-                rect.position = position;
-                rect.anchoredPosition += offset;
-                rect.ClampTransform(canvasRect, padding);
+                Resize();
+                Reposition(position);
             }
+        }
+
+        [ContextMenu(nameof(Resize))]
+        private void Resize()
+        {
+            labelLayoutElement.preferredWidth = -1;
+            rect.RebuildLayout();
+
+            if (rect.sizeDelta.x > maxWidth)
+            {
+                labelLayoutElement.preferredWidth = maxWidth;
+                rect.RebuildLayout();
+            }
+        }
+
+        private void Reposition(Vector3 position)
+        {
+            rect.SetAsLastSibling();
+            rect.position = position;
+            rect.anchoredPosition += offset;
+            rect.ClampTransform(canvasRect);
         }
 
         public void Hide()

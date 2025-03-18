@@ -9,7 +9,25 @@ namespace HHG.Common.Runtime
 
         private void Start()
         {
-            label.text = Application.version;
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            if (label == null)
+            {
+                label = GetComponent<TextMeshProUGUI>();
+            }
+
+            if (label != null)
+            {
+                label.text = Application.version;
+            }
+        }
+
+        private void OnValidate()
+        {
+            Refresh();
         }
     }
 }

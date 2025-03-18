@@ -1,22 +1,22 @@
-using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
+	[System.Serializable]
     public class FileIO : IIO
 	{
-		private string root;
-		private string getRoot
+		private string _root;
+		private string root
 		{
 			get
 			{
-				if (root == null)
+				if (string.IsNullOrEmpty(_root))
 				{
-					root = Application.persistentDataPath;
+					_root = Application.persistentDataPath;
 				}
-				return root;
+				return _root;
 			}
 		}
 
@@ -27,21 +27,21 @@ namespace HHG.Common.Runtime
 
 		public FileIO(string root)
 		{
-			this.root = root;
+			_root = root;
 		}
 
-		public void Clear(string fileName)
+		public void Delete(string fileName)
 		{
 			try
 			{
-				DirectoryInfo directory = new DirectoryInfo(getRoot);
+				DirectoryInfo directory = new DirectoryInfo(root);
 
 				foreach (FileInfo file in directory.EnumerateFiles(fileName))
 				{
 					file.Delete();
 				}
 			}
-			catch (Exception e)
+			catch (System.Exception e)
 			{
                 LogExceptionWithDriveInfo(e);
 			}
@@ -53,7 +53,7 @@ namespace HHG.Common.Runtime
 			{
 				return File.Exists(GetFilePath(fileName));
 			}
-			catch (Exception e)
+			catch (System.Exception e)
 			{
                 LogExceptionWithDriveInfo(e);
 				return false;
@@ -66,7 +66,7 @@ namespace HHG.Common.Runtime
 			{
 				return File.ReadAllBytes(GetFilePath(fileName));
 			}
-			catch (Exception e)
+			catch (System.Exception e)
 			{
                 LogExceptionWithDriveInfo(e);
 				return new byte[0];
@@ -79,7 +79,7 @@ namespace HHG.Common.Runtime
 			{
 				File.WriteAllBytes(GetFilePath(fileName), bytes);
 			}
-			catch (Exception e)
+			catch (System.Exception e)
 			{
                 LogExceptionWithDriveInfo(e);
 			}
@@ -87,13 +87,13 @@ namespace HHG.Common.Runtime
 
 		public string GetFilePath(string fileName)
 		{
-			return string.IsNullOrEmpty(getRoot) ? fileName : $"{getRoot}/{fileName}";
+			return string.IsNullOrEmpty(root) ? fileName : $"{root}/{fileName}";
 		}
 
 		public void OnBeforeClose() { /* Do nothing */ }
 		public void OnClose() { /* Do nothing */ }
 
-		private void LogExceptionWithDriveInfo(Exception e)
+		private void LogExceptionWithDriveInfo(System.Exception e)
 		{
 			string driveLetter = Path.GetPathRoot(Application.persistentDataPath);
             
@@ -103,11 +103,10 @@ namespace HHG.Common.Runtime
 
 				if (driveInfo != null)
 				{
-                    long freeSpaceMB = driveInfo.AvailableFreeSpace / (1024 * 1024);
-
+                    long freeSpaceMb = driveInfo.AvailableFreeSpace / (1024 * 1024);
                     StringBuilder sb = new StringBuilder(e.ToString());
                     sb.AppendLine($"Disk: {driveLetter}");
-                    sb.AppendLine($"Available Space: {freeSpaceMB}mb");
+                    sb.AppendLine($"Available Space: {freeSpaceMb}mb");
                     Debug.LogError(sb.ToString());
 					return;
                 }

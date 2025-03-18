@@ -5,7 +5,7 @@ namespace HHG.Common.Runtime
 {
     public class PlayerPrefsIO : IIO
 	{
-		public void Clear(string fileName)
+		public void Delete(string fileName)
 		{
 			try
 			{

@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 namespace HHG.Common.Runtime
@@ -8,9 +7,7 @@ namespace HHG.Common.Runtime
 		byte[] ReadAllBytes(string fileName);
 		void WriteAllBytes(string fileName, byte[] bytes);
 		bool Exists(string fileName);
-		void Clear(string fileName);
-		void OnBeforeClose();
-		void OnClose();
+		void Delete(string fileName);
 	}
 
 	public static class IIOX
@@ -20,9 +17,9 @@ namespace HHG.Common.Runtime
 			return Encoding.UTF8.GetString(io.ReadAllBytes(fileName));
 		}
 
-		public static string[] ReadAllLines(this IIO io, string fileName)
-		{
-			return io.ReadAllText(fileName).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-		}
-	}
+		public static void WriteAllText(this IIO io, string fileName, string text)
+        {
+            io.WriteAllBytes(fileName, Encoding.UTF8.GetBytes(text));
+        }
+    }
 }

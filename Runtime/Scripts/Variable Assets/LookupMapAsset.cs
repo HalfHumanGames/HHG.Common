@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     {
         protected override void SwapKeyValue()
         {
-            map = new SerializableDictionary<T, T>(map.Values, map.Keys);
+            map = new SerializedDictionary<T, T>(map.Values, map.Keys);
         }
     }
 
@@ -15,7 +15,7 @@ namespace HHG.Common.Runtime
     {
         public IReadOnlyDictionary<K, V> Map => map;
 
-        [SerializeField] protected SerializableDictionary<K, V> map = new SerializableDictionary<K, V>();
+        [SerializeField] protected SerializedDictionary<K, V> map = new SerializedDictionary<K, V>();
     }
 
     public abstract class LookupMapAsset : ScriptableObject

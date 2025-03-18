@@ -1,7 +1,6 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
@@ -11,7 +10,7 @@ namespace HHG.Common.Runtime
         public Transform TabContainer => tabContainer;
         public Transform ContentContainer => contentContainer;
 
-        [SerializeField, FormerlySerializedAs("tabsContainer")] private Transform tabContainer;
+        [SerializeField] private Transform tabContainer;
         [SerializeField] private Transform contentContainer;
 
         private RectTransform rectTransform;
@@ -25,14 +24,6 @@ namespace HHG.Common.Runtime
             Initialize();
         }
 
-        private void OnEnable()
-        {
-            if (tabs.FirstOrDefault() is Button tab)
-            {
-                SelectTab(tab);
-            }
-        }
-
         public void Initialize()
         {
             _tabs.Reset();
@@ -42,10 +33,12 @@ namespace HHG.Common.Runtime
 
             foreach (Button tab in tabs)
             {
+                tab.onClick.RemoveAllListeners();
                 tab.onClick.AddListener(() => SelectTab(tab));
 
                 if (tab.TryGetComponent(out EventTrigger eventTrigger))
                 {
+                    eventTrigger.triggers.Clear();
                     eventTrigger.AddTrigger(EventTriggerType.Select, () => SelectTab(tab));
                 }
             }
@@ -69,6 +62,11 @@ namespace HHG.Common.Runtime
                     Selectable first = selectables.First();
                     first.SetNavigationUp(tab);
                     tab.SetNavigationDown(first);
+                }
+
+                if (i == 0)
+                {
+                    SelectTab(tab);
                 }
             }
         }

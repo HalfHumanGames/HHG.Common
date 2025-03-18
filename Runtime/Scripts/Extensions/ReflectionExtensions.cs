@@ -6,23 +6,45 @@ namespace HHG.Common.Runtime
 {
     public static class ReflectionExtensions
     {
+        public static object GetValueByPath(this object obj, string path)
+        {
+            return GetValueByPath<object>(obj, path);
+        }
+
         public static T GetValueByPath<T>(this object obj, string path)
         {
+            if (TryGetValueByPath(obj, path, out T value))
+            {
+                return value;
+            }
+
+            throw new ArgumentException($"Unable to get value by path '{path}'");
+        }
+
+        public static bool TryGetValueByPath(this object obj, string path, out object value)
+        {
+            return TryGetValueByPath<object>(obj, path, out value);
+        }
+
+        public static bool TryGetValueByPath<T>(this object obj, string path, out T value)
+        {
+            value = default;
+
             if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                return false;
             }
 
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentException("Path cannot be null or empty", nameof(path));
+                return false;
             }
 
             foreach (string part in path.Split('.'))
             {
                 if (obj == null)
                 {
-                    throw new NullReferenceException($"Null encountered while accessing '{part}'");
+                    return false;
                 }
 
                 Type type = obj.GetType();
@@ -32,36 +54,40 @@ namespace HHG.Common.Runtime
 
                 if (obj == null)
                 {
-                    throw new ArgumentException($"Field or property '{part}' not found in '{type.FullName}'");
+                    return false;
                 }
             }
 
             try
             {
-                // We cannot rely solely on 'obj is T' since this does not handle cases where
-                // obj is not T, but IS convertable to T, as is the case with enums and integers
-                return obj is T t ? t : (T)Convert.ChangeType(obj, typeof(T));
+                value = obj is T t ? t : (T)Convert.ChangeType(obj, typeof(T));
+                return true;
             }
-            // Convert.ChangeType may throw any number of exceptions, in which case,
-            // we simply want to log the exception and return the default value
             catch (Exception e)
             {
                 Debug.Log(e);
-
-                return default;
+                return false;
             }
         }
 
         public static void SetValueByPath(this object obj, string path, object value)
         {
+            if (!TrySetValueByPath(obj, path, value))
+            {
+                throw new ArgumentException($"Unable to set value by path '{path}'");
+            }
+        }
+
+        public static bool TrySetValueByPath(this object obj, string path, object value)
+        {
             if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                return false;
             }
 
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentException("Path cannot be null or empty", nameof(path));
+                return false;
             }
 
             string[] parts = path.Split('.');
@@ -70,7 +96,7 @@ namespace HHG.Common.Runtime
             {
                 if (obj == null)
                 {
-                    throw new NullReferenceException($"Null encountered while accessing '{parts[i]}'");
+                    return false;
                 }
 
                 Type type = obj.GetType();
@@ -80,7 +106,7 @@ namespace HHG.Common.Runtime
 
                 if (obj == null)
                 {
-                    throw new ArgumentException($"Field or property '{parts[i]}' not found in '{type.FullName}'");
+                    return false;
                 }
             }
 
@@ -92,14 +118,16 @@ namespace HHG.Common.Runtime
             if (field != null)
             {
                 field.SetValue(obj, value);
+                return true;
             }
             else if (property?.CanWrite == true)
             {
                 property.SetValue(obj, value);
+                return true;
             }
             else
             {
-                throw new ArgumentException($"Field or property '{lastPart}' not found or not writable in '{lastType.FullName}'");
+                return false;
             }
         }
     }

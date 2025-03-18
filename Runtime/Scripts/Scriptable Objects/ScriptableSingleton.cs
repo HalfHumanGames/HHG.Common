@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
+    public class ScriptableSingleton<T> : ScriptableObject where T : ScriptableSingleton<T>
     {
         private static string resourcePath => $"{typeof(T)}";
         private static string defaultAssetPath => $"Assets/Resources/{resourcePath}.asset";

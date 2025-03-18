@@ -1,252 +1,17 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
 {
-    public abstract class BindingBase : System.IDisposable
-    {
-        public Object BindableObject { get => _bindable; set => _bindable = value; }
-        public string Name => name;
-
-        // TODO: Make a fancy dropdown that recursively shows
-        // all of the _bindable's serializable property paths
-        // GetSetMap will also need to be updated to use paths
-        [SerializeField] protected Object _bindable;
-        [SerializeField] protected string name;
-
-        protected IBindable bindable => _bindable is IBindableProvider provider ? provider.Bindable : _bindable as IBindable;
-
-        private object value;
-
-        public void Setup()
-        {
-            if (bindable != null && bindable.TryGetValue(name, out value))
-            {
-                bindable.stateUpdated += OnUpdatedInternal;
-                OnSetup();
-                OnUpdated();
-            }
-        }
-
-        public void Dispose()
-        {
-            if (bindable != null)
-            {
-                bindable.stateUpdated -= OnUpdatedInternal;
-            }
-        }
-
-        public virtual void OnSetup() { }
-        public virtual bool Validate(MonoBehaviour mono) => true;
-
-        protected abstract void OnUpdated();
-
-        private void OnUpdatedInternal()
-        {
-            if (bindable.TryGetValue<object>(name, out object val) && value != val)
-            {
-                value = val;
-                OnUpdated();
-            }
-        }
-    }
-
-    public abstract class BindingBase<TValue, TSource> : BindingBase
-    {
-        [SerializeField] protected TSource source;
-
-        public BindingBase(Object bindable, string name, TSource source)
-        {
-            _bindable = bindable;
-            this.name = name;
-            this.source = source;
-        }
-
-        public override bool Validate(MonoBehaviour mono)
-        {
-            if (_bindable == null)
-            {
-                Debug.LogError($"Bindable cannot be null.\n{GetDebugInfo()}", mono);
-                return false;
-            }
-
-            if (bindable == null)
-            {
-                Debug.LogError($"Bindable does not implement IBindable.\n{GetDebugInfo()}", mono);
-                return false;
-            }
-
-            if (!bindable.TryGetValue(name, out TValue _))
-            {
-                Debug.LogError($"Property '{name}' not found in bindable.\n{GetDebugInfo()}", mono);
-                return false;
-            }
-
-            if (source == null)
-            {
-                Debug.LogError($"Source cannot be null.\n{GetDebugInfo()}", mono);
-                return false;
-            }
-
-            return true;
-        }
-
-        private string GetDebugInfo()
-        {
-            return $"_bindable: {_bindable}\nbindable: {bindable}\nname: {name}\nsource: {source}";
-        }
-    }
-
-    [System.Serializable]
-    public class LabelBinding : BindingBase<object, TMP_Text>
-    {
-        public LabelBinding(Object bindable, string name, TMP_Text source) : base(bindable, name, source)
-        {
-
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out object val))
-            {
-                source.text = val.ToString();
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class ImageBinding : BindingBase<Sprite, Image>
-    {
-        public ImageBinding(Object bindable, string name, Image source) : base(bindable, name, source)
-        {
-
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out Sprite val))
-            {
-                source.sprite = val;
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class SpriteRendererBinding : BindingBase<Sprite, SpriteRenderer>
-    {
-        public SpriteRendererBinding(Object bindable, string name, SpriteRenderer source) : base(bindable, name, source)
-        {
-
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out Sprite val))
-            {
-                source.sprite = val;
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class SliderBinding : BindingBase<float, Slider>
-    {
-        public SliderBinding(Object bindable, string name, Slider source) : base(bindable, name, source)
-        {
-
-        }
-
-        public override void OnSetup()
-        {
-            source.onValueChanged.AddListener(v => bindable.SetValue(name, v));
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out float val))
-            {
-                source.SetValueWithoutNotify(val);
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class DropdownBinding : BindingBase<int, TMP_Dropdown>
-    {
-        public DropdownBinding(Object bindable, string name, TMP_Dropdown source) : base(bindable, name, source)
-        {
-
-        }
-
-        public override void OnSetup()
-        {
-            source.onValueChanged.AddListener(v => bindable.SetValue(name, v));
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out int val))
-            {
-                source.SetValueWithoutNotify(val);
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class ToggleBinding : BindingBase<bool, Toggle>
-    {
-        public ToggleBinding(Object bindable, string name, Toggle source) : base(bindable, name, source)
-        {
-
-        }
-
-        public override void OnSetup()
-        {
-            source.onValueChanged.AddListener(v => bindable.SetValue(name, v));
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out bool val))
-            {
-                source.SetIsOnWithoutNotify(val);
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class InputFieldBinding : BindingBase<string, TMP_InputField>
-    {
-        public InputFieldBinding(Object bindable, string name, TMP_InputField source) : base(bindable, name, source)
-        {
-
-        }
-
-        public override void OnSetup()
-        {
-            source.onValueChanged.AddListener(v => bindable.SetValue(name, v));
-        }
-
-        protected override void OnUpdated()
-        {
-            if (bindable.TryGetValue(name, out string val))
-            {
-                source.SetTextWithoutNotify(val);
-            }
-        }
-    }
-
     public class UIBinding : MonoBehaviour
     {
-        [SerializeField, FormerlySerializedAs("texts")] private List<LabelBinding> labels = new List<LabelBinding>();
+        [SerializeField] private List<LabelBinding> labels = new List<LabelBinding>();
         [SerializeField] private List<ImageBinding> images = new List<ImageBinding>();
         [SerializeField] private List<SpriteRendererBinding> spriteRenderers = new List<SpriteRendererBinding>();
         [SerializeField] private List<SliderBinding> sliders = new List<SliderBinding>();
-        [SerializeField] private List<DropdownBinding> dropdowns  = new List<DropdownBinding>();
+        [SerializeField] private List<DropdownBinding> dropdowns = new List<DropdownBinding>();
         [SerializeField] private List<ToggleBinding> toggles = new List<ToggleBinding>();
         [SerializeField] private List<InputFieldBinding> inputFields = new List<InputFieldBinding>();
 
@@ -310,25 +75,6 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private void Awake()
-        {
-            foreach(BindingBase binding in Enumerable.Empty<BindingBase>().
-                Concat(labels).
-                Concat(images).
-                Concat(spriteRenderers).
-                Concat(sliders).
-                Concat(dropdowns).
-                Concat(toggles).
-                Concat(inputFields))
-            {
-                if (binding.BindableObject is Session session)
-                {
-                    session.initialize(ref session);
-                    binding.BindableObject = session;
-                }
-            }
-        }
-
         private void Start()
         {
             Validate();
@@ -367,6 +113,230 @@ namespace HHG.Common.Runtime
         }
     }
 
+    public abstract class BindingBase : System.IDisposable
+    {
+        public Object Updatable { get => _updatable; set => _updatable = value; }
+        public string Name => name;
+
+        // TODO: Make a fancy dropdown that recursively shows
+        // all of the _bindable's serializable property paths
+        // GetSetMap will also need to be updated to use paths
+        [SerializeField] protected Object _updatable;
+        [SerializeField] protected string name;
+
+        protected IUpdated updatable => _updatable as IUpdated;
+
+        private object value;
+
+        public void Setup()
+        {
+            if (updatable != null && updatable.TryGetValueByPath(name, out value))
+            {
+                updatable.Updated += OnUpdatedInternal;
+                OnSetup();
+                OnUpdated();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (updatable != null)
+            {
+                updatable.Updated -= OnUpdatedInternal;
+            }
+        }
+
+        public virtual void OnSetup() { }
+        public virtual void Validate(MonoBehaviour mono) { }
+
+        protected abstract void OnUpdated();
+
+        private void OnUpdatedInternal()
+        {
+            if (updatable.TryGetValueByPath<object>(name, out object val) && value != val)
+            {
+                value = val;
+                OnUpdated();
+            }
+        }
+    }
+
+    public abstract class BindingBase<TValue, TSource> : BindingBase
+    {
+        [SerializeField] protected TSource source;
+
+        public BindingBase(Object bindable, string name, TSource source)
+        {
+            _updatable = bindable;
+            this.name = name;
+            this.source = source;
+        }
+
+        public override void Validate(MonoBehaviour mono)
+        {
+            if (_updatable == null)
+            {
+                Debug.LogError($"Bindable cannot be null.\n{GetDebugInfo()}", mono);
+            }
+            else if (updatable == null)
+            {
+                Debug.LogError($"Bindable does not implement IBindable.\n{GetDebugInfo()}", mono);
+            }
+            else if(!updatable.TryGetValueByPath(name, out TValue _))
+            {
+                Debug.LogError($"Property '{name}' not found in bindable.\n{GetDebugInfo()}", mono);
+            }
+            else if(source == null)
+            {
+                Debug.LogError($"Source cannot be null.\n{GetDebugInfo()}", mono);
+            }
+        }
+
+        private string GetDebugInfo()
+        {
+            return $"_bindable: {_updatable}\nbindable: {updatable}\nname: {name}\nsource: {source}";
+        }
+    }
+
+    [System.Serializable]
+    public class LabelBinding : BindingBase<object, TMP_Text>
+    {
+        public LabelBinding(Object bindable, string name, TMP_Text source) : base(bindable, name, source)
+        {
+
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out object val))
+            {
+                source.text = val.ToString();
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class ImageBinding : BindingBase<Sprite, Image>
+    {
+        public ImageBinding(Object bindable, string name, Image source) : base(bindable, name, source)
+        {
+
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out Sprite val))
+            {
+                source.sprite = val;
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class SpriteRendererBinding : BindingBase<Sprite, SpriteRenderer>
+    {
+        public SpriteRendererBinding(Object bindable, string name, SpriteRenderer source) : base(bindable, name, source)
+        {
+
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out Sprite val))
+            {
+                source.sprite = val;
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class SliderBinding : BindingBase<float, Slider>
+    {
+        public SliderBinding(Object bindable, string name, Slider source) : base(bindable, name, source)
+        {
+
+        }
+
+        public override void OnSetup()
+        {
+            source.onValueChanged.AddListener(v => updatable.SetValueByPath(name, v));
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out float val))
+            {
+                source.SetValueWithoutNotify(val);
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class DropdownBinding : BindingBase<int, TMP_Dropdown>
+    {
+        public DropdownBinding(Object bindable, string name, TMP_Dropdown source) : base(bindable, name, source)
+        {
+
+        }
+
+        public override void OnSetup()
+        {
+            source.onValueChanged.AddListener(v => updatable.SetValueByPath(name, v));
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out int val))
+            {
+                source.SetValueWithoutNotify(val);
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class ToggleBinding : BindingBase<bool, Toggle>
+    {
+        public ToggleBinding(Object bindable, string name, Toggle source) : base(bindable, name, source)
+        {
+
+        }
+
+        public override void OnSetup()
+        {
+            source.onValueChanged.AddListener(v => updatable.SetValueByPath(name, v));
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out bool val))
+            {
+                source.SetIsOnWithoutNotify(val);
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class InputFieldBinding : BindingBase<string, TMP_InputField>
+    {
+        public InputFieldBinding(Object bindable, string name, TMP_InputField source) : base(bindable, name, source)
+        {
+
+        }
+
+        public override void OnSetup()
+        {
+            source.onValueChanged.AddListener(v => updatable.SetValueByPath(name, v));
+        }
+
+        protected override void OnUpdated()
+        {
+            if (updatable.TryGetValueByPath(name, out string val))
+            {
+                source.SetTextWithoutNotify(val);
+            }
+        }
+    }
+
     public static class BindingBaseExtensions
     {
         public static void Setup(this IEnumerable<BindingBase> bindings)
@@ -385,17 +355,12 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static bool Validate(this IEnumerable<BindingBase> bindings, MonoBehaviour mono)
+        public static void Validate(this IEnumerable<BindingBase> bindings, MonoBehaviour mono)
         {
             foreach (BindingBase binding in bindings)
             {
-                if (!binding.Validate(mono))
-                {
-                    return false;
-                }
+                binding.Validate(mono);
             }
-
-            return true;
         }
     }
 }

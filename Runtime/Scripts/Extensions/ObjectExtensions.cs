@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -16,7 +15,17 @@ namespace HHG.Common.Runtime
             ObjectUtil.SmartDestroy(objects);
         }
 
+        public static void SmartDestroy(this IEnumerable<Object> objects)
+        {
+            ObjectUtil.SmartDestroy(objects);
+        }
+
         public static void Destroy(this Object src, IEnumerable<Object> objects)
+        {
+            ObjectUtil.Destroy(objects);
+        }
+
+        public static void Destroy(this IEnumerable<Object> objects)
         {
             ObjectUtil.Destroy(objects);
         }
@@ -27,6 +36,11 @@ namespace HHG.Common.Runtime
         }
 
         public static void DestroyNextFrame(this Object src, IEnumerable<Object> objects)
+        {
+            ObjectUtil.DestroyNextFrame(objects);
+        }
+
+        public static void DestroyNextFrame(this IEnumerable<Object> objects)
         {
             ObjectUtil.DestroyNextFrame(objects);
         }
@@ -62,48 +76,6 @@ namespace HHG.Common.Runtime
             }
 
             return list;
-        }
-
-        public static T GetPrivateField<T>(this object obj, string fieldName)
-        {
-            if (obj == null)
-            {
-                throw new System.ArgumentNullException(nameof(obj));
-            }
-
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                throw new System.ArgumentException("Field name cannot be null or empty", nameof(fieldName));
-            }
-
-            FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field == null)
-            {
-                throw new System.ArgumentException($"Field '{fieldName}' not found in type '{obj.GetType()}'.");
-            }
-
-            return (T)field.GetValue(obj);
-        }
-
-        public static void SetPrivateField<T>(this object obj, string fieldName, T value)
-        {
-            if (obj == null)
-            {
-                throw new System.ArgumentNullException(nameof(obj));
-            }
-
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                throw new System.ArgumentException("Field name cannot be null or empty", nameof(fieldName));
-            }
-
-            FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field == null)
-            {
-                throw new System.ArgumentException($"Field '{fieldName}' not found in type '{obj.GetType()}'.");
-            }
-
-            field.SetValue(obj, value);
         }
     }
 }

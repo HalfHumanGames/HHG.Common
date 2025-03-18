@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HHG.Common.Runtime
 {
     [Serializable]
-    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>, IList, ISerializationCallbackReceiver
+    public class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>, IList, ISerializationCallbackReceiver
     {
         [SerializeField] private List<TKey> keys = new List<TKey>();
         [SerializeField] private List<TValue> values = new List<TValue>();
@@ -50,12 +50,12 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public SerializableDictionary()
+        public SerializedDictionary()
         {
 
         }
 
-        public SerializableDictionary(IEnumerable<TKey> keys, IEnumerable<TValue> values)
+        public SerializedDictionary(IEnumerable<TKey> keys, IEnumerable<TValue> values)
         {
             this.keys.Clear();
             this.keys.AddRange(keys);

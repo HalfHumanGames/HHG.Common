@@ -5,6 +5,8 @@ namespace HHG.Common.Runtime
 {
     public static class ListExtensions
     {
+        private static System.Random random = new System.Random();
+
         public static void Remove<T>(this IList<T> list, System.Func<T, bool> func)
         {
             for (int i = 0; i < list.Count; i++)
@@ -73,7 +75,7 @@ namespace HHG.Common.Runtime
             int last = count - 1;
             for (int i = 0; i < last; ++i)
             {
-                int rand = Random.Range(i, count);
+                int rand = random.Next(i, count);
                 T temp = list[i];
                 list[i] = list[rand];
                 list[rand] = temp;

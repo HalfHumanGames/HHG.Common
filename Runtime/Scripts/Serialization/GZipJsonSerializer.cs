@@ -1,15 +1,21 @@
 namespace HHG.Common.Runtime
 {
+    [System.Serializable]
     public class GZipJsonSerializer : ISerializer
     {
-        public byte[] Serialize<T>(T value)
+        public byte[] Serialize(object obj)
         {
-            return JsonUtil.ToGZipJsonBytes(value);
+            return JsonUtil.ToGZipJsonBytes(obj);
         }
 
-        public T Deserialize<T>(byte[] bytes)
+        public object Deserialize(byte[] bytes, System.Type type)
         {
-            return JsonUtil.FromGZipJsonBytes<T>(bytes);
+            return JsonUtil.FromGZipJsonBytes(bytes, type);
+        }
+
+        public void DeserializeOverwrite(byte[] bytes, object obj)
+        {
+            JsonUtil.FromGZipJsonBytesOverwrite(obj, bytes);
         }
     }
 }

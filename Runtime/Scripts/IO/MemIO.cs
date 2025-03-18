@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
 	{
 		private Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
 
-		public void Clear(string fileName)
+		public void Delete(string fileName)
 		{
 			if (files.ContainsKey(fileName))
 			{

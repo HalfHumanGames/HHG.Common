@@ -1,15 +1,21 @@
 namespace HHG.Common.Runtime
 {
+    [System.Serializable]
     public class JsonSerializer : ISerializer
     {
-        public byte[] Serialize<T>(T value)
+        public byte[] Serialize(object value)
         {
             return JsonUtil.ToJsonBytes(value, true);
         }
 
-        public T Deserialize<T>(byte[] bytes)
+        public object Deserialize(byte[] bytes, System.Type type)
         {
-            return JsonUtil.FromJsonBytes<T>(bytes);
+            return JsonUtil.FromJsonBytes(bytes, type);
+        }
+
+        public void DeserializeOverwrite(byte[] bytes, object obj)
+        {
+            JsonUtil.FromJsonBytesOverwrite(obj, bytes);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HHG.Common.Runtime
 {
+    // TODO: Do we need this since there's an extension that does a similar thing?
     public static class TextInterpolator
     {
         public static string[] Interpolate(IEnumerable<string> texts, IReadOnlyDictionary<string, object> variables)

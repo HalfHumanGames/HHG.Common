@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace HHG.Common.Runtime
 {
-    public class AssetRegistry : SingletonScriptableObject<AssetRegistry>, ISerializationCallbackReceiver
+    public class AssetRegistry : ScriptableSingleton<AssetRegistry>, ISerializationCallbackReceiver
     {
         [Serializable]
         public struct AssetFolder
@@ -23,7 +23,7 @@ namespace HHG.Common.Runtime
 
         [SerializeField] private bool loadBeforeBuild;
         [SerializeField] private AssetFolder[] folders;
-        [SerializeField] private SerializableDictionary<string, Object> assets = new SerializableDictionary<string, Object>();
+        [SerializeField] private SerializedDictionary<string, Object> assets = new SerializedDictionary<string, Object>();
 
         // This doesn't need to be serialzied since it gets initialized after deserialize
         private Dictionary<Object, string> guids = new Dictionary<Object, string>();
@@ -35,6 +35,7 @@ namespace HHG.Common.Runtime
         {
             if (string.IsNullOrEmpty(guid))
             {
+                Debug.LogError($"Guid cannot be null or empty.");
                 return null;
             }
 
@@ -45,10 +46,16 @@ namespace HHG.Common.Runtime
 
 #if UNITY_EDITOR
             editorLoad();
-            assets.TryGetValue(guid, out asset);
+
+            if (assets.TryGetValue(guid, out asset))
+            {
+                return asset as T;
+            }
 #endif
 
-            return asset as T;
+            Debug.LogError($"Asset not found for guid: {guid}");
+
+            return null;
         }
 
 
@@ -56,6 +63,7 @@ namespace HHG.Common.Runtime
         {
             if (asset == null)
             {
+                Debug.LogError($"Asset cannot be null.");
                 return null;
             }
 
@@ -66,10 +74,16 @@ namespace HHG.Common.Runtime
 
 #if UNITY_EDITOR
             editorLoad();
-            guids.TryGetValue(asset, out guid);
-#endif
 
-            return guid;
+            if (guids.TryGetValue(asset, out guid))
+            {
+                return guid;
+            }
+#endif
+            
+            Debug.LogError($"Guid not found for asset: {asset.name}");
+
+            return string.Empty;            
         }
 
 

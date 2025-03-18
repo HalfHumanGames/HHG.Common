@@ -39,6 +39,8 @@ namespace HHG.Common.Runtime
         {
             Settings settings = GetSettings(bottomLeft, topRight, minimumDistance, iterationPerPoint <= 0 ? defaultIterationPerPoint : iterationPerPoint);
 
+            System.Random random = new System.Random();
+
             Bags bags = new Bags()
             {
                 Grid = new Vector2?[settings.GridWidth + 1, settings.GridHeight + 1],
@@ -46,17 +48,17 @@ namespace HHG.Common.Runtime
                 ActivePoints = new List<Vector2>()
             };
 
-            GetFirstPoint(settings, bags);
+            GetFirstPoint(settings, bags, random);
 
             do
             {
-                int index = Random.Range(0, bags.ActivePoints.Count);
+                int index = random.Next(0, bags.ActivePoints.Count);
                 Vector2 point = bags.ActivePoints[index];
                 bool found = false;
 
                 for (int i = 0; i < settings.IterationPerPoint; i++)
                 {
-                    found = found | GetNextPoint(point, settings, bags);
+                    found = found | GetNextPoint(point, settings, bags, random);
                 }
 
                 if (!found)
@@ -69,11 +71,11 @@ namespace HHG.Common.Runtime
             return bags.SamplePoints;
         }
 
-        private static bool GetNextPoint(Vector2 point, Settings set, Bags bags)
+        private static bool GetNextPoint(Vector2 point, Settings set, Bags bags, System.Random random)
         {
             bool found = false;
 
-            point += GetRandPosInCircle(set.MinimumDistance, 2f * set.MinimumDistance);
+            point += GetRandPosInCircle(set.MinimumDistance, 2f * set.MinimumDistance, random);
 
             if (!set.Dimension.Contains(point))
             {
@@ -111,11 +113,11 @@ namespace HHG.Common.Runtime
             return found;
         }
 
-        private static void GetFirstPoint(Settings set, Bags bags)
+        private static void GetFirstPoint(Settings set, Bags bags, System.Random random)
         {
             Vector2 first = new Vector2(
-                Random.Range(set.BottomLeft.x, set.TopRight.x),
-                Random.Range(set.BottomLeft.y, set.TopRight.y)
+                (float)(random.NextDouble() * (set.TopRight.x - set.BottomLeft.x) + set.BottomLeft.x),
+                (float)(random.NextDouble() * (set.TopRight.y - set.BottomLeft.y) + set.BottomLeft.y)
             );
 
             Vector2Int index = GetGridIndex(first, set);
@@ -153,12 +155,12 @@ namespace HHG.Common.Runtime
             };
         }
 
-        private static Vector2 GetRandPosInCircle(float fieldMin, float fieldMax)
+        private static Vector2 GetRandPosInCircle(float fieldMin, float fieldMax, System.Random random)
         {
-            float theta = Random.Range(0f, Mathf.PI * 2f);
-            float radius = Mathf.Sqrt(Random.Range(fieldMin * fieldMin, fieldMax * fieldMax));
+            float theta = (float)random.NextDouble() * Mathf.PI * 2;
+            float radius = Mathf.Sqrt((float)random.NextDouble() * (fieldMax * fieldMax - fieldMin * fieldMin) + fieldMin * fieldMin);
 
-            return new Vector2(radius * Mathf.Cos(theta), radius * Mathf.Sin(theta));
+            return new Vector2((float)(radius * Mathf.Cos(theta)), (float)(radius * Mathf.Sin(theta)));
         }
     }
 }
