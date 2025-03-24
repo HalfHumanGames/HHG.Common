@@ -1,0 +1,20 @@
+using HHG.Common.Runtime;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine;
+
+namespace {{namespace}}
+{
+    [CreateAssetMenu(fileName = "Config", menuName = "{{game}}/Config")]
+    public class Config : ConfigBase<Config>
+    {
+#if UNITY_EDITOR
+        [MenuItem("| Half Human Games |/Config")]
+        public static void Open()
+        {
+            Selection.activeObject = Instance;
+        }
+#endif
+    }
+}

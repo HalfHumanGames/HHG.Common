@@ -1,0 +1,18 @@
+using HHG.Common.Runtime;
+using UnityEngine;
+
+namespace {{namespace}}
+{
+    [CreateAssetMenu(fileName = "Save File", menuName = "{{game}}/Save File", order = 0)]
+    public class SaveFileAsset : ScriptableSaveFile
+    {
+        public int Gold { get => Get(ref gold); set => Set(ref gold, value); }
+
+        [SerializeField] private int gold = 100;
+
+        public override void Reset()
+        {
+            Gold = 0;
+        }
+    }
+}

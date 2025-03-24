@@ -1,0 +1,10 @@
+using UnityEngine;
+
+namespace {{namespace}}
+{
+    [CreateAssetMenu(fileName = "Difficulty", menuName = "{{game}}/Assets/Difficulty")]
+    public class DifficultyAsset : DifficultyAssetBase
+    {
+        
+    }
+}

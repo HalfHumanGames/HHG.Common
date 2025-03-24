@@ -1,0 +1,12 @@
+using HHG.Common.Runtime;
+
+namespace {{namespace}}
+{
+    public class DifficultyManager : DifficultyManagerBase<SaveFileAsset, DifficultyAsset>
+    {
+        protected override void OnDifficultyUpdated(DifficultyAsset difficultyAsset)
+        {
+            // To-do: Implement
+        }
+    }
+}

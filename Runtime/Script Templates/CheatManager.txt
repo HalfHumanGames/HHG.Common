@@ -1,0 +1,17 @@
+using HHG.Common.Runtime;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace {{namespace}}
+{
+    // Cheats are enabled and disabled by pressing F12
+    // Cheats are activated by pressing Shift + <key>
+    public class CheatManager : CheatManagerBase
+    {
+        [Cheat(Key.C)]
+        public void Cheat()
+        {
+
+        }
+    }
+}
