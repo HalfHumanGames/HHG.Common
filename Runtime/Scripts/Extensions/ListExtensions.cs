@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -133,22 +134,32 @@ namespace HHG.Common.Runtime
             return -1;
         }
 
-        public static bool Resize<T>(this List<T> list, int size, T template, Transform parent = null) where T : MonoBehaviour
+        public static bool Resize<T>(this List<T> list, int size) where T : Component
+        {
+            return list.Resize(size, list.First());
+        }
+
+        public static bool Resize<T>(this List<T> list, int size, T template) where T : Component
+        {
+            return list.Resize(size, template, template.transform.parent);
+        }
+
+        public static bool Resize<T>(this List<T> list, int size, T template, Transform transform) where T : Component
         {
             bool adjusted = list.Count != size;
 
             while (list.Count < size)
             {
-                T item = Object.Instantiate(template, parent);
-                item.gameObject.SetActive(true);
+                T item = Object.Instantiate(template, transform);
                 list.Add(item);
             }
 
             while (list.Count > size)
             {
-                T item = list[list.Count - 1];
+                int index = list.Count - 1;
+                T item = list[index];
+                list.RemoveAt(index);
                 Object.Destroy(item.gameObject);
-                list.RemoveAt(list.Count - 1);
             }
 
             return adjusted;

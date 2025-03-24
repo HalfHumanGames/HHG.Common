@@ -8,8 +8,8 @@ namespace HHG.Common.Runtime
 {
     public class ScriptableSingleton<T> : ScriptableObject where T : ScriptableSingleton<T>
     {
-        private static string resourcePath => $"{typeof(T)}";
-        private static string defaultAssetPath => $"Assets/Resources/{resourcePath}.asset";
+        private static string resourcePath => typeof(T).Name.ToNicified();
+        private static string assetPath => $"Assets/Resources/{resourcePath}.asset";
 
         private static T instance;
         public static T Instance
@@ -41,14 +41,14 @@ namespace HHG.Common.Runtime
 #endif
                     if (instance == null)
                     {
-                        Debug.LogWarning($"{typeof(T)} not found, so a new one has been created at: {defaultAssetPath}");
+                        Debug.LogWarning($"{typeof(T)} not found, so a new one has been created at: {assetPath}");
                         instance = CreateInstance<T>();
 #if UNITY_EDITOR
                         if (!AssetDatabase.IsValidFolder("Assets/Resources"))
                         {
                             AssetDatabase.CreateFolder("Assets", "Resources");
                         }
-                        AssetDatabase.CreateAsset(instance, defaultAssetPath);
+                        AssetDatabase.CreateAsset(instance, assetPath);
 #endif
                     }
                 }

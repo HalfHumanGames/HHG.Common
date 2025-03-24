@@ -34,7 +34,15 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            RectTransform selectedRectTransform = selected.GetComponent<RectTransform>();
+            GameObject current = selected;
+
+            while (current.transform.parent != scrollRect.content)
+            {
+                current = current.transform.parent.gameObject;
+            }
+
+
+            RectTransform selectedRectTransform = current.GetComponent<RectTransform>();
             RectTransform viewportRectTransform = scrollRect.viewport;
 
             Vector3[] selectedWorldCorners = new Vector3[4];
@@ -43,22 +51,38 @@ namespace HHG.Common.Runtime
             selectedRectTransform.GetWorldCorners(selectedWorldCorners);
             viewportRectTransform.GetWorldCorners(viewportWorldCorners);
 
+            int siblingIndex = current.transform.GetSiblingIndex();
+
             bool isAbove = selectedWorldCorners[1].y > viewportWorldCorners[1].y;
             bool isBelow = selectedWorldCorners[0].y < viewportWorldCorners[0].y;
             bool isNotVisible = isAbove || isBelow;
+            bool isFirst = siblingIndex == 0;
+            bool isLast = siblingIndex == current.transform.parent.childCount - 1;
 
-            if (isNotVisible)
+            if (isNotVisible || isFirst || isLast)
             {
-                // NOTE: localPosition might not work if the selected game object is not
-                // an immediate child of the scroll rect's content game object.
                 float xPos = scrollRect.content.anchoredPosition.x;
-                float yPos = isAbove ?
-                    -selectedRectTransform.localPosition.y - (selectedRectTransform.rect.height / 2) :
-                    -selectedRectTransform.localPosition.y + (selectedRectTransform.rect.height / 2) - viewportRectTransform.rect.height;
+                float yPos = 0f;
+
+                if (isFirst)
+                {
+                    yPos = 0f;
+                }
+                else if (isLast)
+                {
+                    yPos = scrollRect.content.rect.height - viewportRectTransform.rect.height;
+                }
+                else
+                {
+                    yPos = isAbove ?
+                        -selectedRectTransform.localPosition.y - (selectedRectTransform.rect.height / 2) :
+                        -selectedRectTransform.localPosition.y + (selectedRectTransform.rect.height / 2) - viewportRectTransform.rect.height;
+                }
+
                 scrollRect.content.anchoredPosition = new Vector2(xPos, yPos);
             }
 
             previousSelection = selected;
         }
-    } 
+    }
 }

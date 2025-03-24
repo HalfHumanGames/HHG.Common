@@ -135,13 +135,15 @@ namespace HHG.Common.Runtime
                     case SelectableNavigation.Horizontal:
                         if (i == 0)
                         {
-                            nav.selectOnLeft = selectables.ElementAt(length - 1);
+                            // Do not wrap
+                            //nav.selectOnLeft = selectables.ElementAt(length - 1);
                             nav.selectOnRight = selectables.ElementAt(1);
                         }
                         else if (i == length - 1)
                         {
                             nav.selectOnLeft = selectables.ElementAt(i - 1);
-                            nav.selectOnRight = selectables.ElementAt(0);
+                            // Do not wrap
+                            //nav.selectOnRight = selectables.ElementAt(0);
                         }
                         else
                         {
@@ -153,13 +155,15 @@ namespace HHG.Common.Runtime
                     case SelectableNavigation.Vertical:
                         if (i == 0)
                         {
-                            nav.selectOnUp = selectables.ElementAt(length - 1);
+                            // Do not wrap
+                            //nav.selectOnUp = selectables.ElementAt(length - 1);
                             nav.selectOnDown = selectables.ElementAt(1);
                         }
                         else if (i == length - 1)
                         {
                             nav.selectOnUp = selectables.ElementAt(i - 1);
-                            nav.selectOnDown = selectables.ElementAt(0);
+                            // Do not wrap
+                            //nav.selectOnDown = selectables.ElementAt(0);
                         }
                         else
                         {

@@ -9,6 +9,28 @@ namespace HHG.Common.Runtime
         private static IEnumerable<Type> types;
         private static Dictionary<Type, IEnumerable<Type>> subclasses;
 
+        public static bool IsSubclassOfGeneric(this Type type, Type generic)
+        {
+            return type.IsSubclassOfGeneric(generic, out _);
+        }
+
+        public static bool IsSubclassOfGeneric(this Type type, Type generic, out Type found)
+        {
+            while (type != null && type != typeof(object))
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == generic)
+                {
+                    found = type;
+                    return true;
+                }
+
+                type = type.BaseType;
+            }
+
+            found = null;
+            return false;
+        }
+
         public static List<Type> FindSubclasses(this Type type, Func<Type, bool> filter = null)
         {
             filter ??= _ => true;

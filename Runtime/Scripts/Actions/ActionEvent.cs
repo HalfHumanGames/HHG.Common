@@ -1,48 +1,98 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace HHG.Common.Runtime
 {
-    [Serializable]
-    public class ActionEvent : ActionEvent<MonoBehaviour> { }
+    [System.Serializable]
+    public class ActionEvent : ActionEvent<MonoBehaviour, object>
+    {
+        public ActionEvent()
+        {
 
-    [Serializable]
-    public class ActionEvent<T> where T : MonoBehaviour
+        }
+
+        public ActionEvent(System.Action action) : base(action)
+        {
+            
+        }
+
+        public ActionEvent(System.Action<MonoBehaviour> action) : base(action)
+        {
+            
+        }
+
+        public ActionEvent(System.Action<MonoBehaviour, object> action) : base(action)
+        {
+
+        }
+    }
+
+    [System.Serializable]
+    public class ActionEvent<TInvoker> : ActionEvent<TInvoker, object> where TInvoker : MonoBehaviour
+    {
+        public ActionEvent()
+        {
+
+        }
+
+        public ActionEvent(System.Action action) : base(action)
+        {
+
+        }
+
+        public ActionEvent(System.Action<TInvoker> action) : base(action)
+        {
+
+        }
+
+        public ActionEvent(System.Action<TInvoker, object> action) : base(action)
+        {
+
+        }
+    }
+
+    [System.Serializable]
+    public class ActionEvent<TInvoker, TContext> where TInvoker : MonoBehaviour
     {
         public List<IActionBase> Actions => actions;
 
         [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
 
-        private UnityEvent unityEvent = new UnityEvent();
-        private UnityEvent<T> unityEventWithArgument = new UnityEvent<T>();
+        private event System.Action invoked1;
+        private event System.Action<TInvoker> invoked2;
+        private event System.Action<TInvoker, TContext> invoked3;
 
         public ActionEvent()
         {
 
         }
 
-        public ActionEvent(UnityAction action)
+        public ActionEvent(System.Action action)
         {
-            unityEvent.AddListener(action);
+            invoked1 += action;
         }
 
-        public ActionEvent(UnityAction<T> action)
+        public ActionEvent(System.Action<TInvoker> action)
         {
-            unityEventWithArgument.AddListener(action);
+            invoked2 += action;
         }
 
-        public Coroutine Invoke(T invoker)
+        public ActionEvent(System.Action<TInvoker, TContext> action)
         {
-            return invoker.StartCoroutine(InvokeAsync(invoker));
+            invoked3 += action;
         }
 
-        public IEnumerator InvokeAsync(T invoker)
+        public Coroutine Invoke(TInvoker invoker, TContext context = default)
         {
-            unityEvent?.Invoke();
-            unityEventWithArgument?.Invoke(invoker);
+            return invoker.StartCoroutine(InvokeAsync(invoker, context));
+        }
+
+        public IEnumerator InvokeAsync(TInvoker invoker, TContext context = default)
+        {
+            invoked1?.Invoke();
+            invoked2?.Invoke(invoker);
+            invoked3?.Invoke(invoker, context);
 
             foreach (IActionBase action in actions)
             {
@@ -57,31 +107,42 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void AddListener(UnityAction call)
+        public void AddListener(System.Action action)
         {
-            unityEvent.AddListener(call);
+            invoked1 += action;
         }
 
-        public void AddListener(UnityAction<T> call)
+        public void AddListener(System.Action<TInvoker> action)
         {
-            unityEventWithArgument.AddListener(call);
+            invoked2 += action;
         }
 
-        public void RemoveListener(UnityAction call)
+        public void AddListener(System.Action<TInvoker, TContext> action)
         {
-            unityEvent.RemoveListener(call);
+            invoked3 += action;
         }
 
-        public void RemoveListener(UnityAction<T> call)
+        public void RemoveListener(System.Action action)
         {
-            unityEventWithArgument.RemoveListener(call);
+            invoked1 -= action;
+        }
+
+        public void RemoveListener(System.Action<TInvoker> action)
+        {
+            invoked2 -= action;
+        }
+
+        public void RemoveListener(System.Action<TInvoker, TContext> action)
+        {
+            invoked3 -= action;
         }
 
         public void RemoveAllListeners()
         {
             actions.Clear();
-            unityEvent.RemoveAllListeners();
-            unityEventWithArgument.RemoveAllListeners();
+            invoked1 = null;
+            invoked2 = null;
+            invoked3 = null;
         }
     }
 }

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace HHG.Common.Runtime
 {
@@ -13,7 +11,7 @@ namespace HHG.Common.Runtime
             return source.Where(x => !EqualityComparer<T>.Default.Equals(x, item));
         }
 
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> func)
+        public static void ForEach<T>(this IEnumerable<T> source, System.Action<T> func)
         {
             foreach (T item in source)
             {
@@ -21,10 +19,10 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, System.Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            if (selector == null) throw new System.ArgumentNullException(nameof(selector));
 
             if (!source.Any())
             {
@@ -34,10 +32,10 @@ namespace HHG.Common.Runtime
             return source.Aggregate((min, current) => Comparer<TKey>.Default.Compare(selector(current), selector(min)) < 0 ? current : min);
         }
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, System.Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            if (selector == null) throw new System.ArgumentNullException(nameof(selector));
 
             if (!source.Any())
             {
@@ -70,16 +68,16 @@ namespace HHG.Common.Runtime
             return enumerable.Where(item => item != null);
         }
 
-        public static T SelectByWeight<T>(this IEnumerable<T> source, Func<T, int> getter)
+        public static T SelectByWeight<T>(this IEnumerable<T> source, System.Func<T, int> getter)
         {
-            Func<T, int> min = item => Mathf.Max(getter(item), 1);
+            System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
             int rand = Random.Range(0, source.Sum(min));
             return source.FirstOrDefault(item => (rand -= min(item)) < 0);
         }
 
-        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, Func<T, int> getter)
+        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, System.Func<T, int> getter)
         {
-            Func<T, int> min = item => Mathf.Max(getter(item), 1);
+            System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
             HashSet<T> taken = new HashSet<T>();
             int sum = source.Sum(min);
 
@@ -107,8 +105,8 @@ namespace HHG.Common.Runtime
 
         public static int IndexOf<T>(this IEnumerable<T> source, T search)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (search == null) throw new ArgumentNullException(nameof(search));
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            if (search == null) throw new System.ArgumentNullException(nameof(search));
 
             int index = 0;
             foreach (T element in source)
@@ -123,10 +121,10 @@ namespace HHG.Common.Runtime
             return -1;
         }
 
-        public static int FindIndex<T>(this IEnumerable<T> source, Func<T, bool> search)
+        public static int FindIndex<T>(this IEnumerable<T> source, System.Func<T, bool> search)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (search == null) throw new ArgumentNullException(nameof(search));
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            if (search == null) throw new System.ArgumentNullException(nameof(search));
 
             int index = 0;
             foreach (T element in source)

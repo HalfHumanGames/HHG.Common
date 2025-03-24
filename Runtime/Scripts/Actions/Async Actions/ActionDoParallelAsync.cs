@@ -7,7 +7,7 @@
 //{
 //    public class ActionDoParallelAsync : IActionAsync
 //    {
-//        [SerializeReference, ReferencePicker] private List<IActionAsync> actions = new List<IActionAsync>();
+//        [SerializeReference, SubclassSelector] private List<IActionAsync> actions = new List<IActionAsync>();
 
 //        public IEnumerator InvokeAsync(MonoBehaviour invoker)
 //        {

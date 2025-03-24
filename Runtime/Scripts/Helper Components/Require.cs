@@ -5,8 +5,8 @@ namespace HHG.Common.Runtime
     public class Require : MonoBehaviour
     {
         [SerializeField] private UpdateMode updateMode;
-        [SerializeReference, ReferencePicker] private IRequirement requirements;
-        [SerializeReference, ReferencePicker] private ISubscribable updateTriggers;
+        [SerializeReference, SubclassSelector] private IRequirement requirements;
+        [SerializeReference, SubclassSelector] private ISubscribable updateTriggers;
 
         [System.Flags]
         private enum UpdateMode

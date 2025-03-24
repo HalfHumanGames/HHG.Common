@@ -8,6 +8,7 @@ namespace HHG.Common.Runtime
         private const string extension = ".sav";
 
         public System.DateTime LastSaved => lastSaved.Value;
+        public string CurrentFileName => currentFileName;
 
         [SerializeReference, SubclassSelector] private IIO io = new FileIO();
         [SerializeReference, SubclassSelector] private ISerializer serializer = new JsonSerializer();
@@ -103,6 +104,11 @@ namespace HHG.Common.Runtime
             if (io.Exists(path))
             {
                 io.Delete(path);
+            }
+
+            if (currentFileName == fileName)
+            {
+                Reset();
             }
         }
 

@@ -1,27 +1,25 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using System;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using Object = UnityEngine.Object;
 
 namespace HHG.Common.Runtime
 {
     public class AssetRegistry : ScriptableSingleton<AssetRegistry>, ISerializationCallbackReceiver
     {
-        [Serializable]
+        [System.Serializable]
         public struct AssetFolder
         {
+            [HideInInspector] public string _; // So has default label
             public string Folder;
             public string Filter;
         }
 
         public static bool LoadBeforeBuild => Instance.loadBeforeBuild;
 
-        [SerializeField] private bool loadBeforeBuild;
+        [SerializeField] private bool loadBeforeBuild = true;
         [SerializeField] private AssetFolder[] folders;
         [SerializeField] private SerializedDictionary<string, Object> assets = new SerializedDictionary<string, Object>();
 
@@ -108,7 +106,7 @@ namespace HHG.Common.Runtime
             guids.Clear();
             foreach (AssetFolder folder in folders)
             {
-                string filter = string.Join(' ', folder.Filter.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(f => $"t:{f}"));
+                string filter = string.Join(' ', folder.Filter.Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(f => $"t:{f}"));
                 string[] ids = AssetDatabase.FindAssets($"{filter}", new[] { folder.Folder });
                 var paths = ids.Select(id => AssetDatabase.GUIDToAssetPath(id));
                 var objs = paths.Select(path => AssetDatabase.LoadAssetAtPath<Object>(path));
@@ -132,7 +130,7 @@ namespace HHG.Common.Runtime
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("Half Human Games/Asset Registry")]
+        [MenuItem("| Half Human Games |/Asset Registry")]
         private static void Open()
         {
             Selection.activeObject = Instance;
