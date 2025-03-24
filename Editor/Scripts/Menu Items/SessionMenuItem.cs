@@ -5,7 +5,7 @@
 //{
 //    public static class SessionMenuItem
 //    {
-//        [MenuItem("Half Human Games/Session")]
+//        [MenuItem("| Half Human Games |/Session")]
 //        private static void Open()
 //        {
 //            Selection.activeObject = AssetDatabaseUtil.FindAsset<Session>();

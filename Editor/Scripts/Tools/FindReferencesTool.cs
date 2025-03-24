@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-using Object = UnityEngine.Object;
 
 namespace HHG.Common.Editor
 {
@@ -15,15 +12,15 @@ namespace HHG.Common.Editor
         private Object searchedObject;
         private Dictionary<Object, int> referenceObjects = new Dictionary<Object, int>();
         private Vector2 scrollPosition;
-        private Stopwatch searchTimer = new Stopwatch();
+        private System.Diagnostics.Stopwatch searchTimer = new System.Diagnostics.Stopwatch();
 
-        [MenuItem("Half Human Games/Tools/Reference Finder")]
-        static void Init()
+        [MenuItem("| Half Human Games |/Tools/Reference Finder")]
+        private static void Open()
         {
             GetWindow(typeof(FindReferencesTool), false, "Reference Finder");
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             if (EditorSettings.serializationMode == SerializationMode.ForceText)
             {

@@ -42,10 +42,20 @@ namespace HHG.Common.Editor
                 return;
             }
 
-            templates.Sort((a, b) => a.name.CompareTo(b.name));
+            if (templates == null)
+            {
+                templates = new List<T>();
+            }
+
+            templates.Sort((a, b) => a != null && b != null ? a.name.CompareTo(b.name) : 0);
 
             foreach (T template in templates)
             {
+                if (template == null)
+                {
+                    continue;
+                }
+
                 string path = $"{this.path}/{template.name}";
                 bool exists = MenuTool.MenuItemExists(path);
 
