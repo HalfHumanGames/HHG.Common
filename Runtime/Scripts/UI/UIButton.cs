@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace HHG.Common.Runtime
@@ -9,6 +10,7 @@ namespace HHG.Common.Runtime
     {
         public TMP_Text Label => label;
         public Button Button => button;
+        public EventTrigger EventTrigger => eventTrigger;
         public ActionEvent<UIButton> OnClick => onClick;
 
         [SerializeField] private bool singleUse;
@@ -16,11 +18,14 @@ namespace HHG.Common.Runtime
 
         private TMP_Text label;
         private Button button;
+        private EventTrigger eventTrigger;
 
         private void Awake()
         {
             label = GetComponentInChildren<TMP_Text>(true);
             button = GetComponent<Button>();
+            eventTrigger = GetComponent<EventTrigger>();
+
             button.onClick.AddListener(OnButtonClick);
         }
 

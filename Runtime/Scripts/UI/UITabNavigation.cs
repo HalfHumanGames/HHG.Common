@@ -9,13 +9,15 @@ namespace HHG.Common.Runtime
     {
         public Transform TabContainer => tabContainer;
         public Transform ContentContainer => contentContainer;
+        public UIButton[] Tabs => tabs;
+        public GameObject[] Contents => contents;
 
         [SerializeField] private Transform tabContainer;
         [SerializeField] private Transform contentContainer;
 
         private RectTransform rectTransform;
-        private Lazy<Button> _tabs = new Lazy<Button>();
-        private Button[] tabs => _tabs.FromComponentsInChildren(tabContainer);
+        private Lazy<UIButton> _tabs = new Lazy<UIButton>();
+        private UIButton[] tabs => _tabs.FromComponentsInChildren(tabContainer, true);
         private Lazy<GameObject> _contents = new Lazy<GameObject>();
         private GameObject[] contents => _contents.From(() => contentContainer.GetChildren().Select(t => t.gameObject).ToArray());
 
@@ -31,24 +33,24 @@ namespace HHG.Common.Runtime
 
             rectTransform = GetComponent<RectTransform>();
 
-            foreach (Button tab in tabs)
+            foreach (UIButton tab in tabs)
             {
-                tab.onClick.RemoveAllListeners();
-                tab.onClick.AddListener(() => SelectTab(tab));
+                tab.OnClick.RemoveListener(SelectTab);
+                tab.OnClick.AddListener(SelectTab);
 
                 if (tab.TryGetComponent(out EventTrigger eventTrigger))
                 {
-                    eventTrigger.triggers.Clear();
-                    eventTrigger.AddTrigger(EventTriggerType.Select, () => SelectTab(tab));
+                    eventTrigger.RemoveTrigger(EventTriggerType.Select, SelectTab);
+                    eventTrigger.AddTrigger(EventTriggerType.Select, SelectTab);
                 }
             }
 
-            tabs.SetNavigationHorizontal();
+            tabs.Select(t => t.Button).SetNavigationHorizontal();
 
             int len = Mathf.Min(tabs.Length, contents.Length);
             for (int i = 0; i < len; i++)
             {
-                Button tab = tabs[i];
+                UIButton tab = tabs[i];
                 GameObject item = contents[i];
 
                 // Make sure to only get the topmost selectable in each child game object
@@ -60,8 +62,8 @@ namespace HHG.Common.Runtime
                 if (selectables.Any())
                 {
                     Selectable first = selectables.First();
-                    first.SetNavigationUp(tab);
-                    tab.SetNavigationDown(first);
+                    first.SetNavigationUp(tab.Button);
+                    tab.Button.SetNavigationDown(first);
                 }
 
                 if (i == 0)
@@ -71,7 +73,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void SelectTab(Button button)
+        private void SelectTab(UIButton button)
         {
             foreach (GameObject item in contents)
             {
@@ -82,7 +84,7 @@ namespace HHG.Common.Runtime
             }
 
             int index = button.transform.GetSiblingIndex();
-            
+
             if (index < contents.Length)
             {
                 if (contents[index] is GameObject content)
@@ -92,6 +94,14 @@ namespace HHG.Common.Runtime
             }
 
             rectTransform.RebuildLayout();
+        }
+
+        private void SelectTab(BaseEventData data)
+        {
+            if (data.selectedObject.TryGetComponent(out UIButton button))
+            {
+                SelectTab(button);
+            }
         }
     }
 }
