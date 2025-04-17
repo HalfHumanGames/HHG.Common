@@ -55,5 +55,47 @@ namespace HHG.Common.Runtime
 
             return destination;
         }
+
+        public static void ForEach<T>(this T[] array, System.Action<int, T> action)
+        {
+            if (array == null)
+            {
+                throw new System.ArgumentNullException(nameof(array));
+            }
+
+            if (action == null)
+            {
+                throw new System.ArgumentNullException(nameof(action));
+            }
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                action(i, array[i]);
+            }
+        }
+
+        public static void ForEach<T>(this T[,] array, System.Action<int, int, T> action)
+        {
+            if (array == null)
+            {
+                throw new System.ArgumentNullException(nameof(array));
+            }
+
+            if (action == null)
+            {
+                throw new System.ArgumentNullException(nameof(action));
+            }
+
+            int rows = array.GetLength(0);
+            int cols = array.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    action(i, j, array[i, j]);
+                }
+            }
+        }
     }
 }
