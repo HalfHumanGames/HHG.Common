@@ -51,12 +51,12 @@ namespace HHG.Common.Runtime
 
         public static T FindObjectOfType<T>(this Object obj, bool includeInactive = false)
         {
-            return ObjectUtil.FindObjectOfType<T>(includeInactive); ;
+            return ObjectUtil.FindComponentInScene<T>(includeInactive); ;
         }
 
         public static T[] FindObjectsOfType<T>(this Object obj, bool includeInactive = false)
         {
-            return ObjectUtil.FindObjectsOfType<T>(includeInactive);
+            return ObjectUtil.FindComponentsInScene<T>(includeInactive);
         }
 
         public static T CloneFromJson<T>(this T obj)

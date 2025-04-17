@@ -8,6 +8,9 @@ namespace HHG.Common.Runtime
 {
     public static class SelectableExtensions
     {
+        private const float directionWeight = .8f;
+        private const float distanceWeight = .2f;
+
         public static bool IsSelected(this Selectable selectable)
         {
             return EventSystem.current.currentSelectedGameObject == selectable.gameObject;
@@ -127,7 +130,8 @@ namespace HHG.Common.Runtime
 
             for (int i = 0; i < length; i++)
             {
-                Navigation nav = selectables.ElementAt(i).navigation;
+                Selectable selectable = selectables.ElementAt(i);
+                Navigation nav = selectable.navigation;
                 nav.mode = Navigation.Mode.Explicit;
 
                 switch (direction)
@@ -182,48 +186,53 @@ namespace HHG.Common.Runtime
                         break;
 
                     case SelectableNavigation.Auto:
-                        nav.selectOnUp = FindNearestSelectable(selectables, i, Vector2.up);
-                        nav.selectOnDown = FindNearestSelectable(selectables, i, Vector2.down);
-                        nav.selectOnLeft = FindNearestSelectable(selectables, i, Vector2.left);
-                        nav.selectOnRight = FindNearestSelectable(selectables, i, Vector2.right);
+                        nav.selectOnUp = selectable.FindNearestSelectable(selectables, Vector2.up);
+                        nav.selectOnDown = selectable.FindNearestSelectable(selectables, Vector2.down);
+                        nav.selectOnLeft = selectable.FindNearestSelectable(selectables, Vector2.left);
+                        nav.selectOnRight = selectable.FindNearestSelectable(selectables, Vector2.right);
                         break;
                 }
 
-                selectables.ElementAt(i).navigation = nav;
+                selectable.navigation = nav;
             }
         }
 
-        private static Selectable FindNearestSelectable(IEnumerable<Selectable> selectables, int currentIndex, Vector2 direction)
+        private static Selectable FindNearestSelectable(this Selectable selectable, IEnumerable<Selectable> selectables, Vector2 direction)
         {
-            Selectable currentSelectable = selectables.ElementAt(currentIndex);
-            Vector2 currentPosition = (currentSelectable.transform as RectTransform).anchoredPosition;
+            Selectable bestMatch = null;
+            float bestScore = float.MaxValue;
+            Vector3 currentPosition = (selectable.transform as RectTransform).anchoredPosition;
 
-            Selectable nearest = null;
-            float shortestDistance = float.MaxValue;
+            float bestDot = 0f, bestDist = 0f;
 
-            foreach (Selectable selectable in selectables)
+            foreach (Selectable other in selectables)
             {
-                if (selectable == currentSelectable)
+                if (other == selectable)
                 {
                     continue;
                 }
 
-                Vector2 position = (selectable.transform as RectTransform).anchoredPosition;
-                Vector2 offset = position - currentPosition;
-
-                if (Vector2.Dot(offset.normalized, direction) > .5f)
+                Vector3 otherPosition = (other.transform as RectTransform).anchoredPosition;
+                Vector3 difference = otherPosition - currentPosition;
+                float dot = Vector3.Dot(direction.normalized, difference.normalized);
+                
+                if(dot > 0f)
                 {
-                    float distance = offset.sqrMagnitude;
+                    float distance = difference.magnitude;
+                    float normalizedDistance = distance / 1080f;
+                    float score = (directionWeight * (1 - dot)) + (distanceWeight * normalizedDistance);
 
-                    if (distance < shortestDistance)
+                    if (score < bestScore)
                     {
-                        shortestDistance = distance;
-                        nearest = selectable;
+                        bestDot = dot;
+                        bestDist = normalizedDistance;
+                        bestScore = score;
+                        bestMatch = other;
                     }
                 }
             }
 
-            return nearest;
+            return bestMatch;
         }
     }
 }
