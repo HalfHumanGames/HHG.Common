@@ -57,7 +57,7 @@ namespace HHG.Common.Runtime
     {
         public List<IActionBase> Actions => actions;
 
-        [SerializeReference, SubclassSelector] private List<IActionBase> actions = new List<IActionBase>();
+        [SerializeReference, ReferencePicker] private List<IActionBase> actions = new List<IActionBase>();
 
         private event System.Action invoked1;
         private event System.Action<TInvoker> invoked2;

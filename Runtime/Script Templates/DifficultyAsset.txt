@@ -1,8 +1,9 @@
+using HHG.Common.Runtime;
 using UnityEngine;
 
 namespace {{namespace}}
 {
-    [CreateAssetMenu(fileName = "Difficulty", menuName = "{{game}}/Assets/Difficulty")]
+    [CreateAssetMenu(fileName = "Difficulty", menuName = "{{game}}/Asset/Difficulty")]
     public class DifficultyAsset : DifficultyAssetBase
     {
         

@@ -12,7 +12,11 @@ namespace {{namespace}}
 
         public override void Reset()
         {
-            Gold = 0;
+            // Reset fields
+            gold = 0;
+
+            // Do after reset
+            InvokeUpdated();
         }
     }
 }
