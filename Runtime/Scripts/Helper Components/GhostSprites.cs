@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
     public class GhostSprites : MonoBehaviour
     {
         private static Lazy<Transform> _container = new Lazy<Transform>();
-        private static Transform container => _container.FromGameObjectCreate("Ghost Sprites");
+        private static Transform container => _container.FromFindOrCreate("Ghost Sprites");
         private static SpriteRenderer template;
 
         [SerializeField] private int ghostCount = 10;
