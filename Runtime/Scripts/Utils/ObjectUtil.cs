@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
@@ -64,16 +65,36 @@ namespace HHG.Common.Runtime
         // but these also work with interfaces while Object.FindObjectOfType methods
         // don't since they require the generic T to be of type UnityEngine.Object
 
-        public static T FindObjectOfType<T>(bool includeInactive = false)
+        public static T FindComponentInScene<T>(bool includeInactive = false)
         {
             T retval = default;
             SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(g => g.TryGetComponentInChildren(out retval, includeInactive));
             return retval;
         }
 
-        public static T[] FindObjectsOfType<T>(bool includeInactive = false)
+        public static T[] FindComponentsInScene<T>(bool includeInactive = false)
         {
             return SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<T>(includeInactive)).ToArray();
+        }
+
+        public static void GetComponentsInScene<T>(List<T> components)
+        {
+            FindComponentsInScene(false, components);
+        }
+
+        public static void FindComponentsInScene<T>(bool includeInactive, List<T> components)
+        {
+            components.Clear();
+
+            List<T> temp = ListPool<T>.Get();
+
+            foreach (GameObject gameObject in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                gameObject.GetComponentsInChildren(includeInactive, temp);
+                components.AddRange(temp);
+            }
+
+            ListPool<T>.Release(temp);
         }
     }
 }

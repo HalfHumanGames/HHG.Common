@@ -42,7 +42,17 @@ namespace HHG.Common.Runtime
         {
             values.Clear();
 
-            Regex regex = new Regex(@"(?:^|,)(?:""([^""]*)""|([^""]*?))(?:,|$)", RegexOptions.Compiled);
+            Regex regex = new Regex(
+                @"
+                (?:^|,)               # Start of the line or a comma
+                (                     # Start of capture group
+                    ""([^""]*)""      # Quoted field (handles escaped quotes inside quotes)
+                    |                 # OR
+                    ([^"",]*)         # Unquoted field (no commas or quotes allowed)
+                )                     # End of capture group
+                (?=,|$)               # Followed by a comma or end of line
+                ",
+                RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
             foreach (Match match in regex.Matches(line))
             {
