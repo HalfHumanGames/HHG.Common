@@ -5,86 +5,50 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public abstract class EnumGrid
+    public abstract class EnumGrid<T> : IEnumerable<Vector3Int> where T : Enum
     {
-        public abstract bool IsInitialized { get; }
-        public abstract bool IsValid { get; }
-        public abstract void Initialize(int newSize);
-        public abstract int GetCellWeak(Vector3Int position);
-        public abstract void SetCellWeak(Vector3Int position, int value);
-        public abstract Color GetColorWeak(int value);
-    }
-
-    public abstract class EnumGrid<T> : EnumGrid, IEnumerable<Vector3Int> where T : Enum
-    {
-        public override bool IsInitialized => grid != null && grid.Length == size * size;
-        public override bool IsValid => size > 0;
+        public bool IsValid => grid != null;
 
         public T this[Vector3Int position]
         {
-            get => GetCell(position);
-            set => SetCell(position, value);
+            get => grid[position];
+            set => grid[position] = value;
         }
 
-        [SerializeField] private int size;
-        [SerializeField] private T[] grid;
+        [SerializeField, AssetPreview] private Sprite sprite;
 
-
-        public EnumGrid(int size)
+        private Dictionary<Vector3Int, T> _grid;
+        private Dictionary<Vector3Int, T> grid
         {
-            Initialize(size);
-        }
-
-        public override void Initialize(int newSize)
-        {
-            size = newSize;
-
-            if (grid == null)
+            get
             {
-                grid = new T[size * size];
-            }
-            else
-            {
-                Array.Resize(ref grid, size * size);
-            }
-        }
+                if (_grid == null && sprite != null)
+                {
+                    _grid = new Dictionary<Vector3Int, T>();
 
-        public T GetCell(Vector3Int position)
-        {
-            return grid[position.y * size + position.x];
-        }
+                    Color[,] pixels = sprite.GetPixels();
 
-        public void SetCell(Vector3Int position, T value)
-        {
-            grid[position.y * size + position.x] = value;
+                    pixels.ForEach((x, y, color) =>
+                    {
+                        if (color != Color.clear)
+                        {
+                            Vector3Int position = new Vector3Int(x, y);
+                            T value = GetValue(color);
+                            _grid[position] = value;
+                        }
+                    });
+                }
+
+                return _grid;
+            }
         }
 
         public abstract Color GetColor(T value);
-
-        public override int GetCellWeak(Vector3Int position)
-        {
-            return Convert.ToInt32(GetCell(position));
-        }
-
-        public override void SetCellWeak(Vector3Int position, int value)
-        {
-            SetCell(position, (T)Enum.ToObject(typeof(T), value));
-        }
-
-        public override Color GetColorWeak(int value)
-        {
-            return GetColor((T)Enum.ToObject(typeof(T), value));
-        }
+        public abstract T GetValue(Color color);
 
         public IEnumerator<Vector3Int> GetEnumerator()
         {
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    yield return new Vector3Int(x, y);
-                }
-            }
+            return grid.Keys.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
