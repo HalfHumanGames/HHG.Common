@@ -30,51 +30,57 @@ namespace HHG.Common.Editor
                 {
                     searchTimer.Reset();
                     searchTimer.Start();
-
                     referenceObjects.Clear();
-                    var pathToAsset = AssetDatabase.GUIDToAssetPath(guidToFind);
+
+                    string pathToAsset = AssetDatabase.GUIDToAssetPath(guidToFind);
+
                     if (!string.IsNullOrEmpty(pathToAsset))
                     {
                         searchedObject = AssetDatabase.LoadAssetAtPath<Object>(pathToAsset);
 
-                        var allPathToAssetsList = new List<string>();
-                        var allPrefabs = Directory.GetFiles(Application.dataPath, "*.prefab", SearchOption.AllDirectories);
+                        List<string> allPathToAssetsList = new List<string>();
+                        string[] allPrefabs = Directory.GetFiles(Application.dataPath, "*.prefab", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allPrefabs);
-                        var allMaterials = Directory.GetFiles(Application.dataPath, "*.mat", SearchOption.AllDirectories);
+                        string[] allMaterials = Directory.GetFiles(Application.dataPath, "*.mat", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allMaterials);
-                        var allScenes = Directory.GetFiles(Application.dataPath, "*.unity", SearchOption.AllDirectories);
+                        string[] allScenes = Directory.GetFiles(Application.dataPath, "*.unity", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allScenes);
-                        var allControllers = Directory.GetFiles(Application.dataPath, "*.controller", SearchOption.AllDirectories);
+                        string[] allControllers = Directory.GetFiles(Application.dataPath, "*.controller", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allControllers);
-                        var allVfxGraphs = Directory.GetFiles(Application.dataPath, "*.vfx", SearchOption.AllDirectories);
+                        string[] allVfxGraphs = Directory.GetFiles(Application.dataPath, "*.vfx", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allVfxGraphs);
-                        var allShaderGraphs = Directory.GetFiles(Application.dataPath, "*.shadergraph", SearchOption.AllDirectories);
+                        string[] allShaderGraphs = Directory.GetFiles(Application.dataPath, "*.shadergraph", SearchOption.AllDirectories);
                         allPathToAssetsList.AddRange(allShaderGraphs);
+                        string[] allAssets = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+                        allPathToAssetsList.AddRange(allAssets);
 
-                        string assetPath;
                         for (int i = 0; i < allPathToAssetsList.Count; i++)
                         {
-                            assetPath = allPathToAssetsList[i];
-                            var text = File.ReadAllText(assetPath);
-                            var lines = text.Split('\n');
+                            string assetPath = allPathToAssetsList[i];
+                            string text = File.ReadAllText(assetPath);
+                            string[] lines = text.Split('\n');
+
                             for (int j = 0; j < lines.Length; j++)
                             {
-                                var line = lines[j];
+                                string line = lines[j];
+
                                 if (line.Contains("guid:"))
                                 {
                                     if (line.Contains(guidToFind))
                                     {
-                                        var pathToReferenceAsset = assetPath.Replace(Application.dataPath, string.Empty);
+                                        string pathToReferenceAsset = assetPath.Replace(Application.dataPath, string.Empty);
                                         pathToReferenceAsset = pathToReferenceAsset.Replace(".meta", string.Empty);
-                                        var path = "Assets" + pathToReferenceAsset;
+                                        string path = "Assets" + pathToReferenceAsset;
                                         path = path.Replace(@"\", "/"); // fix OSX/Windows path
-                                        var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+
+                                        Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
                                         if (asset != null)
                                         {
                                             if (!referenceObjects.ContainsKey(asset))
                                             {
                                                 referenceObjects.Add(asset, 0);
                                             }
+
                                             referenceObjects[asset]++;
                                         }
                                         else
@@ -109,14 +115,15 @@ namespace HHG.Common.Editor
 
         private void ReplaceGuids(Dictionary<Object, int> referenceObjects, string guidToFind, string replacementGuid)
         {
-            foreach (var referenceObject in referenceObjects.Keys)
+            foreach (Object referenceObject in referenceObjects.Keys)
             {
-                var assetPath = AssetDatabase.GetAssetPath(referenceObject);
-                var text = File.ReadAllText(assetPath);
-                var newText = text.Replace(guidToFind, replacementGuid);
+                string assetPath = AssetDatabase.GetAssetPath(referenceObject);
+                string text = File.ReadAllText(assetPath);
+                string newText = text.Replace(guidToFind, replacementGuid);
                 Debug.Log("Overwriting file data of: " + referenceObject.name + "\n\nOld:\n" + text + "\n\nNew:\n" + newText);
                 File.WriteAllText(assetPath, newText);
             }
+
             AssetDatabase.Refresh(ImportAssetOptions.Default);
         }
 
@@ -128,36 +135,45 @@ namespace HHG.Common.Editor
         private void DisplayReferenceObjectList(Dictionary<Object, int> referenceObjectsDictionary)
         {
             GUILayout.Label("Reference by: " + referenceObjectsDictionary.Count + " assets. (Last search duration: " + searchTimer.Elapsed + ")");
+
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-            foreach (var referenceObject in referenceObjectsDictionary)
+
+            foreach (var kvpair in referenceObjectsDictionary)
             {
-                var referencingObject = referenceObject.Key;
-                var referenceCount = referenceObject.Value;
+                Object referencingObject = kvpair.Key;
+                int referenceCount = kvpair.Value;
                 EditorGUILayout.ObjectField(referencingObject.name + " (" + referenceCount + ")", referencingObject, typeof(Object), false);
             }
+
             EditorGUILayout.EndScrollView();
         }
 
         private void DisplayMainMenu()
         {
             EditorGUILayout.BeginHorizontal();
+
             searchedObject = EditorGUILayout.ObjectField(searchedObject != null ? searchedObject.name : "Drag & Drop Asset", searchedObject, typeof(Object), false);
             if (GUILayout.Button("Get GUID") && searchedObject != null)
             {
-                var pathToAsset = AssetDatabase.GetAssetPath(searchedObject);
+                string pathToAsset = AssetDatabase.GetAssetPath(searchedObject);
                 guidToFind = AssetDatabase.AssetPathToGUID(pathToAsset);
             }
+
             EditorGUILayout.EndHorizontal();
 
-            var newGuidToFind = EditorGUILayout.TextField("GUID", guidToFind);
+            string newGuidToFind = EditorGUILayout.TextField("GUID", guidToFind);
             if (!guidToFind.Equals(newGuidToFind))
+            {
                 guidToFind = newGuidToFind;
+            }
 
             if (referenceObjects != null && referenceObjects.Count > 0)
             {
-                var newReplacementGuid = EditorGUILayout.TextField("Replacement", replacementGuid);
+                string newReplacementGuid = EditorGUILayout.TextField("Replacement", replacementGuid);
                 if (!replacementGuid.Equals(newReplacementGuid))
+                {
                     replacementGuid = newReplacementGuid;
+                }
             }
         }
     }
