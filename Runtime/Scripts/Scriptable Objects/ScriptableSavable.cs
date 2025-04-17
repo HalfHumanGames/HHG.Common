@@ -10,6 +10,8 @@ namespace HHG.Common.Runtime
         public System.DateTime LastSaved => lastSaved.Value;
         public string CurrentFileName => currentFileName;
 
+        public virtual string DefaultFileName => nameof(ScriptableSavable);
+
         [SerializeReference, SubclassSelector] private IIO io = new FileIO();
         [SerializeReference, SubclassSelector] private ISerializer serializer = new JsonSerializer();
 
@@ -31,6 +33,11 @@ namespace HHG.Common.Runtime
 
         public event System.Action Updated;
 
+        private void Awake()
+        {
+            currentFileName = DefaultFileName;
+        }
+
         public virtual void Reset() { }
 
         protected virtual void OnUpdated() { }
@@ -43,10 +50,19 @@ namespace HHG.Common.Runtime
             lastSaved.Value = System.DateTime.UtcNow;
         }
 
-        public void LoadLastSaved(params string[] fileNames)
+        public bool LoadLastSaved(params string[] fileNames)
         {
             string path = GetLastSavedFileName(fileNames);
-            Load(path);
+            
+            if (!string.IsNullOrEmpty(path))
+            {
+                Load(path);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void Load(string fileName)
@@ -126,6 +142,11 @@ namespace HHG.Common.Runtime
         {
             value = newValue;
             OnUpdated();
+            InvokeUpdated();
+        }
+
+        protected void InvokeUpdated()
+        {
             Updated?.Invoke();
         }
 
