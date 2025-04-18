@@ -128,6 +128,9 @@ namespace HHG.Common.Runtime
                 return;
             }
 
+            // In case length is less than columns
+            columns = Mathf.Min(length, columns);
+
             for (int i = 0; i < length; i++)
             {
                 Selectable selectable = selectables.ElementAt(i);
