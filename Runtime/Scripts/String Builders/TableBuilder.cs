@@ -13,18 +13,28 @@ namespace HHG.Common.Runtime
         private readonly int[] widths;
         private readonly Align[] alignments;
 
-        public enum Align { Left, Right }
+        private enum Align { Left, Center, Right }
 
-        public TableBuilder(params int[] widths) : this(widths, null)
+        public TableBuilder(params int[] columns)
         {
-            
+            widths = columns;
+            alignments = new Align[columns.Length];
+            Array.Fill(alignments, Align.Left);
         }
 
-        public TableBuilder(int[] widths, Align[] alignments = null)
+        public TableBuilder(params string[] columns)
         {
-            this.widths = widths;
-            this.alignments = alignments ?? GetDefaultAlignments(widths.Length);
+            widths = new int[columns.Length];
+            alignments = new Align[columns.Length];
+
+            for (int i = 0; i < columns.Length; i++)
+            {
+                widths[i] = int.Parse(Regex.Match(columns[i], @"^\d+").Value);
+                alignments[i] = ParseAlignment(Regex.Match(columns[i], @"[LCR]").Value);
+            }
         }
+
+        public void AppendRow() => AppendRow(string.Empty);
 
         public void AppendRow(params object[] row) => AppendRow((IEnumerable<object>)row);
 
@@ -48,15 +58,24 @@ namespace HHG.Common.Runtime
                 int visualLength = GetLength(cell);
                 int padding = Math.Max(0, width - visualLength);
 
-                if (alignments[i] == Align.Right)
+                switch (alignments[i])
                 {
-                    sb.Append(' ', padding);
-                    sb.Append(cell);
-                }
-                else
-                {
-                    sb.Append(cell);
-                    sb.Append(' ', padding);
+                    case Align.Left:
+                    default:
+                        sb.Append(cell);
+                        sb.Append(' ', padding);
+                        break;
+                    case Align.Center:
+                        int padLeft = padding / 2;
+                        int padRight = padding - padLeft;
+                        sb.Append(' ', padLeft);
+                        sb.Append(cell);
+                        sb.Append(' ', padRight);
+                        break;
+                    case Align.Right:
+                        sb.Append(' ', padding);
+                        sb.Append(cell);
+                        break;
                 }
 
                 i++;
@@ -65,13 +84,16 @@ namespace HHG.Common.Runtime
 
         private int GetLength(string str) => richTextRegex.Replace(str, "").Length;
 
-        private static Align[] GetDefaultAlignments(int count)
+        private Align ParseAlignment(string alignment)
         {
-            Align[] alignments = new Align[count];
-            Array.Fill(alignments, Align.Left, 0, count);
-            return alignments;
+            return alignment switch
+            {
+                "L" => Align.Left,
+                "C" => Align.Center,
+                "R" => Align.Right,
+                _ => Align.Left
+            };
         }
-
         public void Clear() => sb.Clear();
 
         public override string ToString() => sb.ToString();
