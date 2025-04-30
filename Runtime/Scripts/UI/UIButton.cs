@@ -25,18 +25,17 @@ namespace HHG.Common.Runtime
             label = GetComponentInChildren<TMP_Text>(true);
             button = GetComponent<Button>();
             eventTrigger = GetComponent<EventTrigger>();
-
             button.onClick.AddListener(OnButtonClick);
         }
 
         private void OnButtonClick()
         {
-            onClick.Invoke(this);
-
             if (singleUse)
             {
                 button.interactable = false;
             }
+
+            onClick.Invoke(this);
         }
     }
 }
