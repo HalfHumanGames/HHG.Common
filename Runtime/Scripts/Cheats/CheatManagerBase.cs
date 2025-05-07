@@ -11,13 +11,40 @@ namespace HHG.Common.Runtime
     {
         private const Key toggleCheatsKey = Key.F12;
 
+        private static readonly Key[] modifierKeys = new Key[]
+        {
+            Key.LeftShift,
+            Key.RightShift,
+            Key.LeftCtrl,
+            Key.RightCtrl,
+            Key.LeftAlt,
+            Key.RightAlt
+        };
+
         [SerializeField] private bool logsEnabled;
 
-        private Dictionary<Key, (Action Action, string Description, string MethodName)> cheats = new();
+        private Dictionary<Key, Cheat> cheats = new Dictionary<Key, Cheat>();
         private bool cheatsEnabled = false;
+
+        private struct Cheat
+        {
+            public Action Action;
+            public string Description;
+            public string MethodName;
+
+            public Cheat(Action action, string description, string methodName)
+            {
+                Action = action;
+                Description = description;
+                MethodName = methodName;
+            }
+        }
 
         protected virtual void Awake()
         {
+            // Enabled cheats by default for the editor and debug builds
+            cheatsEnabled = Application.isEditor || Debug.isDebugBuild;
+
             RegisterCheats();
         }
 
@@ -30,7 +57,7 @@ namespace HHG.Common.Runtime
                 CheatAttribute attribute = method.GetCustomAttribute<CheatAttribute>();
                 if (attribute != null)
                 {
-                    cheats[attribute.Key] =
+                    cheats[attribute.Key] = new Cheat
                     (
                         (Action)Delegate.CreateDelegate(typeof(Action), this, method),
                         attribute.Description,
@@ -54,13 +81,23 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            foreach (var cheat in cheats)
-            {
-                if (Keyboard.current[cheat.Key].wasPressedThisFrame)
-                {
-                    cheat.Value.Action.Invoke();
+            bool modifier = modifierKeys.Any(key => Keyboard.current[key].isPressed);
 
-                    Log($"Cheat activated: {cheat.Value.MethodName.ToNicified()} ({cheat.Key})");
+            if (!modifier)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<Key, Cheat> kvpair in cheats)
+            {
+                Key key = kvpair.Key;
+                Cheat cheat = kvpair.Value;
+
+                if (Keyboard.current[key].wasPressedThisFrame)
+                {
+                    cheat.Action.Invoke();
+
+                    Log($"Cheat activated: {cheat.MethodName.ToNicified()} ({key})");
                 }
             }
         }
