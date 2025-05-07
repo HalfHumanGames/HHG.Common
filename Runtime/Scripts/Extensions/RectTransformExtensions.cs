@@ -8,6 +8,19 @@ namespace HHG.Common.Runtime
     {
         private static HashSet<RectTransform> rebuildLayoutRects = new HashSet<RectTransform>();
 
+        public static void SetToWorldPosition(this RectTransform rectTransform, Vector3 worldPosition)
+        {
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPosition);
+            Canvas canvas = rectTransform.GetComponentInParent<Canvas>();
+            RectTransform canvasRect = canvas.transform as RectTransform;
+            Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, camera, out Vector2 localPoint))
+            {
+                rectTransform.position = canvasRect.TransformPoint(localPoint);
+            }
+        }
+
         public static void ResetAnchoredPos(this RectTransform rect)
         {
             rect.anchoredPosition = Vector2.zero;
@@ -177,12 +190,12 @@ namespace HHG.Common.Runtime
 
             public void LayoutComplete()
             {
-                
+
             }
 
             public void GraphicUpdateComplete()
             {
-                
+
             }
         }
     }

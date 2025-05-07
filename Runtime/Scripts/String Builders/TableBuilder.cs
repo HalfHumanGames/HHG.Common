@@ -34,6 +34,10 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public void Append(string text) => sb.Append(text);
+
+        public void AppendLine(string text = null) => sb.AppendLine(text);
+
         public void AppendRow() => AppendRow(string.Empty);
 
         public void AppendRow(params object[] row) => AppendRow((IEnumerable<object>)row);
