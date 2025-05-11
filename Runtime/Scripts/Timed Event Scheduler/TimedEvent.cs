@@ -13,8 +13,11 @@ namespace HHG.Common.Runtime
         protected object weakContext;
         protected float timeRemaining;
 
+        public event Action<TimedEvent, float> WeakSchedule;
+        public event Action<TimedEvent, float> WeakRescheduled;
+        public event Action<TimedEvent, float> WeakUpdate;
+        public event Action<TimedEvent> WeakUnscheduled;
         public event Action<TimedEvent> WeakExpired;
-        public event Action<TimedEvent> WeakRescheduled;
 
         public TimedEvent()
         {
@@ -30,13 +33,23 @@ namespace HHG.Common.Runtime
         {
             timeRemaining = duration;
             weakContext = ctx;
-            WeakExpired = null;
+            WeakSchedule = null;
             WeakRescheduled = null;
+            WeakUpdate = null;
+            WeakUnscheduled = null;
+            WeakExpired = null;
+        }
+
+        public void Schedule(float duration)
+        {
+            OnSchedule(duration);
         }
 
         public void Update(float timeElapsed)
         {
             timeRemaining -= timeElapsed;
+
+            OnUpdate(timeElapsed);
 
             if (timeRemaining < 0f)
             {
@@ -49,8 +62,13 @@ namespace HHG.Common.Runtime
             if (timeRemaining != duration)
             {
                 timeRemaining = duration;
-                OnReschedule();
+                OnReschedule(duration);
             }
+        }
+
+        public void Unschedule()
+        {
+            OnUnschedule();
         }
 
         public void Expire()
@@ -68,14 +86,54 @@ namespace HHG.Common.Runtime
             return $"TimedEvent: {timeRemaining:0.00}s - {weakContext}";
         }
 
-        protected virtual void OnReschedule()
+        protected virtual void OnSchedule(float duration)
         {
-            WeakRescheduled?.Invoke(this);
+            WeakSchedule?.Invoke(this, duration);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventScheduled(this, duration);
+            }
+        }
+
+        protected virtual void OnReschedule(float duration)
+        {
+            WeakRescheduled?.Invoke(this, duration);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventRescheduled(this, duration);
+            }
+        }
+
+        protected virtual void OnUpdate(float timeElapsed)
+        {
+            WeakUpdate?.Invoke(this, timeElapsed);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventUpdate(this, timeElapsed);
+            }
+        }
+
+        protected virtual void OnUnschedule()
+        {
+            WeakUnscheduled?.Invoke(this);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventUnscheduled(this);
+            }
         }
 
         protected virtual void OnExpire()
         {
             WeakExpired?.Invoke(this);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventExpired(this);
+            }
         }
     }
 
@@ -85,8 +143,11 @@ namespace HHG.Common.Runtime
 
         private T context;
 
+        public event Action<TimedEvent<T>, float> Scheduled;
+        public event Action<TimedEvent<T>, float> Rescheduled;
+        public event Action<TimedEvent<T>, float> Updated;
+        public event Action<TimedEvent<T>> Unscheduled;
         public event Action<TimedEvent<T>> Expired;
-        public event Action<TimedEvent<T>> Rescheduled;
 
         public TimedEvent()
         {
@@ -101,8 +162,11 @@ namespace HHG.Common.Runtime
         public void Initialize(float duration = 0f, T ctx = default)
         {
             context = ctx;
-            Expired = null;
+            Scheduled = null;
             Rescheduled = null;
+            Updated = null;
+            Unscheduled = null;
+            Expired = null;
             base.Initialize(duration, ctx);
         }
 
@@ -122,16 +186,59 @@ namespace HHG.Common.Runtime
             }
         }
 
-        protected override void OnReschedule()
+        protected override void OnSchedule(float duration)
         {
-            base.OnReschedule();
-            Rescheduled?.Invoke(this);
+            base.OnSchedule(duration);
+            Scheduled?.Invoke(this, duration);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventScheduled(this, duration);
+            }
+        }
+
+        protected override void OnReschedule(float duration)
+        {
+            base.OnReschedule(duration);
+            Rescheduled?.Invoke(this, duration);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventRescheduled(this, duration);
+            }
+        }
+
+        protected override void OnUpdate(float timeElapsed)
+        {
+            base.OnUpdate(timeElapsed);
+            Updated?.Invoke(this, timeElapsed);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventUpdate(this, timeElapsed);
+            }
+        }
+
+        protected override void OnUnschedule()
+        {
+            base.OnUnschedule();
+            Unscheduled?.Invoke(this);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventUnscheduled(this);
+            }
         }
 
         protected override void OnExpire()
         {
             base.OnExpire();
             Expired?.Invoke(this);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventExpired(this);
+            }
         }
     }
 

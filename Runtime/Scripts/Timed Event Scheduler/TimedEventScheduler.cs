@@ -13,10 +13,14 @@ namespace HHG.Common.Runtime
         private List<TimedEvent> scheduledEvents = new List<TimedEvent>();
         private List<TimedEvent> expiredEvents = new List<TimedEvent>();
 
+        public bool IsScheduled(TimedEvent timedEvent) => scheduledEventsHash.Contains(timedEvent);
+        public bool IsExpired(TimedEvent timedEvent) => expiredEventsHash.Contains(timedEvent);
+
         public void Schedule(TimedEvent timedEvent)
         {
             if (!scheduledEventsHash.Contains(timedEvent))
             {
+                timedEvent.Schedule(timedEvent.TimeRemaining);
                 timedEvent.WeakRescheduled += OnRescheduled;
                 scheduledEvents.SortedInsert(timedEvent);
                 scheduledEventsHash.Add(timedEvent);
@@ -27,14 +31,12 @@ namespace HHG.Common.Runtime
         {
             if (scheduledEventsHash.Contains(timedEvent))
             {
+                timedEvent.Unschedule();
                 timedEvent.WeakRescheduled -= OnRescheduled;
                 scheduledEvents.Remove(timedEvent);
                 scheduledEventsHash.Remove(timedEvent);
             }
         }
-
-        public bool IsScheduled(TimedEvent timedEvent) => scheduledEventsHash.Contains(timedEvent);
-        public bool IsExpired(TimedEvent timedEvent) => expiredEventsHash.Contains(timedEvent);
 
         public void Update(float deltaTime)
         {
@@ -113,7 +115,7 @@ namespace HHG.Common.Runtime
             return sb.ToString();
         }
 
-        private void OnRescheduled(TimedEvent timedEvent)
+        private void OnRescheduled(TimedEvent timedEvent, float duration)
         {
             scheduledEvents.ResortItem(timedEvent);
         }
