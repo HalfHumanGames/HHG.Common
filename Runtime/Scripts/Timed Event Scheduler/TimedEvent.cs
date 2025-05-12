@@ -112,7 +112,7 @@ namespace HHG.Common.Runtime
 
             if (weakContext is ITimedEventListener listener)
             {
-                listener.OnTimedEventUpdate(this, timeElapsed);
+                listener.OnTimedEventUpdated(this, timeElapsed);
             }
         }
 
@@ -215,7 +215,7 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventUpdate(this, timeElapsed);
+                listener.OnTimedEventUpdated(this, timeElapsed);
             }
         }
 
