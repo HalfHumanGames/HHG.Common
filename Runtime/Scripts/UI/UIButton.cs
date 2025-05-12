@@ -8,31 +8,28 @@ namespace HHG.Common.Runtime
     [RequireComponent(typeof(Button))]
     public class UIButton : MonoBehaviour
     {
-        public TMP_Text Label => label;
-        public Button Button => button;
-        public EventTrigger EventTrigger => eventTrigger;
+        public TMP_Text Label => label.FromComponentInChildren(this, true);
+        public Button Button => button.FromComponent(this);
+        public EventTrigger EventTrigger => eventTrigger.FromComponent(this);
         public ActionEvent<UIButton> OnClick => onClick;
 
         [SerializeField] private bool singleUse;
         [SerializeField] private ActionEvent<UIButton> onClick = new ActionEvent<UIButton>();
 
-        private TMP_Text label;
-        private Button button;
-        private EventTrigger eventTrigger;
+        private Lazy<TMP_Text> label = new Lazy<TMP_Text>();
+        private Lazy<Button> button = new Lazy<Button>();
+        private Lazy<EventTrigger> eventTrigger = new Lazy<EventTrigger>();
 
         private void Awake()
         {
-            label = GetComponentInChildren<TMP_Text>(true);
-            button = GetComponent<Button>();
-            eventTrigger = GetComponent<EventTrigger>();
-            button.onClick.AddListener(OnButtonClick);
+            Button.onClick.AddListener(OnButtonClick);
         }
 
         private void OnButtonClick()
         {
             if (singleUse)
             {
-                button.interactable = false;
+                Button.interactable = false;
             }
 
             onClick.Invoke(this);
