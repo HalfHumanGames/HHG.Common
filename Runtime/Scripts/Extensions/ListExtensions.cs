@@ -8,6 +8,11 @@ namespace HHG.Common.Runtime
     {
         private static System.Random random = new System.Random();
 
+        public static T GetRandom<T>(this List<T> list)
+        {
+            return list[random.Next(0, list.Count)];
+        }
+
         public static void Remove<T>(this IList<T> list, System.Func<T, bool> func)
         {
             for (int i = 0; i < list.Count; i++)
