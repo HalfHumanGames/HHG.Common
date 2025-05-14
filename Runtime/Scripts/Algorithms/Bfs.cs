@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -18,7 +19,7 @@ namespace HHG.Common.Runtime
             new Vector3Int(-1, -1, 0)
         };
 
-        public static void Fill(Vector3Int start, float range, HashSet<Vector3Int> obstacles, HashSet<Vector3Int> fill)
+        public static void Fill(Vector3Int start, float range, ICollection<Vector3Int> obstacles, ICollection<Vector3Int> fill)
         {
             if (obstacles == null)
             {
