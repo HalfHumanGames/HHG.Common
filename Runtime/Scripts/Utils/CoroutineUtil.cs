@@ -11,7 +11,6 @@ namespace HHG.Common.Runtime
     {
         private class EmptyMonoBehaviour : MonoBehaviour { }
 
-        private static MonoBehaviour coroutiner;
         public static MonoBehaviour Coroutiner
         {
             get
@@ -33,6 +32,9 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public static Coroutine Empty => StartCoroutine(YieldBreak());
+
+        private static MonoBehaviour coroutiner;
         private static bool isQuitting;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -59,6 +61,11 @@ namespace HHG.Common.Runtime
         {
             // Don't create if doesn't exist
             coroutiner?.StopAllCoroutines();
+        }
+
+        private static IEnumerator YieldBreak()
+        {
+            yield break;
         }
 
         public static Coroutine StartCoroutine(IEnumerator enumerator)
