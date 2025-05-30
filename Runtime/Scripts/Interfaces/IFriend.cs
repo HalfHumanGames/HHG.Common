@@ -2,16 +2,23 @@ namespace Dungeonspire
 {
     public interface IFriend<T> where T : class
     {
-        private Friendship friendship { get => default; }
+        public Friendship Friendship { get; }
 
         public bool IsFriendOf(T subject)
         {
-            return friendship.Friend == subject;
+            return Friendship.Friend == subject;
         }
 
-        public void SetFriendField<TProperty>(T subject, ref TProperty property, TProperty value)
+        public void Invoke(T subject, System.Action action)
         {
-            property = IsFriendOf(subject) ? value : throw new System.InvalidOperationException($"Cannot set field since not a friend.");
+            if (IsFriendOf(subject))
+            {
+                action?.Invoke();
+            }
+            else
+            {
+                throw new System.InvalidOperationException($"Cannot invoke since not a friend.");
+            }
         }
     }
 
