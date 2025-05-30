@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace HHG.Common.Runtime
 {
-    public class Bfs
+    public class BreadthFirstSearch
     {
         private static readonly Vector3Int[] directions = new Vector3Int[]
         {

@@ -110,7 +110,7 @@ namespace HHG.Common.Runtime
             StringBuilder sb = new StringBuilder("TimedEventScheduler");
             foreach (TimedEvent timedEvent in scheduledEvents)
             {
-                sb.AppendLine($" • {timedEvent.ToString()}");
+                sb.AppendLine($" - {timedEvent}");
             }
             return sb.ToString();
         }
