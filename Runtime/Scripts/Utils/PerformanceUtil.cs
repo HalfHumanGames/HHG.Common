@@ -4,31 +4,37 @@ namespace HHG.Common.Runtime
 {
     public static class PerformanceUtil
     {
-        private static string label;
+        private static string label = string.Empty;
+        private static int maxMS = int.MaxValue;
         private static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
-        public static void MeasureDuration(string label, System.Action action)
+        public static void MeasureDuration(string label, System.Action action, int maxMS = int.MaxValue)
         {
+            PerformanceUtil.label = label;
+            PerformanceUtil.maxMS = maxMS;
             sw.Restart();
             action();
             sw.Stop();
-            Debug.Log($"{label}: {sw.ElapsedMilliseconds}ms");
+            Log(sw.ElapsedMilliseconds);
         }
 
-        public static void MeasureDurationStart(string label)
+        public static void MeasureDurationStart(string label, int maxMS = int.MaxValue)
         {
             PerformanceUtil.label = label;
+            PerformanceUtil.maxMS = maxMS;
             sw.Restart();
         }
 
         public static void MeasureDurationStop()
         {
             sw.Stop();
-            Debug.Log($"{label}: {sw.ElapsedMilliseconds}ms");
+            Log(sw.ElapsedMilliseconds);
         }
 
-        public static void MeasureAverageDuration(string label, System.Action action, int iterations = 1)
+        public static void MeasureAverageDuration(string label, System.Action action, int iterations = 1, int maxMS = int.MaxValue)
         {
+            PerformanceUtil.label = label;
+            PerformanceUtil.maxMS = maxMS;
             long sum = 0;
             for (int i = 0; i < iterations; i++) {
                 sw.Restart();
@@ -37,7 +43,20 @@ namespace HHG.Common.Runtime
                 sum += sw.ElapsedMilliseconds;
             }
             long avg = sum / iterations;
-            Debug.Log($"{label}: {avg}ms");
+            Log(avg);
+        }
+
+        private static void Log(long ms)
+        {
+            string message = $"{label}: {ms}ms";
+            if (ms >= maxMS)
+            {
+                Debug.LogError(message);
+            }
+            else
+            {
+                Debug.Log(message);
+            }
         }
     }
 }
