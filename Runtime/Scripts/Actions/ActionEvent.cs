@@ -63,6 +63,10 @@ namespace HHG.Common.Runtime
         private event System.Action<TInvoker> invoked2;
         private event System.Action<TInvoker, TContext> invoked3;
 
+        private event System.Func<IEnumerator> coroutine1;
+        private event System.Func<TInvoker, IEnumerator> coroutine2;
+        private event System.Func<TInvoker, TContext, IEnumerator> coroutine3;
+
         public ActionEvent()
         {
 
@@ -83,6 +87,21 @@ namespace HHG.Common.Runtime
             invoked3 += action;
         }
 
+        public ActionEvent(System.Func<IEnumerator> func)
+        {
+            coroutine1 += func;
+        }
+
+        public ActionEvent(System.Func<TInvoker, IEnumerator> func)
+        {
+            coroutine2 += func;
+        }
+
+        public ActionEvent(System.Func<TInvoker, TContext, IEnumerator> func)
+        {
+            coroutine3 += func;
+        }
+
         public Coroutine Invoke(TInvoker invoker, TContext context = default)
         {
             return invoker.StartCoroutine(InvokeAsync(invoker, context));
@@ -93,6 +112,10 @@ namespace HHG.Common.Runtime
             invoked1?.Invoke();
             invoked2?.Invoke(invoker);
             invoked3?.Invoke(invoker, context);
+
+            if (coroutine1 != null) yield return coroutine1();
+            if (coroutine2 != null) yield return coroutine2(invoker);
+            if (coroutine3 != null) yield return coroutine3(invoker, context);
 
             foreach (IActionBase action in actions)
             {
@@ -122,6 +145,21 @@ namespace HHG.Common.Runtime
             invoked3 += action;
         }
 
+        public void AddListener(System.Func<IEnumerator> func)
+        {
+            coroutine1 += func;
+        }
+
+        public void AddListener(System.Func<TInvoker, IEnumerator> func)
+        {
+            coroutine2 += func;
+        }
+
+        public void AddListener(System.Func<TInvoker, TContext, IEnumerator> func)
+        {
+            coroutine3 += func;
+        }
+
         public void RemoveListener(System.Action action)
         {
             invoked1 -= action;
@@ -137,12 +175,30 @@ namespace HHG.Common.Runtime
             invoked3 -= action;
         }
 
+        public void RemoveListener(System.Func<IEnumerator> func)
+        {
+            coroutine1 -= func;
+        }
+
+        public void RemoveListener(System.Func<TInvoker, IEnumerator> func)
+        {
+            coroutine2 -= func;
+        }
+
+        public void RemoveListener(System.Func<TInvoker, TContext, IEnumerator> func)
+        {
+            coroutine3 -= func;
+        }
+
         public void RemoveAllListeners()
         {
             actions.Clear();
             invoked1 = null;
             invoked2 = null;
             invoked3 = null;
+            coroutine1 = null;
+            coroutine2 = null;
+            coroutine3 = null;
         }
     }
 }
