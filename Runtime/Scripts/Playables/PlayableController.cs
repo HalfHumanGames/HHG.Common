@@ -10,21 +10,21 @@ namespace HHG.Common.Runtime
         private Playable _playable;
         private Playable playable => _playable ??= Playable.Create(gameObject);
 
-        public void PlayAt(Vector3 position)
+        public CustomYieldInstruction PlayAt(Vector3 position)
         {
             transform.position = position;
-            Play();
+            return Play();
         }
 
         [ContextMenu("Play Repeatedly")]
-        public void PlayRepeatedly()
+        public Coroutine PlayRepeatedly()
         {
-            PlayRepeatedly(repeatInterval);
+            return PlayRepeatedly(repeatInterval);
         }
 
-        public void PlayRepeatedly(float interval)
+        public Coroutine PlayRepeatedly(float interval)
         {
-            StartCoroutine(PlayRepeatedlyAsync(interval));
+            return StartCoroutine(PlayRepeatedlyAsync(interval));
         }
 
         private IEnumerator PlayRepeatedlyAsync(float interval)
@@ -37,9 +37,9 @@ namespace HHG.Common.Runtime
         }
 
         [ContextMenu("Play")]
-        public void Play()
+        public CustomYieldInstruction Play()
         {
-            playable.Play();
+            return playable.Play();
         }
 
         [ContextMenu("Stop")]
@@ -55,9 +55,9 @@ namespace HHG.Common.Runtime
         }
 
         [ContextMenu("Resume")]
-        public void Resume()
+        public CustomYieldInstruction Resume()
         {
-            playable.Resume();
+            return playable.Resume();
         }
     }
 }

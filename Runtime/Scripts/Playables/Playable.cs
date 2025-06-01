@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public partial class Playable
+    public partial class Playable : CustomYieldInstruction
     {
+        public override bool keepWaiting => IsPlaying;
+
+        public bool IsPlaying => isPlaying?.Invoke() == true || children.Any(c => c.IsPlaying);
+
         private readonly Action play;
         private readonly Action stop;
         private readonly Action pause;
         private readonly Action resume;
+        private readonly Func<bool> isPlaying;
         private readonly List<Playable> children = new List<Playable>();
 
         public event Action Played;
@@ -21,15 +28,21 @@ namespace HHG.Common.Runtime
 
         }
 
-        public Playable(Action play, Action stop = null, Action pause = null, Action resume = null)
+        public Playable(
+            Action play, 
+            Action stop = null, 
+            Action pause = null, 
+            Action resume = null, 
+            Func<bool> isPlaying = null)
         {
             this.play = play;
             this.stop = stop;
             this.pause = pause;
             this.resume = resume;
+            this.isPlaying = isPlaying;
         }
 
-        public void Play()
+        public CustomYieldInstruction Play()
         {
             play?.Invoke();
             Played?.Invoke();
@@ -38,6 +51,8 @@ namespace HHG.Common.Runtime
             {
                 child.Play();
             }
+
+            return this;
         }
 
         public void Stop()
@@ -62,7 +77,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void Resume()
+        public CustomYieldInstruction Resume()
         {
             resume?.Invoke();
             Resumed?.Invoke();
@@ -71,6 +86,8 @@ namespace HHG.Common.Runtime
             {
                 child.Resume();
             }
+
+            return this;
         }
 
         public void Add(Playable child)
