@@ -439,6 +439,7 @@ namespace HHG.Common.Runtime
 
         #region Helper Methods
 
+        // ObjectPool.Release will fail if call StopCoroutine on the invoker
         private static Invoker GetInvokerFromObjectPool(this MonoBehaviour mono)
         {
             Invoker invoker = ObjectPool.Get<Invoker>();
@@ -446,6 +447,7 @@ namespace HHG.Common.Runtime
             return invoker;
         }
 
+        // ObjectPool.Release will fail if call StopCoroutine on the invoker
         private static Invoker<T> GetInvokerFromObjectPool<T>(this MonoBehaviour mono)
         {
             Invoker<T> invoker = ObjectPool.Get<Invoker<T>>();

@@ -20,9 +20,10 @@ namespace HHG.Common.Runtime
 
             while (true)
             {
-                if (obstacles.Contains(new Vector3Int(x0, y0))) return false;
-
                 if (x0 == x1 && y0 == y1) break;
+
+                // Check obstacled after check current location
+                if (obstacles.Contains(new Vector3Int(x0, y0))) return false;
 
                 int e2 = 2 * err;
                 if (e2 >= dy)
