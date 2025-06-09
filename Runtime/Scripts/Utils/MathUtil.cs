@@ -55,6 +55,15 @@ namespace HHG.Common.Runtime
             return x * x + y * y;
         }
 
+        public static float GridDistance(Vector2Int a, Vector2Int b, float cardinalCost = 1f, float diagonalCost = 1.5f)
+        {
+            int dx = Mathf.Abs(a.x - b.x);
+            int dy = Mathf.Abs(a.y - b.y);
+            int diagonalSteps = Mathf.Min(dx, dy);
+            int straightSteps = Mathf.Abs(dx - dy);
+            return diagonalSteps * diagonalCost + straightSteps * cardinalCost;
+        }
+
         public static float ManhattanDistance(Vector3Int a, Vector3Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
@@ -70,6 +79,15 @@ namespace HHG.Common.Runtime
             int x = a.x - b.x;
             int y = a.y - b.y;
             return x * x + y * y;
+        }
+
+        public static float GridDistance(Vector3Int a, Vector3Int b, float cardinalCost = 1f, float diagonalCost = 1.5f)
+        {
+            int dx = Mathf.Abs(a.x - b.x);
+            int dy = Mathf.Abs(a.y - b.y);
+            int diagonalSteps = Mathf.Min(dx, dy);
+            int straightSteps = Mathf.Abs(dx - dy);
+            return diagonalSteps * diagonalCost + straightSteps * cardinalCost;
         }
 
         public static int RoundToMultiple(int value, int multiple)
