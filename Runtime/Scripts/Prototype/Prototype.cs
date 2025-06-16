@@ -33,7 +33,7 @@ namespace HHG.Common.Runtime
                 pool.Clear();
             }
             
-            if (original != null)
+            if (original != null && original.pool != null)
             {
                 // It does not matter if removal
                 // succeeds or not, it is faster
