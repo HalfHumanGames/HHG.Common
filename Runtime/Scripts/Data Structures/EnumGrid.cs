@@ -7,7 +7,7 @@ namespace HHG.Common.Runtime
 {
     public abstract class EnumGrid<T> : IEnumerable<Vector3Int> where T : Enum
     {
-        public bool IsValid => grid != null;
+        public bool IsValid => sprite != null;
 
         public T this[Vector3Int position]
         {
