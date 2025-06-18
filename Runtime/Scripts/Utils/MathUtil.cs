@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -64,6 +65,34 @@ namespace HHG.Common.Runtime
             return diagonalSteps * diagonalCost + straightSteps * cardinalCost;
         }
 
+        public static float GridPathDistance(IEnumerable<Vector2Int> path, float cardinalCost = 1f, float diagonalCost = 1.5f)
+        {
+            using var enumerator = path.GetEnumerator();
+
+            if (!enumerator.MoveNext()) return 0f;
+
+            Vector2Int prev = enumerator.Current;
+            float distance = 0f;
+
+            while (enumerator.MoveNext())
+            {
+                Vector2Int curr = enumerator.Current;
+
+                int dx = Mathf.Abs(curr.x - prev.x);
+                int dy = Mathf.Abs(curr.y - prev.y);
+
+                int changes = 0;
+                if (dx != 0) changes++;
+                if (dy != 0) changes++;
+
+                distance += (changes == 1) ? cardinalCost : diagonalCost;
+
+                prev = curr;
+            }
+
+            return distance;
+        }
+
         public static float ManhattanDistance(Vector3Int a, Vector3Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
@@ -88,6 +117,36 @@ namespace HHG.Common.Runtime
             int diagonalSteps = Mathf.Min(dx, dy);
             int straightSteps = Mathf.Abs(dx - dy);
             return diagonalSteps * diagonalCost + straightSteps * cardinalCost;
+        }
+
+        public static float GridPathDistance(IEnumerable<Vector3Int> path, float cardinalCost = 1f, float diagonalCost = 1.5f)
+        {
+            using var enumerator = path.GetEnumerator();
+
+            if (!enumerator.MoveNext()) return 0f;
+
+            Vector3Int prev = enumerator.Current;
+            float distance = 0f;
+
+            while (enumerator.MoveNext())
+            {
+                Vector3Int curr = enumerator.Current;
+
+                int dx = Mathf.Abs(curr.x - prev.x);
+                int dy = Mathf.Abs(curr.y - prev.y);
+                int dz = Mathf.Abs(curr.z - prev.z);
+
+                int changes = 0;
+                if (dx != 0) changes++;
+                if (dy != 0) changes++;
+                if (dz != 0) changes++;
+
+                distance += (changes == 1) ? cardinalCost : diagonalCost;
+
+                prev = curr;
+            }
+
+            return distance;
         }
 
         public static int RoundToMultiple(int value, int multiple)
