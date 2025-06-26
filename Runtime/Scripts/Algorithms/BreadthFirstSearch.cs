@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -6,63 +7,88 @@ namespace HHG.Common.Runtime
 {
     public class BreadthFirstSearch
     {
-        private static readonly Vector3Int[] directions = new Vector3Int[]
+        private static readonly Vector3Int[] cardinalDirections = new Vector3Int[]
         {
             new Vector3Int(1, 0, 0),
             new Vector3Int(-1, 0, 0),
             new Vector3Int(0, 1, 0),
             new Vector3Int(0, -1, 0),
+        };
+
+        private static readonly Vector3Int[] diagonalDirections = new Vector3Int[]
+        {
             new Vector3Int(1, 1, 0),
             new Vector3Int(-1, 1, 0),
             new Vector3Int(1, -1, 0),
             new Vector3Int(-1, -1, 0)
         };
 
-        public static void Fill(Vector3Int start, float range, ICollection<Vector3Int> obstacles, ICollection<Vector3Int> fill)
+        private struct Node
         {
-            if (obstacles == null)
-            {
-                throw new System.ArgumentNullException(nameof(obstacles));
-            }
+            public Vector3Int Position;
+            public float Cost;
 
-            if (fill == null)
+            public Node(Vector3Int position, float cost)
             {
-                throw new System.ArgumentNullException(nameof(fill));
+                Position = position;
+                Cost = cost;
             }
+        }
+
+        public static void Fill(
+            Vector3Int start,
+            float range,
+            ICollection<Vector3Int> obstacles,
+            ICollection<Vector3Int> fill,
+            bool useDiagonal = true,
+            float cardinalCost = 1f,
+            float diagonalCost = 1.5f,
+            Dictionary<Vector3Int, float> costMap = null)
+        {
+            if (obstacles == null) throw new System.ArgumentNullException(nameof(obstacles));
+            if (fill == null) throw new System.ArgumentNullException(nameof(fill));
 
             fill.Clear();
+            costMap?.Clear();
 
-            var queue = QueuePool<(Vector3Int position, float cost)>.Get();
+            var queue = QueuePool<Node>.Get();
             var visited = HashSetPool<Vector3Int>.Get();
 
-            queue.Enqueue((start, 0));
+            queue.Enqueue(new Node(start, 0));
             visited.Add(start);
+            costMap?.Add(start, 0f);
+
+            var directions = Enumerable.Empty<Vector3Int>().Concat(cardinalDirections);
+            if (useDiagonal) directions.Concat(diagonalDirections);
 
             while (queue.Count > 0)
             {
-                var (current, currentCost) = queue.Dequeue();
+                Node node = queue.Dequeue();
 
                 foreach (var direction in directions)
                 {
-                    var neighbor = current + direction;
+                    var neighbor = node.Position + direction;
+
                     if (visited.Contains(neighbor) || obstacles.Contains(neighbor))
                     {
                         continue;
                     }
 
-                    float additionalCost = (direction.x != 0 && direction.y != 0) ? 1.5f : 1f;
-                    float newCost = currentCost + additionalCost;
+                    bool isDiagonal = direction.x != 0 && direction.y != 0;
+                    float stepCost = isDiagonal ? diagonalCost : cardinalCost;
+                    float newCost = node.Cost + stepCost;
 
                     if (newCost <= range)
                     {
-                        queue.Enqueue((neighbor, newCost));
+                        queue.Enqueue(new Node(neighbor, newCost));
                         visited.Add(neighbor);
                         fill.Add(neighbor);
+                        costMap?.Add(neighbor, newCost);
                     }
                 }
             }
 
-            QueuePool<(Vector3Int position, float cost)>.Release(queue);
+            QueuePool<Node>.Release(queue);
             HashSetPool<Vector3Int>.Release(visited);
         }
     }
