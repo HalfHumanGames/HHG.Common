@@ -35,6 +35,11 @@ namespace HHG.Common.Runtime
             return Regex.Replace(s, "([A-Z])", " $1", RegexOptions.Compiled).ToTitleCase().Trim();
         }
 
+        public static string Format(this string s, params object[] args)
+        {
+            return string.Format(s, args);
+        }
+
         public static string Format(this string s, IDictionary<string, string> parameters)
         {
             foreach (KeyValuePair<string, string> kvpair in parameters)

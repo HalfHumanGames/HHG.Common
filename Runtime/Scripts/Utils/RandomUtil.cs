@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
     {
         public static bool Chance(float chance)
         {
-            return Random.Range(0f, 1f) < chance;
+            return Random.value < chance;
         }
 
         public static Vector3 InsideCircle(float min, float max)

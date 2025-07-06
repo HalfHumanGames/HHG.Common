@@ -2,6 +2,7 @@
     "name": "HHG.Common.Editor",
     "rootNamespace": "HHG.Common.Editor",
     "references": [
+        "GUID:1b845e2499b39be4aab3e6ac2c8aa02a",
         "GUID:8413476b1284ef74fa7300662f10cca9",
         "GUID:3a9781db4804a9945b9883f3a7c46d45",
         "GUID:613783dc1674e844b87788ea74ede0f6",
