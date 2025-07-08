@@ -10,11 +10,11 @@ namespace HHG.Common.Runtime
 {
     public class LinkSelectable : Selectable, ISubmitHandler, IPointerClickHandler, IPointerMoveHandler
     {
-        public ActionEvent<LinkSelectable, string> Clicked => clicked;
-        public ActionEvent<LinkSelectable, string> Highlighted => highlighted;
-        public ActionEvent<LinkSelectable, string> Unhighlighted => unhighlighted;
-        public ActionEvent<LinkSelectable, string> Selected => selected;
-        public ActionEvent<LinkSelectable, string> Deselected => deselected;
+        public ActionEvent<LinkSelectable, Link> Clicked => clicked;
+        public ActionEvent<LinkSelectable, Link> Highlighted => highlighted;
+        public ActionEvent<LinkSelectable, Link> Unhighlighted => unhighlighted;
+        public ActionEvent<LinkSelectable, Link> Selected => selected;
+        public ActionEvent<LinkSelectable, Link> Deselected => deselected;
 
         [Header("Styles")]
         [SerializeField] private string highlightedStyle = "<color=yellow>{0}</color>";
@@ -22,31 +22,31 @@ namespace HHG.Common.Runtime
 
         [Header("Events")]
         [SerializeField] private bool logEvents;
-        [SerializeField] private ActionEvent<LinkSelectable, string> clicked = new ActionEvent<LinkSelectable, string>();
-        [SerializeField] private ActionEvent<LinkSelectable, string> highlighted = new ActionEvent<LinkSelectable, string>();
-        [SerializeField] private ActionEvent<LinkSelectable, string> unhighlighted = new ActionEvent<LinkSelectable, string>();
-        [SerializeField] private ActionEvent<LinkSelectable, string> selected = new ActionEvent<LinkSelectable, string>();
-        [SerializeField] private ActionEvent<LinkSelectable, string> deselected = new ActionEvent<LinkSelectable, string>();
+        [SerializeField] private ActionEvent<LinkSelectable, Link> clicked = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private ActionEvent<LinkSelectable, Link> highlighted = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private ActionEvent<LinkSelectable, Link> unhighlighted = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private ActionEvent<LinkSelectable, Link> selected = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private ActionEvent<LinkSelectable, Link> deselected = new ActionEvent<LinkSelectable, Link>();
 
         private TMP_Text label;
-        private readonly List<LinkData> allLinks = new List<LinkData>();
-        private LinkData _highlightedLink = LinkData.Invalid;
-        private LinkData _selectedLink = LinkData.Invalid;
+        private readonly List<Link> allLinks = new List<Link>();
+        private Link _highlightedLink = Link.Invalid;
+        private Link _selectedLink = Link.Invalid;
         private string originalText;
 
-        private LinkData highlightedLink
+        private Link highlightedLink
         {
             get => _highlightedLink;
             set
             {
-                if (_highlightedLink.IsValid == value.IsValid && _highlightedLink.LinkID == value.LinkID)
+                if (_highlightedLink.IsValid == value.IsValid && _highlightedLink.Id == value.Id)
                 {
                     return;
                 }
 
                 if (_highlightedLink.IsValid)
                 {
-                    unhighlighted?.Invoke(this, _highlightedLink.LinkID);
+                    unhighlighted?.Invoke(this, _highlightedLink);
                 }
 
                 _highlightedLink = value;
@@ -54,24 +54,24 @@ namespace HHG.Common.Runtime
 
                 if (_highlightedLink.IsValid)
                 {
-                    highlighted?.Invoke(this, _highlightedLink.LinkID);
+                    highlighted?.Invoke(this, _highlightedLink);
                 }
             }
         }
 
-        private LinkData selectedLink
+        private Link selectedLink
         {
             get => _selectedLink;
             set
             {
-                if (_selectedLink.IsValid == value.IsValid && _selectedLink.LinkID == value.LinkID)
+                if (_selectedLink.IsValid == value.IsValid && _selectedLink.Id == value.Id)
                 {
                     return;
                 }
 
                 if (_selectedLink.IsValid)
                 {
-                    deselected?.Invoke(this, _selectedLink.LinkID);
+                    deselected?.Invoke(this, _selectedLink);
                 }
 
                 _selectedLink = value;
@@ -79,23 +79,9 @@ namespace HHG.Common.Runtime
 
                 if (_selectedLink.IsValid)
                 {
-                    selected?.Invoke(this, _selectedLink.LinkID);
+                    selected?.Invoke(this, _selectedLink);
                 }
             }
-        }
-
-        private struct LinkData
-        {
-            public static readonly LinkData Invalid = new() { LinkIndex = -1 };
-            public bool IsValid => LinkIndex >= 0;
-            public int LinkIndex;
-            public string LinkID;
-            public string LinkText;
-            public Vector2 Center;
-            public int LineNumber;
-            public int Start;
-            public int End;
-            public int Length;
         }
 
         protected override void Awake()
@@ -147,7 +133,7 @@ namespace HHG.Common.Runtime
         {
             base.OnSelect(eventData);
             DoStateTransition(SelectionState.Selected, false);
-            selected?.Invoke(this, selectedLink.LinkID);
+            selected?.Invoke(this, selectedLink);
             ApplyStyles();
         }
 
@@ -155,11 +141,11 @@ namespace HHG.Common.Runtime
         {
             base.OnDeselect(eventData);
             DoStateTransition(SelectionState.Normal, false);
-            deselected?.Invoke(this, selectedLink.LinkID);
+            deselected?.Invoke(this, selectedLink);
             RemoveStyles();
 
             // Also clear unhighlighted link
-            highlightedLink = LinkData.Invalid;
+            highlightedLink = Link.Invalid;
         }
 
         public override void OnMove(AxisEventData eventData)
@@ -191,25 +177,25 @@ namespace HHG.Common.Runtime
             if (selectedLink.IsValid)
             {
                 DoStateTransition(SelectionState.Pressed, false);
-                clicked?.Invoke(this, selectedLink.LinkID);
+                clicked?.Invoke(this, selectedLink);
             }
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (TryFindIntersectingLink(out LinkData link))
+            if (TryFindIntersectingLink(out Link link))
             {
                 DoStateTransition(SelectionState.Pressed, false);
                 selectedLink = link;
-                clicked?.Invoke(this, selectedLink.LinkID);
+                clicked?.Invoke(this, selectedLink);
             }
         }
 
         public void OnPointerMove(PointerEventData eventData)
         {
-            if (TryFindIntersectingLink(out LinkData hit))
+            if (TryFindIntersectingLink(out Link hit))
             {
-                if (highlightedLink.IsValid && highlightedLink.LinkID == hit.LinkID)
+                if (highlightedLink.IsValid && highlightedLink.Id == hit.Id)
                 {
                     return;
                 }
@@ -219,7 +205,7 @@ namespace HHG.Common.Runtime
             }
             else if (highlightedLink.IsValid)
             {
-                highlightedLink = LinkData.Invalid;
+                highlightedLink = Link.Invalid;
                 
                 if (EventSystem.current.currentSelectedGameObject == gameObject)
                 {
@@ -236,6 +222,7 @@ namespace HHG.Common.Runtime
         {
             allLinks.Clear();
 
+            string text = label.text;
             TMP_TextInfo textInfo = label.textInfo;
             for (int i = 0; i < textInfo.linkCount; i++)
             {
@@ -244,19 +231,21 @@ namespace HHG.Common.Runtime
                 int lastCharIndex = firstCharIndex + link.linkTextLength - 1;
                 TMP_CharacterInfo firstChar = textInfo.characterInfo[firstCharIndex];
                 TMP_CharacterInfo lastChar = textInfo.characterInfo[lastCharIndex];
-                Vector2 position = (firstChar.bottomLeft + lastChar.topRight) / 2f;
+                Vector3 position = firstChar.bottomLeft;
+                Vector3 size = lastChar.topRight - position;
+                int linkLength = lastChar.index - firstChar.index + 1;
                 int lineNumber = firstChar.lineNumber;
 
-                allLinks.Add(new LinkData
+                allLinks.Add(new Link
                 {
-                    LinkIndex = i,
-                    LinkID = link.GetLinkID(),
-                    LinkText = link.GetLinkText(),
-                    Center = position,
+                    Index = i,
+                    Id = link.GetLinkID(),
+                    Text = text.Substring(firstChar.index, linkLength),
+                    Rect = new Rect(position, size),
                     LineNumber = lineNumber,
                     Start = firstChar.index,
                     End = lastChar.index,
-                    Length = lastChar.index - firstChar.index + 1
+                    Length = linkLength
                 });
 
                 // Sort A-Z but we will traverse backwards later
@@ -264,19 +253,19 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private bool TryFindIntersectingLink(out LinkData result)
+        private bool TryFindIntersectingLink(out Link result)
         {
             Vector2 mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(label, mousePosition, null);
 
             if (linkIndex == -1)
             {
-                result = LinkData.Invalid;
+                result = Link.Invalid;
                 return false;
             }
             else
             {
-                result = allLinks.Find(l => l.LinkIndex == linkIndex);
+                result = allLinks.Find(l => l.Index == linkIndex);
                 return result.IsValid;
             }
         }
@@ -285,16 +274,16 @@ namespace HHG.Common.Runtime
         {
             if (allLinks.Count == 0) return false;
 
-            LinkData current = selectedLink;
-            LinkData best = LinkData.Invalid;
+            Link current = selectedLink;
+            Link best = Link.Invalid;
             float bestDistance = float.MaxValue;
 
-            foreach (LinkData link in allLinks)
+            foreach (Link link in allLinks)
             {
-                if (link.LinkIndex == current.LinkIndex) continue;
+                if (link.Index == current.Index) continue;
                 if (link.LineNumber != current.LineNumber) continue;
 
-                float dx = link.Center.x - current.Center.x;
+                float dx = link.Rect.center.x - current.Rect.center.x;
 
                 if (direction > 0 && dx <= 0) continue;
                 if (direction < 0 && dx >= 0) continue;
@@ -321,13 +310,13 @@ namespace HHG.Common.Runtime
         {
             if (allLinks.Count == 0) return false;
 
-            LinkData current = selectedLink;
-            LinkData best = LinkData.Invalid;
+            Link current = selectedLink;
+            Link best = Link.Invalid;
             float bestScore = float.MaxValue;
 
-            foreach (LinkData link in allLinks)
+            foreach (Link link in allLinks)
             {
-                if (link.LinkIndex == current.LinkIndex) continue;
+                if (link.Index == current.Index) continue;
 
                 int dy = link.LineNumber - current.LineNumber;
 
@@ -335,7 +324,7 @@ namespace HHG.Common.Runtime
                 if (direction > 0 && dy <= 0) continue;
 
                 float yDist = Mathf.Abs(dy);
-                float xDist = Mathf.Abs(link.Center.x - current.Center.x);
+                float xDist = Mathf.Abs(link.Rect.center.x - current.Rect.center.x);
                 float score = yDist * 1000f + xDist;
 
                 if (score < bestScore)
@@ -361,16 +350,16 @@ namespace HHG.Common.Runtime
             // allLinks is sorted A-Z, but we want to traverse backwards
             for (int i = allLinks.Count - 1; i >= 0; i--)
             {
-                LinkData link = allLinks[i];
+                Link link = allLinks[i];
 
-                string oldLinkText = link.LinkText;
+                string oldLinkText = link.Text;
                 string newLinkText = oldLinkText;
 
-                if (selectedLink.IsValid && link.LinkIndex == selectedLink.LinkIndex)
+                if (selectedLink.IsValid && link.Index == selectedLink.Index)
                 {
                     newLinkText = string.Format(selectedStyle, oldLinkText);
                 }
-                else if (highlightedLink.IsValid && link.LinkIndex == highlightedLink.LinkIndex)
+                else if (highlightedLink.IsValid && link.Index == highlightedLink.Index)
                 {
                     newLinkText = string.Format(highlightedStyle, oldLinkText);
                 }
