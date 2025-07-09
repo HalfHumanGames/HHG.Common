@@ -168,5 +168,10 @@ namespace HHG.Common.Runtime
 
             return Mathf.Round(value / multiple) * multiple;
         }
+
+        public static int RoundToMultipleToInt(float value, int multiple)
+        {
+            return (int)RoundToMultiple(value, multiple);
+        }
     }
 }
