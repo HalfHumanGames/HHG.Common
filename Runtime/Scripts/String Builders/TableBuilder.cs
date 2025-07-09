@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
@@ -19,7 +19,7 @@ namespace HHG.Common.Runtime
         {
             widths = columns;
             alignments = new Align[columns.Length];
-            Array.Fill(alignments, Align.Left);
+            System.Array.Fill(alignments, Align.Left);
         }
 
         public TableBuilder(params string[] columns)
@@ -44,11 +44,6 @@ namespace HHG.Common.Runtime
 
         public void AppendRow(IEnumerable<object> row)
         {
-            if (sb.Length > 0)
-            {
-                sb.AppendLine();
-            }
-
             int i = 0;
             foreach (object item in row)
             {
@@ -60,7 +55,7 @@ namespace HHG.Common.Runtime
                 string cell = item?.ToString() ?? string.Empty;
                 int width = widths[i];
                 int visualLength = GetLength(cell);
-                int padding = Math.Max(0, width - visualLength);
+                int padding = Mathf.Max(0, width - visualLength);
 
                 switch (alignments[i])
                 {
@@ -84,6 +79,8 @@ namespace HHG.Common.Runtime
 
                 i++;
             }
+
+            sb.AppendLine();
         }
 
         private int GetLength(string str) => richTextRegex.Replace(str, "").Length;
@@ -100,6 +97,10 @@ namespace HHG.Common.Runtime
         }
         public void Clear() => sb.Clear();
 
-        public override string ToString() => sb.ToString();
+        public override string ToString()
+        {
+            // Remove preceding new lines
+            return sb.Trim().ToString();
+        }
     }
 }
