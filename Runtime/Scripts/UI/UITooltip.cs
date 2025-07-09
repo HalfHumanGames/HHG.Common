@@ -22,6 +22,13 @@ namespace HHG.Common.Runtime
         private CanvasGroup canvasGroup;
         private ITooltip current;
         private string tooltipText;
+        private Mode mode;
+
+        public enum Mode
+        {
+            FollowMouse,
+            FixedPosition
+        }
 
         private void Awake()
         {
@@ -44,7 +51,7 @@ namespace HHG.Common.Runtime
             if (!string.IsNullOrEmpty(tooltipText))
             {
                 // Only follow mouse if the cursor is visible
-                if (Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 point))
+                if (mode == Mode.FollowMouse && Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 point))
                 {
                     Vector3 position = canvasRect.TransformPoint(point);
                     Reposition(position);
@@ -52,16 +59,24 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void Show(ITooltip tooltip)
+        public void Show(ITooltip tooltip, Mode newMode = Mode.FollowMouse)
         {
             current = tooltip;
+            mode = newMode;
             ShowInternal(current.TooltipText, current.TooltipPosition);
         }
 
-        public void Show(string text, Vector3 position)
+        public void Show(string text, Vector3 position, Mode newMode = Mode.FollowMouse)
         {
             current = null;
+            mode = newMode;
             ShowInternal(text, position);
+        }
+
+        public void Hide()
+        {
+            tooltipText = null;
+            gameObject.SetActive(false);
         }
 
         private void ShowInternal(string text, Vector3 position)
@@ -100,12 +115,6 @@ namespace HHG.Common.Runtime
             rect.position = position;
             rect.anchoredPosition += offset;
             rect.ClampTransform(canvasRect);
-        }
-
-        public void Hide()
-        {
-            tooltipText = null;
-            gameObject.SetActive(false);
         }
 
         private void OnDestroy()
