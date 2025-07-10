@@ -18,7 +18,7 @@ namespace HHG.Common.Runtime
             new Vector3Int(-1, -1, 0)
         };
 
-        public static bool FindPath(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> obstacles, List<Vector3Int> path)
+        public static bool FindPath(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> obstacles, List<Vector3Int> path, float cardinalCost, float ordinalCost)
         {
             if (obstacles == null)
             {
@@ -40,7 +40,7 @@ namespace HHG.Common.Runtime
             var fScore = DictionaryPool<Vector3Int, float>.Get();
 
             gScore.Add(start, 0);
-            fScore.Add(start, Heuristic(start, goal));
+            fScore.Add(start, Heuristic(start, goal, cardinalCost, ordinalCost));
 
             openSet.Enqueue(start, fScore[start]);
 
@@ -69,7 +69,7 @@ namespace HHG.Common.Runtime
                     {
                         cameFrom[neighbor] = current;
                         gScore[neighbor] = tentativeGScore;
-                        fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goal);
+                        fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goal, cardinalCost, ordinalCost);
 
                         if (!openSet.Contains(neighbor))
                         {
@@ -87,9 +87,11 @@ namespace HHG.Common.Runtime
             return found;
         }
 
-        private static float Heuristic(Vector3Int a, Vector3Int b)
+        private static float Heuristic(Vector3Int a, Vector3Int b, float cardinalCost, float ordinalCost)
         {
-            return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+            float dx = Mathf.Abs(a.x - b.x);
+            float dy = Mathf.Abs(a.y - b.y);
+            return cardinalCost * (dx + dy) + (ordinalCost - 2f * cardinalCost) * Mathf.Min(dx, dy);
         }
 
         private static List<Vector3Int> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current, List<Vector3Int> path)
