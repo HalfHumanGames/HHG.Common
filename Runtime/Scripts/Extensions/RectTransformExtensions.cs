@@ -10,15 +10,23 @@ namespace HHG.Common.Runtime
 
         public static void SetToWorldPosition(this RectTransform rectTransform, Vector3 worldPosition)
         {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPosition);
             Canvas canvas = rectTransform.GetComponentInParent<Canvas>();
-            RectTransform canvasRect = canvas.transform as RectTransform;
-            Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main;
 
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, camera, out Vector2 localPoint))
+            if (canvas.renderMode == RenderMode.WorldSpace)
             {
-                rectTransform.position = canvasRect.TransformPoint(localPoint);
+                rectTransform.position = worldPosition;
             }
+            else
+            {
+                Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPosition);
+                RectTransform canvasRect = canvas.transform as RectTransform;
+                Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main;
+
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, camera, out Vector2 localPoint))
+                {
+                    rectTransform.position = canvasRect.TransformPoint(localPoint);
+                }
+            } 
         }
 
         public static void ResetAnchoredPos(this RectTransform rect)
