@@ -36,6 +36,12 @@ namespace HHG.Common.Runtime
                 scheduledEvents.Remove(timedEvent);
                 scheduledEventsHash.Remove(timedEvent);
             }
+
+            if (expiredEventsHash.Contains(timedEvent))
+            {
+                expiredEvents.Remove(timedEvent);
+                expiredEventsHash.Remove(timedEvent);
+            }
         }
 
         public void Update(float deltaTime)
