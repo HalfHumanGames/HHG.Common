@@ -5,6 +5,8 @@ namespace HHG.Common.Runtime
 {
     public class PlayableController : MonoBehaviour
     {
+        public bool IsPlaying => playable.IsPlaying;
+
         [SerializeField] private float repeatInterval = 2f;
 
         private Playable _playable;
