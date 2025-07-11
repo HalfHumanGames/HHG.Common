@@ -59,7 +59,7 @@ namespace HHG.Common.Runtime
             costMap?.Add(start, 0f);
 
             var directions = Enumerable.Empty<Vector3Int>().Concat(cardinalDirections);
-            if (useDiagonal) directions.Concat(diagonalDirections);
+            if (useDiagonal) directions = directions.Concat(diagonalDirections);
 
             while (queue.Count > 0)
             {
