@@ -77,6 +77,16 @@ namespace HHG.Common.Runtime
             return (color + other) / 2f;
         }
 
+        public static Color Lightened(this Color color)
+        {
+            return color.Mix(Color.white);
+        }
+
+        public static Color Darkened(this Color color)
+        {
+            return color.Mix(Color.black);
+        }
+
         public static Color Inverted(this Color color)
         {
             return new Color(1 - color.r, 1f - color.g, 1f - color.b);

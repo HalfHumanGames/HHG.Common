@@ -32,13 +32,13 @@ namespace HHG.Common.Runtime
 
         private void Awake()
         {
+            Locator.Register(this);
             rect = GetComponent<RectTransform>();
             canvas = GetComponentInParent<Canvas>();
             canvasRect = canvas.GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-            Locator.Register(this);
         }
 
         private void Start()

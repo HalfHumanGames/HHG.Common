@@ -9,6 +9,8 @@ namespace HHG.Common.Runtime
     {
         private static readonly Regex richTextRegex = new(@"<.*?>", RegexOptions.Compiled);
 
+        public int Length { get => sb.Length; set => sb.Length = value; }
+
         private readonly StringBuilder sb = new();
         private readonly int[] widths;
         private readonly Align[] alignments;
