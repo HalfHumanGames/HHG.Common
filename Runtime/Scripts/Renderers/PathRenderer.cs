@@ -16,9 +16,19 @@ namespace HHG.Common.Runtime
         private GameObject tail;
         private List<Vector3> points = new List<Vector3>();
         private List<Vector3> smoothedPoints = new List<Vector3>();
+        private bool initialized;
 
         private void Awake()
         {
+            EnsureInitialized();
+        }
+
+        private void EnsureInitialized()
+        {
+            if (initialized) return;
+
+            initialized = true;
+
             lineRenderer = GetComponent<LineRenderer>();
             head = headPrefab && !headPrefab.scene.IsValid() ? Instantiate(headPrefab, transform) : headPrefab;
             tail = tailPrefab && !tailPrefab.scene.IsValid() ? Instantiate(tailPrefab, transform) : tailPrefab;
@@ -26,6 +36,7 @@ namespace HHG.Common.Runtime
 
         public void SetPoints(IEnumerable<Vector3> newPoints)
         {
+            EnsureInitialized();
             points.Clear();
             points.AddRange(newPoints);
             Render();
@@ -33,6 +44,7 @@ namespace HHG.Common.Runtime
 
         public void Clear()
         {
+            EnsureInitialized();
             points.Clear();
             Render();
         }
