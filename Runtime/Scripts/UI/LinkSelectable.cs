@@ -125,7 +125,8 @@ namespace HHG.Common.Runtime
 
             if (!selectedLink.IsValid && allLinks.Count > 0)
             {
-                selectedLink = allLinks[0];
+                // Set field to bypass callbacks
+                _selectedLink = allLinks[0];
             }
         }
 
