@@ -8,8 +8,8 @@ namespace HHG.Common.Runtime
 {
     public static class SelectableExtensions
     {
-        private const float directionWeight = .8f;
-        private const float distanceWeight = .2f;
+        private const float directionWeight = 1f;
+        private const float distanceWeight = 1f;
 
         public static bool IsSelected(this Selectable selectable)
         {
@@ -189,10 +189,10 @@ namespace HHG.Common.Runtime
                         break;
 
                     case SelectableNavigation.Auto:
-                        nav.selectOnUp = selectable.FindNearestSelectable(selectables, Vector2.up);
-                        nav.selectOnDown = selectable.FindNearestSelectable(selectables, Vector2.down);
-                        nav.selectOnLeft = selectable.FindNearestSelectable(selectables, Vector2.left);
-                        nav.selectOnRight = selectable.FindNearestSelectable(selectables, Vector2.right);
+                        nav.selectOnUp = selectable.FindNearestSelectable(selectables, Vector3.up);
+                        nav.selectOnDown = selectable.FindNearestSelectable(selectables, Vector3.down);
+                        nav.selectOnLeft = selectable.FindNearestSelectable(selectables, Vector3.left);
+                        nav.selectOnRight = selectable.FindNearestSelectable(selectables, Vector3.right);
                         break;
                 }
 
@@ -200,13 +200,16 @@ namespace HHG.Common.Runtime
             }
         }
 
-        private static Selectable FindNearestSelectable(this Selectable selectable, IEnumerable<Selectable> selectables, Vector2 direction)
+        public static Selectable FindNearestSelectable(this Selectable selectable, IEnumerable<Selectable> selectables, Vector3 direction)
         {
+            Canvas canvas = selectable.GetComponentInParent<Canvas>(true);
+            
+            if (canvas == null) return null;
+
+            // Use GetCanvasPoint since all other utility methods break if the scale is (0, 0, 0)
+            Vector3 currentPosition = (selectable.transform as RectTransform).GetCanvasPoint(canvas);
             Selectable bestMatch = null;
             float bestScore = float.MaxValue;
-            Vector3 currentPosition = (selectable.transform as RectTransform).anchoredPosition;
-
-            float bestDot = 0f, bestDist = 0f;
 
             foreach (Selectable other in selectables)
             {
@@ -215,10 +218,10 @@ namespace HHG.Common.Runtime
                     continue;
                 }
 
-                Vector3 otherPosition = (other.transform as RectTransform).anchoredPosition;
+                Vector3 otherPosition = (other.transform as RectTransform).GetCanvasPoint(canvas);
                 Vector3 difference = otherPosition - currentPosition;
                 float dot = Vector3.Dot(direction.normalized, difference.normalized);
-                
+
                 if(dot > 0f)
                 {
                     float distance = difference.magnitude;
@@ -227,8 +230,6 @@ namespace HHG.Common.Runtime
 
                     if (score < bestScore)
                     {
-                        bestDot = dot;
-                        bestDist = normalizedDistance;
                         bestScore = score;
                         bestMatch = other;
                     }
