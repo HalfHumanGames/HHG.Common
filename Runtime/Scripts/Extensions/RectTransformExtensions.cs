@@ -26,7 +26,32 @@ namespace HHG.Common.Runtime
                 {
                     rectTransform.position = canvasRect.TransformPoint(localPoint);
                 }
-            } 
+            }
+        }
+
+        // All of the other built-in utility methods break if scale is (0, 0, 0)
+        public static Vector2 GetCanvasPoint(this RectTransform rectTransform, Canvas canvas)
+        {
+            Vector2 position = Vector2.zero;
+            RectTransform current = rectTransform;
+
+            while (current != null)
+            {
+                position += current.anchoredPosition;
+
+                if (canvas != null)
+                {
+                    if (current == canvas.transform) break;
+                }
+                else if (current.GetComponent<Canvas>() != null)
+                {
+                    break;
+                }
+
+                current = current.parent as RectTransform;
+            }
+
+            return position;
         }
 
         public static void ResetAnchoredPos(this RectTransform rect)
