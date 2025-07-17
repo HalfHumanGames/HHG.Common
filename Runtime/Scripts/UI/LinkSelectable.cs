@@ -32,6 +32,7 @@ namespace HHG.Common.Runtime
         private Link _highlightedLink = Link.Invalid;
         private Link _selectedLink = Link.Invalid;
         private string originalText;
+        private GameObject previousSelectedGameObject;
 
         private Link highlightedLink
         {
@@ -123,6 +124,14 @@ namespace HHG.Common.Runtime
             RemoveStyles();
         }
 
+        private void Update()
+        {
+            if (EventSystem.current != null)
+            {
+                previousSelectedGameObject = EventSystem.current.currentSelectedGameObject;
+            }
+        }
+
         public void CaptureOriginalText()
         {
             originalText = label.text;
@@ -147,6 +156,34 @@ namespace HHG.Common.Runtime
             else linkNavigations[linkId] = nav;
         }
 
+        public void SetLinkNavigationUp(string linkId, Selectable target)
+        {
+            LinkNavigation nav = GetLinkNavigation(linkId);
+            nav.Up = target;
+            linkNavigations[linkId] = nav;
+        }
+
+        public void SetLinkNavigationDown(string linkId, Selectable target)
+        {
+            LinkNavigation nav = GetLinkNavigation(linkId);
+            nav.Down = target;
+            linkNavigations[linkId] = nav;
+        }
+
+        public void SetLinkNavigationLeft(string linkId, Selectable target)
+        {
+            LinkNavigation nav = GetLinkNavigation(linkId);
+            nav.Left = target;
+            linkNavigations[linkId] = nav;
+        }
+
+        public void SetLinkNavigationRight(string linkId, Selectable target)
+        {
+            LinkNavigation nav = GetLinkNavigation(linkId);
+            nav.Right = target;
+            linkNavigations[linkId] = nav;
+        }
+
         public void ClearLinkNavigation(string linkId)
         {
             linkNavigations.Remove(linkId);
@@ -160,8 +197,18 @@ namespace HHG.Common.Runtime
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
+
             DoStateTransition(SelectionState.Selected, false);
-            if (!options.HasFlag(Options.RememberSelection)) ForgetSelection();
+
+            bool dontForget =
+                GetLinkNavigation(selectedLink.Id).Contains(previousSelectedGameObject) ||
+                TrySelectLinkForSelectable(eventData);
+
+            if (!dontForget && !options.HasFlag(Options.RememberSelection))
+            {
+                ForgetSelection();
+            }
+
             selected?.Invoke(this, selectedLink);
             ApplyStyles();
         }
@@ -208,8 +255,8 @@ namespace HHG.Common.Runtime
         {
             LinkNavigation nav = GetLinkNavigation(selectedLink.Id);
 
-            target = isHorizontal ? 
-                (direction == -1 ? nav.Left : nav.Right) : 
+            target = isHorizontal ?
+                (direction == -1 ? nav.Left : nav.Right) :
                 (direction == -1 ? nav.Down : nav.Up);
 
             return target != null;
@@ -311,6 +358,31 @@ namespace HHG.Common.Runtime
                 result = allLinks.Find(l => l.Index == linkIndex);
                 return result.IsValid;
             }
+        }
+
+        // If slow, can build a reverse map so don't need to traverse the navigations
+        private bool TrySelectLinkForSelectable(BaseEventData eventData)
+        {
+            if (previousSelectedGameObject == null ||
+                previousSelectedGameObject == this) return false;
+
+            foreach (var kvpair in linkNavigations)
+            {
+                string linkId = kvpair.Key;
+                LinkNavigation nav = kvpair.Value;
+
+                if (nav.Contains(previousSelectedGameObject))
+                {
+                    var link = allLinks.Find(l => l.Id == linkId);
+                    if (link.IsValid)
+                    {
+                        selectedLink = link;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private bool MoveHorizontal(int direction)

@@ -169,5 +169,10 @@ namespace HHG.Common.Runtime
 
             return adjusted;
         }
+
+        public static IEnumerable<T> Reversed<T>(this List<T> list)
+        {
+            return ((IEnumerable<T>)list).Reverse();
+        }
     }
 }
