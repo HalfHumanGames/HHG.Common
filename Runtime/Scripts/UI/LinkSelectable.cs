@@ -24,6 +24,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private ActionEvent<LinkSelectable, Link> unhighlighted = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> selected = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> deselected = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private SerializedDictionary<string, LinkNavigation> linkNavigations = new SerializedDictionary<string, LinkNavigation>();
         [SerializeField] private bool logEvents;
 
         private TMP_Text label;
@@ -135,6 +136,27 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public LinkNavigation GetLinkNavigation(string linkId)
+        {
+            return linkNavigations.TryGetValue(linkId, out LinkNavigation nav) ? nav : default;
+        }
+
+        public void SetLinkNavigation(string linkId, LinkNavigation nav)
+        {
+            if (nav.IsEmpty) ClearLinkNavigation(linkId);
+            else linkNavigations[linkId] = nav;
+        }
+
+        public void ClearLinkNavigation(string linkId)
+        {
+            linkNavigations.Remove(linkId);
+        }
+
+        public void ClearAllLinkNavigations()
+        {
+            linkNavigations.Clear();
+        }
+
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
@@ -157,16 +179,19 @@ namespace HHG.Common.Runtime
 
         public override void OnMove(AxisEventData eventData)
         {
-            bool moved = false;
+            bool moved;
             Vector2 move = eventData.moveVector;
+            bool isHorizontal = Mathf.Abs(move.x) > Mathf.Abs(move.y);
+            int direction = isHorizontal ? (move.x > 0 ? 1 : -1) : (move.y > 0 ? -1 : 1);
 
-            if (Mathf.Abs(move.x) > Mathf.Abs(move.y))
+            if (TryGetNavigationTarget(isHorizontal, direction, out Selectable target))
             {
-                moved = MoveHorizontal(move.x > 0 ? 1 : -1);
+                target.Select();
+                moved = true;
             }
             else
             {
-                moved = MoveVertical(move.y > 0 ? -1 : 1);
+                moved = isHorizontal ? MoveHorizontal(direction) : MoveVertical(direction);
             }
 
             if (moved)
@@ -177,6 +202,17 @@ namespace HHG.Common.Runtime
             {
                 base.OnMove(eventData);
             }
+        }
+
+        private bool TryGetNavigationTarget(bool isHorizontal, int direction, out Selectable target)
+        {
+            LinkNavigation nav = GetLinkNavigation(selectedLink.Id);
+
+            target = isHorizontal ? 
+                (direction == -1 ? nav.Left : nav.Right) : 
+                (direction == -1 ? nav.Down : nav.Up);
+
+            return target != null;
         }
 
         public void OnSubmit(BaseEventData eventData)
@@ -213,7 +249,7 @@ namespace HHG.Common.Runtime
             else if (highlightedLink.IsValid)
             {
                 highlightedLink = Link.Invalid;
-                
+
                 if (EventSystem.current.currentSelectedGameObject == gameObject)
                 {
                     DoStateTransition(SelectionState.Selected, false);
