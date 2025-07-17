@@ -162,12 +162,15 @@ namespace HHG.Common.Runtime
         // This is a custom implementation of LayoutRebuilder.MarkLayoutForRebuild
         // that actually works using our own RebuildLayout extension method
         // This solves issues caused by rebuilding more than once in the a frame
-        public static void MarkLayoutForRebuild(this RectTransform rect)
+        public static void MarkLayoutForRebuild(this RectTransform rect, System.Action done = null)
         {
             if (!rebuildLayoutRects.Contains(rect))
             {
                 rebuildLayoutRects.Add(rect);
-                CanvasUpdateRegistry.RegisterCanvasElementForLayoutRebuild(new LayoutRebuildHelper(rect));
+
+                LayoutRebuildHelper rebuilder = ObjectPool.Get<LayoutRebuildHelper>();
+                rebuilder.Initialize(rect, done);
+                CanvasUpdateRegistry.RegisterCanvasElementForLayoutRebuild(rebuilder);
             }
         }
 
@@ -176,10 +179,22 @@ namespace HHG.Common.Runtime
             public Transform transform => rect;
 
             private RectTransform rect;
+            private System.Action done;
 
-            public LayoutRebuildHelper(RectTransform rect)
+            public LayoutRebuildHelper()
+            {
+
+            }
+
+            public LayoutRebuildHelper(RectTransform rect, System.Action done = null)
+            {
+                Initialize(rect, done);
+            }
+
+            public void Initialize(RectTransform rect, System.Action done = null)
             {
                 this.rect = rect;
+                this.done = done;
             }
 
             public void Rebuild(CanvasUpdate executing)
@@ -198,7 +213,10 @@ namespace HHG.Common.Runtime
 
             public void LayoutComplete()
             {
+                done?.Invoke();
 
+                // Do after done callback
+                ObjectPool.Release(this);
             }
 
             public void GraphicUpdateComplete()
