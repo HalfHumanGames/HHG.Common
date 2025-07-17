@@ -16,17 +16,15 @@ namespace HHG.Common.Runtime
         public ActionEvent<LinkSelectable, Link> Selected => selected;
         public ActionEvent<LinkSelectable, Link> Deselected => deselected;
 
-        [Header("Styles")]
         [SerializeField] private string highlightedStyle = "<color=yellow>{0}</color>";
         [SerializeField] private string selectedStyle = "<color=orange>{0}</color>";
-
-        [Header("Events")]
-        [SerializeField] private bool logEvents;
+        [SerializeField] private Options options;
         [SerializeField] private ActionEvent<LinkSelectable, Link> clicked = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> highlighted = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> unhighlighted = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> selected = new ActionEvent<LinkSelectable, Link>();
         [SerializeField] private ActionEvent<LinkSelectable, Link> deselected = new ActionEvent<LinkSelectable, Link>();
+        [SerializeField] private bool logEvents;
 
         private TMP_Text label;
         private readonly List<Link> allLinks = new List<Link>();
@@ -84,6 +82,13 @@ namespace HHG.Common.Runtime
             }
         }
 
+        [System.Flags]
+        private enum Options
+        {
+            RememberSelection = 1 << 0,
+            All = -1
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -134,6 +139,7 @@ namespace HHG.Common.Runtime
         {
             base.OnSelect(eventData);
             DoStateTransition(SelectionState.Selected, false);
+            if (!options.HasFlag(Options.RememberSelection)) ForgetSelection();
             selected?.Invoke(this, selectedLink);
             ApplyStyles();
         }
@@ -385,6 +391,14 @@ namespace HHG.Common.Runtime
         {
             label.text = text;
             label.ForceMeshUpdate(true, true);
+        }
+
+        private void ForgetSelection()
+        {
+            if (allLinks.Count > 0)
+            {
+                _selectedLink = allLinks[0];
+            }
         }
     }
 }
