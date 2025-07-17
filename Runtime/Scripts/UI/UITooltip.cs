@@ -14,7 +14,7 @@ namespace HHG.Common.Runtime
         [SerializeField, FormerlySerializedAs("text")] private TextMeshProUGUI label;
         [SerializeField] private LayoutElement labelLayoutElement;
         [SerializeField] private float maxWidth = 300;
-        [SerializeField] private Vector2 offset = new Vector2(32, -32);
+        [SerializeField] private Vector2 defaultOffset = new Vector2(32, -32);
 
         private RectTransform rect;
         private RectTransform canvasRect;
@@ -22,12 +22,21 @@ namespace HHG.Common.Runtime
         private CanvasGroup canvasGroup;
         private ITooltip current;
         private string tooltipText;
-        private Mode mode;
+        private PositionMode positionMode;
+        private OffsetMode offsetMode;
+        private Vector2 customOffset;
 
-        public enum Mode
+        public enum PositionMode
         {
             FollowMouse,
             FixedPosition
+        }
+
+        public enum OffsetMode
+        {
+            Default,
+            Custom,
+            None,
         }
 
         private void Awake()
@@ -51,7 +60,7 @@ namespace HHG.Common.Runtime
             if (!string.IsNullOrEmpty(tooltipText))
             {
                 // Only follow mouse if the cursor is visible
-                if (mode == Mode.FollowMouse && Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 point))
+                if (positionMode == PositionMode.FollowMouse && Cursor.visible && Mouse.current != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Mouse.current.position.value, canvas.worldCamera, out Vector2 point))
                 {
                     Vector3 position = canvasRect.TransformPoint(point);
                     Reposition(position);
@@ -59,17 +68,15 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public void Show(ITooltip tooltip, Mode newMode = Mode.FollowMouse)
+        public void Show(ITooltip tooltip, PositionMode positionMode = PositionMode.FollowMouse, OffsetMode offsetMode = OffsetMode.Default, Vector2 customOffset = default)
         {
-            current = tooltip;
-            mode = newMode;
+            Initialize(tooltip, positionMode, offsetMode, customOffset);
             ShowInternal(current.TooltipText, current.TooltipPosition);
         }
 
-        public void Show(string text, Vector3 position, Mode newMode = Mode.FollowMouse)
+        public void Show(string text, Vector3 position, PositionMode positionMode = PositionMode.FollowMouse, OffsetMode offsetMode = OffsetMode.Default, Vector2 customOffset = default)
         {
-            current = null;
-            mode = newMode;
+            Initialize(null, positionMode, offsetMode, customOffset);
             ShowInternal(text, position);
         }
 
@@ -77,6 +84,14 @@ namespace HHG.Common.Runtime
         {
             tooltipText = null;
             gameObject.SetActive(false);
+        }
+
+        private void Initialize(ITooltip tooltip, PositionMode newPositionMode = PositionMode.FollowMouse, OffsetMode newOffsetMode = OffsetMode.Default, Vector2 newCustomOffset = default)
+        {
+            current = tooltip;
+            positionMode = newPositionMode;
+            offsetMode = newOffsetMode;
+            customOffset = newCustomOffset;
         }
 
         private void ShowInternal(string text, Vector3 position)
@@ -113,8 +128,18 @@ namespace HHG.Common.Runtime
         {
             rect.SetAsLastSibling();
             rect.position = position;
-            rect.anchoredPosition += offset;
+            rect.anchoredPosition += GetOffset();
             rect.ClampTransform(canvasRect);
+        }
+
+        private Vector2 GetOffset()
+        {
+            return offsetMode switch
+            {
+                OffsetMode.Default => defaultOffset,
+                OffsetMode.Custom => customOffset,
+                _ => Vector2.zero
+            };
         }
 
         private void OnDestroy()
