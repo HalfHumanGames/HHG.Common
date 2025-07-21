@@ -462,6 +462,8 @@ namespace HHG.Common.Runtime
         {
             StringBuilder sb = new StringBuilder(originalText);
 
+            bool isSelected = this.IsSelected();
+
             // allLinks is sorted A-Z, but we want to traverse backwards
             for (int i = allLinks.Count - 1; i >= 0; i--)
             {
@@ -470,7 +472,8 @@ namespace HHG.Common.Runtime
                 string oldLinkText = link.Text;
                 string newLinkText = oldLinkText;
 
-                if (selectedLink.IsValid && link.Index == selectedLink.Index)
+                // Do not highlight selected link if label is not currently selected
+                if (isSelected && selectedLink.IsValid && link.Index == selectedLink.Index)
                 {
                     newLinkText = string.Format(selectedStyle, oldLinkText);
                 }
