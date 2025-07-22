@@ -54,15 +54,22 @@ namespace HHG.Common.Runtime
 
         public static Selectable GetCurrentSelectable(this EventSystem eventSystem)
         {
-            return eventSystem.currentSelectedGameObject != null ?
-                   eventSystem.currentSelectedGameObject.GetComponent<Selectable>() : null;
+            GameObject selected = eventSystem.currentSelectedGameObject;
+            return selected != null ? selected.GetComponent<Selectable>() : null;
         }
 
         public static bool TryGetCurrentSelection(this EventSystem eventSystem, out Selectable selection)
         {
             selection = null;
-            return eventSystem.currentSelectedGameObject &&
-                   eventSystem.currentSelectedGameObject.TryGetComponent(out selection);
+            GameObject selected = eventSystem.currentSelectedGameObject;
+            return selected && selected.TryGetComponent(out selection);
+        }
+
+        public static void ReselectSelectedGameObject(this EventSystem eventSystem)
+        {
+            GameObject selected = eventSystem.currentSelectedGameObject;
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(selected);
         }
     }
 }
