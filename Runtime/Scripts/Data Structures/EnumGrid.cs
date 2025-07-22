@@ -46,6 +46,11 @@ namespace HHG.Common.Runtime
         public abstract Color GetColor(T value);
         public abstract T GetValue(Color color);
 
+        public void SetSprite(Sprite sprite)
+        {
+            this.sprite = sprite;
+        }
+
         public IEnumerator<Vector3Int> GetEnumerator()
         {
             return grid.Keys.GetEnumerator();
