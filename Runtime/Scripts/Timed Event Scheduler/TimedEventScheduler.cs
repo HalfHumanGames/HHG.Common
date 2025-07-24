@@ -84,10 +84,9 @@ namespace HHG.Common.Runtime
         {
             if (expiredEvents.Count > 0)
             {
-                int index = expiredEvents.Count - 1;
-                expiredEvent = expiredEvents[index];
+                expiredEvent = expiredEvents[0];
                 expiredEvent.Expire();
-                expiredEvents.RemoveAt(index);
+                expiredEvents.RemoveAt(0);
                 expiredEventsHash.Remove(expiredEvent);
                 return true;
             }
