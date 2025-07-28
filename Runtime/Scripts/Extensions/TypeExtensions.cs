@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,15 +6,15 @@ namespace HHG.Common.Runtime
 {
     public static class TypeExtensions
     {
-        private static IEnumerable<Type> types;
-        private static Dictionary<Type, IEnumerable<Type>> subclasses;
+        private static IEnumerable<System.Type> types;
+        private static Dictionary<System.Type, IEnumerable<System.Type>> subclasses;
 
-        public static bool IsSubclassOfGeneric(this Type type, Type generic)
+        public static bool IsSubclassOfGeneric(this System.Type type, System.Type generic)
         {
             return type.IsSubclassOfGeneric(generic, out _);
         }
 
-        public static bool IsSubclassOfGeneric(this Type type, Type generic, out Type found)
+        public static bool IsSubclassOfGeneric(this System.Type type, System.Type generic, out System.Type found)
         {
             while (type != null && type != typeof(object))
             {
@@ -31,18 +31,18 @@ namespace HHG.Common.Runtime
             return false;
         }
 
-        public static List<Type> FindSubclasses(this Type type, Func<Type, bool> filter = null)
+        public static List<System.Type> FindSubclasses(this System.Type type, System.Func<System.Type, bool> filter = null)
         {
             filter ??= _ => true;
 
             if (types == null)
             {
-                types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes());
+                types = System.AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes());
             }
 
             if (subclasses == null)
             {
-                subclasses = new Dictionary<Type, IEnumerable<Type>>();
+                subclasses = new Dictionary<System.Type, IEnumerable<System.Type>>();
             }
 
             if (!subclasses.ContainsKey(type))
@@ -53,14 +53,24 @@ namespace HHG.Common.Runtime
             return subclasses[type].Where(filter).ToList();
         }
 
-        public static bool Implements(this Type type, params Type[] interfaces)
+        public static bool Implements(this System.Type type, params System.Type[] interfaces)
         {
-            return Array.Exists(type.GetInterfaces(), i => interfaces.Contains(i));
+            return System.Array.Exists(type.GetInterfaces(), i => interfaces.Contains(i));
         }
 
-        public static bool IsBaseImplementationOf(this Type type, Type _interface)
+        public static bool IsBaseImplementationOf(this System.Type type, System.Type _interface)
         {
             return type == _interface || (type.Implements(_interface) && (type.BaseType == null || !type.BaseType.Implements(_interface)));
+        }
+
+        public static bool IsReference(this System.Type type)
+        {
+            return type.IsClass && type != typeof(string);
+        }
+
+        public static bool IsCollection(this System.Type type)
+        {
+            return type.IsClass && type != typeof(string) && typeof(IEnumerable).IsAssignableFrom(type);
         }
     }
 }
