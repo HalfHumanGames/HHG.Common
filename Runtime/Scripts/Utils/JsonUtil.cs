@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -68,6 +69,27 @@ namespace HHG.Common.Runtime
         public static void FromGZipJsonBytesOverwrite(this object value, byte[] bytes)
         {
             JsonUtility.FromJsonOverwrite(Encoding.UTF8.GetString(GZipUtil.Decompress(bytes)), value);
+        }
+
+        public static T CloneFromJson<T>(this T obj)
+        {
+            // Use this instead of the generic version since it also works in
+            // cases when T is either an abstract class or an interface
+            return (T)JsonUtility.FromJson(JsonUtility.ToJson(obj), obj.GetType());
+        }
+
+        public static List<T> CloneFromJson<T>(this IEnumerable<T> objs)
+        {
+            List<T> list = new List<T>();
+            objs.CloneFromJson(list);
+            return list;
+        }
+
+        public static void CloneFromJson<T>(this IEnumerable<T> objs, List<T> list)
+        {
+            list.Clear();
+
+            foreach (T obj in objs) list.Add(obj.CloneFromJson());
         }
     }
 }

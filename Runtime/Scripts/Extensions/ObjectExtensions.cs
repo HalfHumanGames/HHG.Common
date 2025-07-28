@@ -48,7 +48,6 @@ namespace HHG.Common.Runtime
         // These are similar to the Object.FindObjectOfType methods and its variants
         // but these also work with interfaces while Object.FindObjectOfType methods
         // don't since they require the generic T to be of type UnityEngine.Object
-
         public static T FindObjectOfType<T>(this Object obj, bool includeInactive = false)
         {
             return ObjectUtil.FindComponentInScene<T>(includeInactive); ;
@@ -57,25 +56,6 @@ namespace HHG.Common.Runtime
         public static T[] FindObjectsOfType<T>(this Object obj, bool includeInactive = false)
         {
             return ObjectUtil.FindComponentsInScene<T>(includeInactive);
-        }
-
-        public static T CloneFromJson<T>(this T obj)
-        {
-            // Use this instead of the generic version since it also works in
-            // cases when T is either an abstract class or an interface
-            return (T)JsonUtility.FromJson(JsonUtility.ToJson(obj), obj.GetType());
-        }
-
-        public static List<T> CloneFromJson<T>(this IEnumerable<T> objs)
-        {
-            List<T> list = new List<T>();
-
-            foreach (T obj in objs)
-            {
-                list.Add(obj.CloneFromJson());
-            }
-
-            return list;
         }
     }
 }
