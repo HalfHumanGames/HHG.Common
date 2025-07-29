@@ -51,7 +51,7 @@ namespace HHG.Common.Runtime
                 return;
             }
 
-            for (int i = scheduledEvents.Count - 1; i >= 0; i--)
+            for (int i = 0; i < scheduledEvents.Count; i++)
             {
                 TimedEvent scheduledEvent = scheduledEvents[i];
                 scheduledEvent.Update(deltaTime);
@@ -59,7 +59,7 @@ namespace HHG.Common.Runtime
                 if (scheduledEvent.IsExpired)
                 {
                     scheduledEvent.WeakRescheduled -= OnRescheduled;
-                    scheduledEvents.RemoveAt(i);
+                    scheduledEvents.RemoveAt(i--);
                     scheduledEventsHash.Remove(scheduledEvent);
                     expiredEvents.Add(scheduledEvent);
                     expiredEventsHash.Add(scheduledEvent);
