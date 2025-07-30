@@ -53,12 +53,12 @@ namespace HHG.Common.Runtime
             return enumerable.OrderBy(x => Random.Range(0, int.MaxValue));
         }
 
-        public static T GetRandom<T>(this IEnumerable<T> enumerable)
+        public static T RandomOrDefault<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.Shuffled().FirstOrDefault();
         }
 
-        public static IEnumerable<T> GetRandom<T>(this IEnumerable<T> enumerable, int take)
+        public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> enumerable, int take)
         {
             return enumerable.Shuffled().Take(take);
         }
