@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
@@ -101,5 +103,30 @@ namespace HHG.Common.Runtime
             StopAndNullifyCoroutine(ref coroutine);
             coroutine = StartCoroutine(enumerator);
         }
+
+        public static IEnumerator YieldAllParallel(List<IEnumerator> enumerators)
+        {
+            List<IEnumerator> active = ListPool<IEnumerator>.Get();
+            active.AddRange(enumerators);
+
+            while (active.Count > 0)
+            {
+                for (int i = active.Count - 1; i >= 0; i--)
+                {
+                    if (!active[i].MoveNext())
+                    {
+                        active.RemoveAt(i);
+                    }
+                }
+
+                if (active.Count > 0)
+                {
+                    yield return new WaitForEndOfFrame();
+                }
+            }
+
+            ListPool<IEnumerator>.Release(active);
+        }
+
     }
 }
