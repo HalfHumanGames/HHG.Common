@@ -70,7 +70,10 @@ namespace HHG.Common.Runtime
 
         public static bool IsCollection(this System.Type type)
         {
-            return type.IsClass && type != typeof(string) && typeof(IEnumerable).IsAssignableFrom(type);
+            return type.IsArray ||
+                   typeof(ICollection).IsAssignableFrom(type) ||
+                   type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
+
     }
 }

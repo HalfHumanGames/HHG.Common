@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -380,6 +381,81 @@ namespace HHG.Common.Runtime
             if (angle < 0) angle += 360;
 
             return angle;
+        }
+
+        public static Vector2 Average(this IEnumerable<Vector2Int> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector2Int.zero;
+
+            Vector2Int sum = vectors.Aggregate(Vector2Int.zero, (acc, v) => acc + v);
+
+            return new Vector2(sum.x / count, sum.y / count);
+
+        }
+
+        public static Vector3 Average(this IEnumerable<Vector3Int> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector3Int.zero;
+
+            Vector3Int sum = vectors.Aggregate(Vector3Int.zero, (acc, v) => acc + v);
+
+            return new Vector3(sum.x / count, sum.y / count, sum.z / count);
+
+        }
+
+        public static Vector2Int AverageToInt(this IEnumerable<Vector2Int> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector2Int.zero;
+
+            Vector2Int sum = vectors.Aggregate(Vector2Int.zero, (acc, v) => acc + v);
+
+            return new Vector2Int(
+                Mathf.RoundToInt((float)sum.x / count),
+                Mathf.RoundToInt((float)sum.y / count)
+            );
+        }
+
+        public static Vector3Int AverageToInt(this IEnumerable<Vector3Int> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector3Int.zero;
+
+            Vector3Int sum = vectors.Aggregate(Vector3Int.zero, (acc, v) => acc + v);
+
+            return new Vector3Int(
+                Mathf.RoundToInt((float)sum.x / count),
+                Mathf.RoundToInt((float)sum.y / count),
+                Mathf.RoundToInt((float)sum.z / count)
+            );
+        }
+
+        public static Vector2 Average(this IEnumerable<Vector2> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector2.zero;
+
+            Vector2 sum = vectors.Aggregate(Vector2.zero, (acc, v) => acc + v);
+
+            return new Vector2(sum.x / count, sum.y / count);
+        }
+
+        public static Vector3 Average(this IEnumerable<Vector3> vectors)
+        {
+            int count = vectors.Count();
+
+            if (count == 0) return Vector3.zero;
+
+            Vector3 sum = vectors.Aggregate(Vector3.zero, (acc, v) => acc + v);
+
+            return new Vector3(sum.x / count, sum.y / count, sum.y / count);
         }
     }
 }
