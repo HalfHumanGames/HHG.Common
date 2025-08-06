@@ -10,6 +10,14 @@ namespace HHG.Common.Runtime
             {
                 hashSet.Add(item);
             }
-        }   
+        }
+
+        public static void RemoveRange<T>(this HashSet<T> hashSet, IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                hashSet.Remove(item);
+            }
+        }
     }
 }
