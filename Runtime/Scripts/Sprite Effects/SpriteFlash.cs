@@ -5,7 +5,6 @@ namespace HHG.Common.Runtime
 {
     public class SpriteFlash : MonoBehaviour
     {
-        private static readonly int mainTex = Shader.PropertyToID("_MainTex");
         private static readonly int flashColor = Shader.PropertyToID("_FlashColor");
         private static readonly int flashAmount = Shader.PropertyToID("_FlashAmount");
 
