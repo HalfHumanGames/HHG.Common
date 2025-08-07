@@ -6,9 +6,9 @@ namespace HHG.Common.Runtime
 {
     public static class JsonUtil
     {
-        public static string ToJson(this object value)
+        public static string ToJson(this object value, bool pretty = false)
         {
-            return JsonUtility.ToJson(value);
+            return JsonUtility.ToJson(value, pretty);
         }
 
         public static T FromJson<T>(string json)
