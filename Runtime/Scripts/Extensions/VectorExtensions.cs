@@ -6,7 +6,7 @@ namespace HHG.Common.Runtime
 {
     public static class VectorExtensions
     {
-        public static Vector2[] directionsCompassV2 = new Vector2[]
+        public static Vector2[] directions8 = new Vector2[]
         {
             new Vector2(1, 0),
             new Vector2(1, 1),
@@ -18,7 +18,7 @@ namespace HHG.Common.Runtime
             new Vector2(1, -1)
         };
 
-        public static Vector2[] directionsCardinalV2 = new Vector2[]
+        public static Vector2[] directions4 = new Vector2[]
         {
             new Vector2(1, 0),
             new Vector2(0, 1),
@@ -26,7 +26,7 @@ namespace HHG.Common.Runtime
             new Vector2(0, -1)
         };
 
-        public static Vector2[] directionsOrdinalV2 = new Vector2[]
+        public static Vector2[] directions4Diagonal = new Vector2[]
         {
             new Vector2(1, 1),
             new Vector2(1, -1),
@@ -284,42 +284,42 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static Vector2Int SnapToNearestDirectionCompass(this Vector3 direction)
+        public static Vector3Int SnapToNearestDirection8(this Vector3 direction)
         {
-            return direction.SnapToNearestDirection(directionsCompassV2);
+            return direction.SnapToNearestDirectionHelper(directions8);
         }
 
-        public static Vector2Int SnapToNearestDirectionCardinal(this Vector3 direction)
+        public static Vector3Int SnapToNearestDirection4(this Vector3 direction)
         {
-            return direction.SnapToNearestDirection(directionsCardinalV2);
+            return direction.SnapToNearestDirectionHelper(directions4);
         }
 
-        public static Vector2Int SnapToNearestDirectionOrdinal(this Vector3 direction)
+        public static Vector3Int SnapToNearestDirection4Diagonal(this Vector3 direction)
         {
-            return direction.SnapToNearestDirection(directionsOrdinalV2);
+            return direction.SnapToNearestDirectionHelper(directions4Diagonal);
         }
 
-        public static Vector2Int SnapToNearestDirectionCompass(this Vector2 direction)
+        public static Vector3Int SnapToNearestDirection8(this Vector2 direction)
         {
-            return direction.SnapToNearestDirection(directionsCompassV2);
+            return direction.SnapToNearestDirectionHelper(directions8);
         }
 
-        public static Vector2Int SnapToNearestDirectionCardinal(this Vector2 direction)
+        public static Vector3Int SnapToNearestDirection4(this Vector2 direction)
         {
-            return direction.SnapToNearestDirection(directionsCardinalV2);
+            return direction.SnapToNearestDirectionHelper(directions4);
         }
 
-        public static Vector2Int SnapToNearestDirectionOrdinal(this Vector2 direction)
+        public static Vector3Int SnapToNearestDirection4Diagonal(this Vector2 direction)
         {
-            return direction.SnapToNearestDirection(directionsOrdinalV2);
+            return direction.SnapToNearestDirectionHelper(directions4Diagonal);
         }
 
-        public static Vector2Int SnapToNearestDirection(this Vector3 direction, Vector2[] directions)
+        private static Vector3Int SnapToNearestDirectionHelper(this Vector3 direction, Vector2[] directions)
         {
-            return ((Vector2)direction).SnapToNearestDirection(directions);
+            return ((Vector2)direction).SnapToNearestDirectionHelper(directions);
         }
 
-        public static Vector2Int SnapToNearestDirection(this Vector2 direction, Vector2[] directions)
+        private static Vector3Int SnapToNearestDirectionHelper(this Vector2 direction, Vector2[] directions)
         {
             direction.Normalize();
             Vector2 closestDirection = Vector2.zero;
@@ -335,7 +335,7 @@ namespace HHG.Common.Runtime
                 }
             }
 
-            return new Vector2Int(Mathf.RoundToInt(closestDirection.x), Mathf.RoundToInt(closestDirection.y));
+            return new Vector3Int(Mathf.RoundToInt(closestDirection.x), Mathf.RoundToInt(closestDirection.y));
         }
 
         public static float ToAngle(this Vector3 direction)

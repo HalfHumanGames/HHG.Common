@@ -1,9 +1,19 @@
-using System;
+using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
     public static class NumberExtensions
     {
+        public static float Round(this float number)
+        {
+            return Mathf.Round(number);
+        }
+
+        public static int RoundToInt(this float number)
+        {
+            return Mathf.RoundToInt(number);
+        }
+
         public static float RoundToNearest(this float number, float nearest)
         {
             if (nearest == 0)
@@ -12,7 +22,7 @@ namespace HHG.Common.Runtime
             }
             float factor = 1 / nearest;
             float retval = number * factor;
-            retval = (float)Math.Round(retval, MidpointRounding.AwayFromZero);
+            retval = (float)System.Math.Round(retval, System.MidpointRounding.AwayFromZero);
             return retval / factor;
         }
 
@@ -39,7 +49,7 @@ namespace HHG.Common.Runtime
         public static int ToFlags(this int[] ints)
         {
             int flags = 0;
-            Array.ForEach(ints, i => flags |= 1 << i);
+            System.Array.ForEach(ints, i => flags |= 1 << i);
             return flags;
         }
     }

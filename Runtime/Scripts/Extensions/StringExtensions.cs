@@ -7,6 +7,11 @@ namespace HHG.Common.Runtime
 {
     public static class StringExtensions
     {
+        public static string RemoveBacketedText(this string s)
+        {
+            return Regex.Replace(s, @"\s*[\(\[\<][^)\]\>]*[\)\]\>]", string.Empty);
+        }
+
         public static string ReplaceMany(this string s, char[] search, char replace)
         {
             string[] temp = s.Split(search, StringSplitOptions.RemoveEmptyEntries);
