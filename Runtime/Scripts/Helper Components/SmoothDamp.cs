@@ -13,7 +13,15 @@ namespace HHG.Common.Runtime
 
         private void Update()
         {
-            transform.position = Vector3.SmoothDamp(transform.position, target.TransformPoint(offset), ref velocity, smoothTime, maxSpeed);
+            if (target != null)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, target.TransformPoint(offset), ref velocity, smoothTime, maxSpeed);
+            }
         }
-    } 
+
+        public void SetTarget(Transform target)
+        {
+            this.target = target;
+        }
+    }
 }

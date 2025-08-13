@@ -34,6 +34,8 @@ namespace HHG.Common.Runtime
             {
                 outlineMaterial = outlineGraphic.material;
             }
+
+            Hide();
         }
 
         private void OnEnable()
