@@ -1,12 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
-using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
@@ -108,12 +105,21 @@ namespace HHG.Common.Runtime
 
         public static IEnumerator YieldAllParallel(IEnumerable<IEnumerator> enumerators)
         {
-            return YieldAllParallel(enumerators.Select(e => StartCoroutine(e)));
-        }
+            int running = 0;
 
-        public static IEnumerator YieldAllParallel(IEnumerable<Coroutine> coroutines)
-        {
-            foreach (Coroutine coroutine in coroutines) yield return coroutine;
+            foreach (IEnumerator enumerator in enumerators)
+            {
+                StartCoroutine(Run(enumerator));
+            }
+
+            while (running > 0) yield return null;
+
+            IEnumerator Run(IEnumerator enumerator)
+            {
+                running++;
+                yield return enumerator;
+                running--;
+            }
         }
     }
 }
