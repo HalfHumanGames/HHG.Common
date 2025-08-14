@@ -239,14 +239,12 @@ namespace HHG.Common.Runtime
             public void LayoutComplete()
             {
                 done?.Invoke();
-
-                // Do after done callback
-                ObjectPool.Release(this);
             }
 
             public void GraphicUpdateComplete()
             {
-
+                CanvasUpdateRegistry.UnRegisterCanvasElementForRebuild(this);
+                ObjectPool.Release(this);
             }
         }
     }
