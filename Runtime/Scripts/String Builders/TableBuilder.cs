@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -10,9 +11,11 @@ namespace HHG.Common.Runtime
         private static readonly Regex richTextRegex = new(@"<.*?>", RegexOptions.Compiled);
 
         public int Length { get => sb.Length; set => sb.Length = value; }
+        public int Width => width;
 
         private readonly StringBuilder sb = new();
         private readonly int[] widths;
+        private readonly int width;
         private readonly Align[] alignments;
 
         private enum Align { Left, Center, Right }
@@ -20,6 +23,7 @@ namespace HHG.Common.Runtime
         public TableBuilder(params int[] columns)
         {
             widths = columns;
+            width = widths.Sum(); // Do after set widths
             alignments = new Align[columns.Length];
             System.Array.Fill(alignments, Align.Left);
         }
@@ -34,6 +38,8 @@ namespace HHG.Common.Runtime
                 widths[i] = int.Parse(Regex.Match(columns[i], @"^\d+").Value);
                 alignments[i] = ParseAlignment(Regex.Match(columns[i], @"[LCR]").Value);
             }
+
+            width = widths.Sum(); // Do after set widths
         }
 
         public void Append(string text) => sb.Append(text);
