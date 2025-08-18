@@ -1,3 +1,4 @@
+using System.Text;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -51,6 +52,41 @@ namespace HHG.Common.Runtime
             int flags = 0;
             System.Array.ForEach(ints, i => flags |= 1 << i);
             return flags;
+        }
+
+        private static readonly (int Value, string Symbol)[] romanNumerals =
+        {
+            (1000, "M"),
+            (900, "CM"),
+            (500, "D"),
+            (400, "CD"),
+            (100, "C"),
+            (90, "XC"),
+            (50, "L"),
+            (40, "XL"),
+            (10, "X"),
+            (9, "IX"),
+            (5, "V"),
+            (4, "IV"),
+            (1, "I")
+        };
+
+        public static string ToRomanNumeral(this int number)
+        {
+            if (number <= 0) throw new System.ArgumentOutOfRangeException(nameof(number), "Roman numerals require a positive integer.");
+
+            StringBuilder result = new StringBuilder();
+
+            foreach ((int value, string symbol) in romanNumerals)
+            {
+                while (number >= value)
+                {
+                    result.Append(symbol);
+                    number -= value;
+                }
+            }
+
+            return result.ToString();
         }
     }
 }
