@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HHG.Common.Runtime
 {
     public class TimedEventScheduler
     {
+        public IEnumerable<TimedEvent> AllEvents => ExpiredEvents.Concat(ScheduledEvents);
         public IReadOnlyList<TimedEvent> ScheduledEvents => scheduledEvents;
         public IReadOnlyList<TimedEvent> ExpiredEvents => expiredEvents;
 
