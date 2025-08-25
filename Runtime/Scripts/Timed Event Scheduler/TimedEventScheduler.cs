@@ -30,10 +30,11 @@ namespace HHG.Common.Runtime
         }
 
         public void Unschedule(TimedEvent timedEvent)
-        {
+        {                
+            timedEvent.Unschedule();
+
             if (scheduledEventsHash.Contains(timedEvent))
             {
-                timedEvent.Unschedule();
                 timedEvent.WeakRescheduled -= OnRescheduled;
                 scheduledEvents.Remove(timedEvent);
                 scheduledEventsHash.Remove(timedEvent);
