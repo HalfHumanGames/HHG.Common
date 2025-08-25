@@ -69,9 +69,15 @@ namespace HHG.Common.Runtime
             yield break;
         }
 
-        public static Coroutine StartCoroutine(IEnumerator enumerator)
+        public static Coroutine StartCoroutine(IEnumerator enumerator, System.Action onComplete = null)
         {
-            return isQuitting || Coroutiner == null ? null : Coroutiner.StartCoroutine(enumerator);
+            return isQuitting || Coroutiner == null ? null : Coroutiner.StartCoroutine(Run(enumerator, onComplete));
+
+            static IEnumerator Run(IEnumerator enumerator, System.Action onComplete = null)
+            {
+                yield return enumerator;
+                onComplete?.Invoke();
+            }
         }
 
         public static void StopCoroutine(Coroutine coroutine)
