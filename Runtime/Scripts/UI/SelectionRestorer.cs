@@ -62,7 +62,7 @@ namespace HHG.Common.Runtime
         public void SearchForSelectables()
         {
             selectables.Clear();
-            selectables.AddRange(GetComponentsInChildren<Selectable>(true));
+            selectables.UnionWith(GetComponentsInChildren<Selectable>(true));
         }
     }
 }
