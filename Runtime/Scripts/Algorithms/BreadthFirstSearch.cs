@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace HHG.Common.Runtime
 {
     public class BreadthFirstSearch
     {
-        private static readonly Vector3Int[] cardinalDirections = new Vector3Int[]
+        private static readonly Vector3Int[] directions4 = new Vector3Int[]
         {
             new Vector3Int(1, 0, 0),
             new Vector3Int(-1, 0, 0),
@@ -15,13 +13,20 @@ namespace HHG.Common.Runtime
             new Vector3Int(0, -1, 0),
         };
 
-        private static readonly Vector3Int[] diagonalDirections = new Vector3Int[]
+        private static readonly Vector3Int[] directions8 = new Vector3Int[]
         {
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, -1, 0),
             new Vector3Int(1, 1, 0),
             new Vector3Int(-1, 1, 0),
             new Vector3Int(1, -1, 0),
             new Vector3Int(-1, -1, 0)
         };
+
+        private static readonly Queue<Node> queue = new();
+        private static readonly HashSet<Vector3Int> visited = new();
 
         private struct Node
         {
@@ -38,7 +43,7 @@ namespace HHG.Common.Runtime
         public static void Fill(
             Vector3Int start,
             float range,
-            ICollection<Vector3Int> obstacles,
+            ISet<Vector3Int> obstacles, // Use ISet for O(1) lookups
             ICollection<Vector3Int> fill,
             bool useDiagonal = true,
             float cardinalCost = 1f,
@@ -51,45 +56,42 @@ namespace HHG.Common.Runtime
             fill.Clear();
             costMap?.Clear();
 
-            var queue = QueuePool<Node>.Get();
-            var visited = HashSetPool<Vector3Int>.Get();
+            queue.Clear();
+            visited.Clear();
 
             queue.Enqueue(new Node(start, 0));
             visited.Add(start);
             costMap?.Add(start, 0f);
 
-            var directions = Enumerable.Empty<Vector3Int>().Concat(cardinalDirections);
-            if (useDiagonal) directions = directions.Concat(diagonalDirections);
+            Vector3Int[] directions = useDiagonal ? directions8 : directions4;
 
             while (queue.Count > 0)
             {
                 Node node = queue.Dequeue();
 
-                foreach (var direction in directions)
+                for (int i = 0; i < directions.Length; i++)
                 {
-                    var neighbor = node.Position + direction;
+                    Vector3Int neighbor = node.Position;
+                    neighbor.x += directions[i].x;
+                    neighbor.y += directions[i].y;
 
-                    if (visited.Contains(neighbor) || obstacles.Contains(neighbor))
-                    {
-                        continue;
-                    }
+                    // fast check if already visited
+                    if (!visited.Add(neighbor)) continue;
 
-                    bool isDiagonal = direction.x != 0 && direction.y != 0;
+                    if (obstacles.Contains(neighbor)) continue;
+
+                    bool isDiagonal = i >= 4;
                     float stepCost = isDiagonal ? diagonalCost : cardinalCost;
                     float newCost = node.Cost + stepCost;
 
                     if (newCost <= range)
                     {
                         queue.Enqueue(new Node(neighbor, newCost));
-                        visited.Add(neighbor);
                         fill.Add(neighbor);
                         costMap?.Add(neighbor, newCost);
                     }
                 }
             }
-
-            QueuePool<Node>.Release(queue);
-            HashSetPool<Vector3Int>.Release(visited);
         }
     }
 }
