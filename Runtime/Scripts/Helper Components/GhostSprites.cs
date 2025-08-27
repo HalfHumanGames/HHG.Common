@@ -17,7 +17,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Material material;
 
-        private GameObjectPool<SpriteRenderer> pool;
+        private Prototype prototype;
         private Queue<SpriteRenderer> ghosts;
         private SpriteRenderer ghostsTail;
         private SortingGroup sortingGroup;
@@ -31,7 +31,7 @@ namespace HHG.Common.Runtime
                 CreateTemplate();
             }
 
-            pool = GameObjectPool.GetPool(nameof(GhostSprites), template, container, Debug.isDebugBuild, ghostCount, 10000, true);
+            prototype = template.gameObject.AddComponent<Prototype>();
             ghosts = new Queue<SpriteRenderer>(ghostCount);
 
             if (spriteRenderer == null)
@@ -142,7 +142,7 @@ namespace HHG.Common.Runtime
 
         private void RetrieveGhost(Vector3 ghostPosition)
         {
-            SpriteRenderer ghost = pool.Get();
+            SpriteRenderer ghost = prototype.Instantiate<SpriteRenderer>();
             SetupGhost(ghost, ghostPosition);
             ghost.gameObject.SetActive(true);
             ghosts.Enqueue(ghost);
@@ -157,7 +157,7 @@ namespace HHG.Common.Runtime
             if (ghost != null)
             {
                 ghost.gameObject.SetActive(false);
-                pool.Release(ghost);
+                ghost.GetComponent<Prototype>().ReturnToPool();
             }
         }
 
