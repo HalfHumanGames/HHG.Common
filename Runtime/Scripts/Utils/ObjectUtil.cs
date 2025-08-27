@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 
 namespace HHG.Common.Runtime
@@ -86,7 +85,7 @@ namespace HHG.Common.Runtime
         {
             components.Clear();
 
-            List<T> temp = ListPool<T>.Get();
+            List<T> temp = Pool.GetList<T>();
 
             foreach (GameObject gameObject in SceneManager.GetActiveScene().GetRootGameObjects())
             {
@@ -94,7 +93,7 @@ namespace HHG.Common.Runtime
                 components.AddRange(temp);
             }
 
-            ListPool<T>.Release(temp);
+            Pool.ReleaseList(temp);
         }
     }
 }

@@ -442,16 +442,16 @@ namespace HHG.Common.Runtime
         // ObjectPool.Release will fail if call StopCoroutine on the invoker
         private static Invoker GetInvokerFromObjectPool(this MonoBehaviour mono)
         {
-            Invoker invoker = ObjectPool.Get<Invoker>();
-            invoker.Initialize(mono, () => ObjectPool.Release(invoker));
+            Invoker invoker = Pool.Get<Invoker>();
+            invoker.Initialize(mono, () => Pool.Release(invoker));
             return invoker;
         }
 
         // ObjectPool.Release will fail if call StopCoroutine on the invoker
         private static Invoker<T> GetInvokerFromObjectPool<T>(this MonoBehaviour mono)
         {
-            Invoker<T> invoker = ObjectPool.Get<Invoker<T>>();
-            invoker.Initialize(mono, () => ObjectPool.Release(invoker));
+            Invoker<T> invoker = Pool.Get<Invoker<T>>();
+            invoker.Initialize(mono, () => Pool.Release(invoker));
             return invoker;
         }
 

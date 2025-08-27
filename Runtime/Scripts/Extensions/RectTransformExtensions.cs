@@ -193,7 +193,7 @@ namespace HHG.Common.Runtime
             {
                 rebuildLayoutRects.Add(rect);
 
-                LayoutRebuildHelper rebuilder = ObjectPool.Get<LayoutRebuildHelper>();
+                LayoutRebuildHelper rebuilder = Pool.Get<LayoutRebuildHelper>();
                 rebuilder.Initialize(rect, done);
                 CanvasUpdateRegistry.RegisterCanvasElementForLayoutRebuild(rebuilder);
             }
@@ -244,7 +244,7 @@ namespace HHG.Common.Runtime
             public void GraphicUpdateComplete()
             {
                 CanvasUpdateRegistry.UnRegisterCanvasElementForRebuild(this);
-                ObjectPool.Release(this);
+                Pool.Release(this);
             }
         }
     }

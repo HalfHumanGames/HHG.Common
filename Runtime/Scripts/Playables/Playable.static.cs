@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace HHG.Common.Runtime
 {
@@ -62,7 +61,7 @@ namespace HHG.Common.Runtime
         {
             Playable root = new Playable();
 
-            using (ListPool<Component>.Get(out List<Component> components))
+            using (Pool.GetList(out List<Component> components))
             {
                 gameObject.GetComponentsInChildren(true, components);
 
@@ -101,8 +100,8 @@ namespace HHG.Common.Runtime
             pause ??= _ => { };
             resume ??= _ => { };
             isPlaying ??= _ => false;
-
-            using (ListPool<T>.Get(out List<T> components))
+            
+            using (Pool.GetList(out List<T> components))
             {
                 gameObject.GetComponentsInChildren(components);
 
