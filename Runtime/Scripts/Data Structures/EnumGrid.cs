@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public abstract class EnumGrid<T> : IEnumerable<Vector3Int> where T : Enum
+    public abstract class EnumGrid<T> : IEnumerable<KeyValuePair<Vector3Int, T>> where T : Enum
     {
         public bool IsValid => sprite != null;
 
@@ -51,9 +51,9 @@ namespace HHG.Common.Runtime
             this.sprite = sprite;
         }
 
-        public IEnumerator<Vector3Int> GetEnumerator()
+        public IEnumerator<KeyValuePair<Vector3Int, T>> GetEnumerator()
         {
-            return grid.Keys.GetEnumerator();
+            return grid.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
