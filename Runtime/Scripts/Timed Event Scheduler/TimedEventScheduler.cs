@@ -29,8 +29,13 @@ namespace HHG.Common.Runtime
             }
         }
 
+        public void Reschedule(TimedEvent timedEvent, float timeRemaining)
+        {
+            timedEvent.Reschedule(timeRemaining);
+        }
+
         public void Unschedule(TimedEvent timedEvent)
-        {                
+        {
             timedEvent.Unschedule();
 
             if (scheduledEventsHash.Contains(timedEvent))
@@ -97,7 +102,7 @@ namespace HHG.Common.Runtime
             {
                 expiredEvent = null;
                 return false;
-            }  
+            }
         }
 
         public void Clear()
@@ -115,17 +120,36 @@ namespace HHG.Common.Runtime
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("TimedEventScheduler");
-            foreach (TimedEvent timedEvent in scheduledEvents)
+            using (Pool.Get(out StringBuilder sb))
             {
-                sb.AppendLine($" - {timedEvent}");
+                sb.AppendLine("TimedEventScheduler");
+                foreach (TimedEvent timedEvent in scheduledEvents)
+                {
+                    sb.AppendLine($" - {timedEvent}");
+                }
+                return sb.ToString();
             }
-            return sb.ToString();
         }
 
         private void OnRescheduled(TimedEvent timedEvent, float duration)
         {
-            scheduledEvents.ResortItem(timedEvent);
+            if (scheduledEventsHash.Contains(timedEvent))
+            {
+                scheduledEvents.ResortItem(timedEvent);
+            }
+            else if (expiredEventsHash.Contains(timedEvent))
+            {
+                // Add back into scheduled list if new time is > 0
+                if (duration > 0f)
+                {
+                    expiredEvents.Remove(timedEvent);
+                    expiredEventsHash.Remove(timedEvent);
+
+                    scheduledEvents.SortedInsert(timedEvent);
+                    scheduledEventsHash.Add(timedEvent);
+                }
+            }
+            else throw new System.InvalidOperationException($"Timed event not found in scheduler: {timedEvent}");
         }
     }
 }

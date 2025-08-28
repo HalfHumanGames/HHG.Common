@@ -254,9 +254,15 @@ namespace HHG.Common.Runtime
             return enumerable.Select(x => x.Context);
         }
 
+        // This only works if context is passed as the same type of the timed event's context
         public static TimedEvent<T> Find<T>(this IEnumerable<TimedEvent> enumerable, T context)
         {
             return enumerable.ByContextType<T>().FirstOrDefault(x => x.Context.Equals(context));
+        }
+
+        public static TimedEvent FindWeak(this IEnumerable<TimedEvent> enumerable, object context)
+        {
+            return enumerable.FirstOrDefault(x => x.WeakContext?.Equals(context) == true);
         }
     }
 }
