@@ -33,8 +33,6 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static Coroutine Empty => StartCoroutine(YieldBreak());
-
         private static MonoBehaviour coroutiner;
         private static bool isQuitting;
 
@@ -64,20 +62,9 @@ namespace HHG.Common.Runtime
             coroutiner?.StopAllCoroutines();
         }
 
-        private static IEnumerator YieldBreak()
-        {
-            yield break;
-        }
-
         public static Coroutine StartCoroutine(IEnumerator enumerator, System.Action onComplete = null)
         {
-            return isQuitting || Coroutiner == null ? null : Coroutiner.StartCoroutine(Run(enumerator, onComplete));
-
-            static IEnumerator Run(IEnumerator enumerator, System.Action onComplete = null)
-            {
-                yield return enumerator;
-                onComplete?.Invoke();
-            }
+            return !isQuitting && Coroutiner != null ? Coroutiner.StartCoroutine(enumerator, onComplete) : null;
         }
 
         public static void StopCoroutine(Coroutine coroutine)
@@ -90,42 +77,20 @@ namespace HHG.Common.Runtime
 
         public static void StopAndNullifyCoroutine(ref Coroutine coroutine)
         {
-            if (!isQuitting && Coroutiner != null && coroutine != null)
+            if (!isQuitting && Coroutiner != null)
             {
-                Coroutiner.StopCoroutine(coroutine);
-                coroutine = null;
+                Coroutiner.StopAndNullifyCoroutine(ref coroutine);
             }
         }
 
-        public static void ReplaceCoroutine(ref Coroutine coroutine, Coroutine val)
+        public static IEnumerator YieldParallel(IEnumerable<IEnumerator> enumerators)
         {
-            StopAndNullifyCoroutine(ref coroutine);
-            coroutine = val;
+            yield return !isQuitting && Coroutiner != null ? Coroutiner.YieldParallel(enumerators) : null;
         }
 
-        public static void ReplaceCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
+        public static IEnumerator YieldSliced<T>(IEnumerable<T> items, int perFrame, System.Action<T> action)
         {
-            StopAndNullifyCoroutine(ref coroutine);
-            coroutine = StartCoroutine(enumerator);
-        }
-
-        public static IEnumerator YieldAllParallel(IEnumerable<IEnumerator> enumerators)
-        {
-            int running = 0;
-
-            foreach (IEnumerator enumerator in enumerators)
-            {
-                StartCoroutine(Run(enumerator));
-            }
-
-            while (running > 0) yield return null;
-
-            IEnumerator Run(IEnumerator enumerator)
-            {
-                running++;
-                yield return enumerator;
-                running--;
-            }
+            yield return !isQuitting && Coroutiner != null ? Coroutiner.YieldSliced(items, perFrame, action) : null;
         }
     }
 }
