@@ -8,7 +8,7 @@ namespace HHG.Common.Runtime
     {
         private static Lazy<Transform> _container = new Lazy<Transform>();
         private static Transform container => _container.FromFindOrCreate("Ghost Sprites");
-        private static SpriteRenderer template;
+        private static Prototype prototype;
 
         [SerializeField] private int ghostCount = 10;
         [SerializeField] private float spacing = .1f;
@@ -17,7 +17,6 @@ namespace HHG.Common.Runtime
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Material material;
 
-        private Prototype prototype;
         private Queue<SpriteRenderer> ghosts;
         private SpriteRenderer ghostsTail;
         private SortingGroup sortingGroup;
@@ -26,12 +25,11 @@ namespace HHG.Common.Runtime
 
         private void Start()
         {
-            if (template == null)
+            if (prototype == null)
             {
-                CreateTemplate();
+                CreatePrototype();
             }
 
-            prototype = template.gameObject.AddComponent<Prototype>();
             ghosts = new Queue<SpriteRenderer>(ghostCount);
 
             if (spriteRenderer == null)
@@ -44,11 +42,11 @@ namespace HHG.Common.Runtime
             ReinitializeVariables();
         }
 
-        private void CreateTemplate()
+        private void CreatePrototype()
         {
-            template = new GameObject("Ghost Template").AddComponent<SpriteRenderer>();
-            SetupGhost(template, default);
-            template.gameObject.SetActive(false);
+            GameObject prototypeGO = new GameObject("Ghost Prototype", typeof(SpriteRenderer), typeof(Prototype));
+            prototype = prototypeGO.GetComponent<Prototype>();
+            prototype.gameObject.SetActive(false);
         }
 
         private void ReinitializeVariables()
