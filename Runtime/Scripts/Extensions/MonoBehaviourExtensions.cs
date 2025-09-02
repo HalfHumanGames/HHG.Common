@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,7 +47,7 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static IEnumerator YieldSliced<T>(this MonoBehaviour mono, IEnumerable<T> items, int perFrame, Action<T> action)
+        public static IEnumerator YieldSliced<T>(this MonoBehaviour mono, IEnumerable<T> items, int perFrame, System.Action<T> action)
         {
             if (items == null) yield break;
             if (action == null) yield break;

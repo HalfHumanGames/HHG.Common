@@ -5,6 +5,26 @@ namespace HHG.Common.Runtime
 {
     public static class NumberExtensions
     {
+        public static float Ceil(this float number)
+        {
+            return Mathf.Ceil(number);
+        }
+
+        public static int CeilToInt(this float number)
+        {
+            return Mathf.CeilToInt(number);
+        }
+
+        public static float Floor(this float number)
+        {
+            return Mathf.Floor(number);
+        }
+
+        public static int FloorToInt(this float number)
+        {
+            return Mathf.FloorToInt(number);
+        }
+
         public static float Round(this float number)
         {
             return Mathf.Round(number);
