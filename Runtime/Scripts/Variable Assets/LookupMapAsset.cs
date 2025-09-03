@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
@@ -7,7 +8,7 @@ namespace HHG.Common.Runtime
     {
         protected override void SwapKeyValue()
         {
-            map = new SerializedDictionary<T, T>(map.Values, map.Keys);
+            map = new SerializedDictionary<T, T>(map.ToDictionary(i => i.Value, i => i.Key));
         }
     }
 
