@@ -83,14 +83,14 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static IEnumerator YieldParallel(IEnumerable<IEnumerator> enumerators)
+        public static IEnumerator WaitForAll(IEnumerable<Coroutine> coroutines)
         {
-            yield return !isQuitting && Coroutiner != null ? Coroutiner.YieldParallel(enumerators) : null;
+            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForAll(coroutines) : null;
         }
 
-        public static IEnumerator YieldSliced<T>(IEnumerable<T> items, int perFrame, System.Action<T> action)
+        public static IEnumerator WaitForSliced<T>(IEnumerable<T> items, int sliceSize, System.Action<T> action)
         {
-            yield return !isQuitting && Coroutiner != null ? Coroutiner.YieldSliced(items, perFrame, action) : null;
+            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForSliced(items, sliceSize, action) : null;
         }
     }
 }

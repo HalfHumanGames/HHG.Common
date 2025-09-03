@@ -26,32 +26,21 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static IEnumerator YieldParallel(this MonoBehaviour mono, IEnumerable<IEnumerator> enumerators)
+        public static IEnumerator WaitForAll(this MonoBehaviour mono, IEnumerable<Coroutine> coroutines)
         {
-            if (enumerators == null) yield break;
+            if (coroutines == null) yield break;
 
-            int running = 0;
-
-            foreach (IEnumerator enumerator in enumerators)
+            foreach (Coroutine coroutine in coroutines)
             {
-                mono.StartCoroutine(Run(enumerator));
-            }
-
-            while (running > 0) yield return null;
-
-            IEnumerator Run(IEnumerator enumerator)
-            {
-                running++;
-                yield return enumerator;
-                running--;
+                yield return coroutine;
             }
         }
 
-        public static IEnumerator YieldSliced<T>(this MonoBehaviour mono, IEnumerable<T> items, int perFrame, System.Action<T> action)
+        public static IEnumerator WaitForSliced<T>(this MonoBehaviour mono, IEnumerable<T> items, int sliceSize, System.Action<T> action)
         {
             if (items == null) yield break;
             if (action == null) yield break;
-            if (perFrame <= 0) perFrame = 1;
+            if (sliceSize <= 0) sliceSize = 1;
 
             int count = 0;
             foreach (T item in items)
@@ -59,7 +48,7 @@ namespace HHG.Common.Runtime
                 action(item);
                 count++;
 
-                if (count >= perFrame)
+                if (count >= sliceSize)
                 {
                     count = 0;
                     yield return null;
