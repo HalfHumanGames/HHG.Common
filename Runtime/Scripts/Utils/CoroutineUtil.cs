@@ -83,9 +83,9 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static IEnumerator WaitForAll(IEnumerable<Coroutine> coroutines)
+        public static IEnumerator WaitForAll(CoroutineHandle coroutine)
         {
-            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForAll(coroutines) : null;
+            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForAll(coroutine) : null;
         }
 
         public static IEnumerator WaitForSliced<T>(IEnumerable<T> items, int sliceSize, System.Action<T> action)

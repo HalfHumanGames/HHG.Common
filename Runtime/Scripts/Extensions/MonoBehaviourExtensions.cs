@@ -26,14 +26,11 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static IEnumerator WaitForAll(this MonoBehaviour mono, IEnumerable<Coroutine> coroutines)
+        public static IEnumerator WaitForAll(this MonoBehaviour mono, CoroutineHandle coroutine)
         {
-            if (coroutines == null) yield break;
+            if (coroutine == null) yield break;
 
-            foreach (Coroutine coroutine in coroutines)
-            {
-                yield return coroutine;
-            }
+            while (!coroutine.IsDone) yield return null;
         }
 
         public static IEnumerator WaitForSliced<T>(this MonoBehaviour mono, IEnumerable<T> items, int sliceSize, System.Action<T> action)
