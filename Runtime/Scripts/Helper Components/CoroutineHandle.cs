@@ -24,16 +24,21 @@ namespace HHG.Common.Runtime
             }
         }
 
-        public static CoroutineHandle GetFromPool()
+        public static CoroutineHandle GetFromPool(MonoBehaviour owner = null)
         {
             locked = false;
             CoroutineHandle handle = Pool.Get<CoroutineHandle>();
             locked = true;
-            handle.owner = null;
+            handle.owner = owner;
             handle.coroutine = null;
             handle.isDone = true;
             handle.children.Clear();
             return handle;
+        }
+
+        public CoroutineHandle StartCoroutine(IEnumerator routine)
+        {
+            return StartCoroutine(owner, routine);
         }
 
         public CoroutineHandle StartCoroutine(MonoBehaviour owner, IEnumerator routine)
@@ -41,7 +46,7 @@ namespace HHG.Common.Runtime
             if (owner == null) throw new System.ArgumentNullException(nameof(owner), "Owner MonoBehaviour cannot be null.");
             if (routine == null) throw new System.ArgumentNullException(nameof(routine), "Coroutine routine cannot be null.");
 
-            CoroutineHandle child = GetFromPool();
+            CoroutineHandle child = GetFromPool(owner);
             child.owner = owner;
             child.isDone = false;
             child.StartCoroutineInternal(routine);
