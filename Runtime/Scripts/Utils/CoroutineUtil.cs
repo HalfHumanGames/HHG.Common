@@ -67,6 +67,11 @@ namespace HHG.Common.Runtime
             return !isQuitting && Coroutiner != null ? Coroutiner.StartCoroutine(enumerator, onComplete) : null;
         }
 
+        public static Coroutine StartCoroutineSliced<T>(IEnumerable<T> items, int sliceSize, System.Action<T> action)
+        {
+            return !isQuitting && Coroutiner != null ? Coroutiner.StartCoroutineSliced(items, sliceSize, action) : null;
+        }
+
         public static void StopCoroutine(Coroutine coroutine)
         {
             if (!isQuitting && Coroutiner != null && coroutine != null)
@@ -81,16 +86,6 @@ namespace HHG.Common.Runtime
             {
                 Coroutiner.StopAndNullifyCoroutine(ref coroutine);
             }
-        }
-
-        public static IEnumerator WaitForAll(CoroutineHandle coroutine)
-        {
-            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForAll(coroutine) : null;
-        }
-
-        public static IEnumerator WaitForSliced<T>(IEnumerable<T> items, int sliceSize, System.Action<T> action)
-        {
-            yield return !isQuitting && Coroutiner != null ? Coroutiner.WaitForSliced(items, sliceSize, action) : null;
         }
     }
 }

@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class CoroutineHandle : System.IDisposable
+    public class CoroutineHandle : CustomYieldInstruction, System.IDisposable
     {
         private static bool locked = false;
 
-        public bool IsDone => isDone && children.TrueForAll(c => c.IsDone);
+        public override bool keepWaiting => !isDone || children.Any(c => c.keepWaiting);
 
         private MonoBehaviour owner;
         private Coroutine coroutine;
