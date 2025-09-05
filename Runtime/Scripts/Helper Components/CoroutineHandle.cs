@@ -38,7 +38,7 @@ namespace HHG.Common.Runtime
 
         public CoroutineHandle StartCoroutine(IEnumerator routine)
         {
-            return StartCoroutine(owner, routine);
+            return StartCoroutine(owner != null ? owner : CoroutineUtil.Coroutiner, routine);
         }
 
         public CoroutineHandle StartCoroutine(MonoBehaviour owner, IEnumerator routine)
