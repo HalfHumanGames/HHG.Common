@@ -16,6 +16,7 @@ namespace HHG.Common.Runtime
         public event Action<TimedEvent, float> WeakSchedule;
         public event Action<TimedEvent, float> WeakRescheduled;
         public event Action<TimedEvent, float> WeakUpdate;
+        public event Action<TimedEvent, float> WeakLateUpdate;
         public event Action<TimedEvent> WeakUnscheduled;
         public event Action<TimedEvent> WeakExpired;
 
@@ -36,6 +37,7 @@ namespace HHG.Common.Runtime
             WeakSchedule = null;
             WeakRescheduled = null;
             WeakUpdate = null;
+            WeakLateUpdate = null;
             WeakUnscheduled = null;
             WeakExpired = null;
         }
@@ -55,6 +57,11 @@ namespace HHG.Common.Runtime
             {
                 timeRemaining = 0f;
             }
+        }
+
+        public void LateUpdate(float timeElapsed)
+        {
+            OnLateUpdate(timeElapsed);
         }
 
         public void Reschedule(float duration)
@@ -92,7 +99,7 @@ namespace HHG.Common.Runtime
 
             if (weakContext is ITimedEventListener listener)
             {
-                listener.OnTimedEventScheduled(this, duration);
+                listener.OnTimedEventSchedule(this, duration);
             }
         }
 
@@ -102,7 +109,7 @@ namespace HHG.Common.Runtime
 
             if (weakContext is ITimedEventListener listener)
             {
-                listener.OnTimedEventRescheduled(this, duration);
+                listener.OnTimedEventReschedule(this, duration);
             }
         }
 
@@ -112,7 +119,17 @@ namespace HHG.Common.Runtime
 
             if (weakContext is ITimedEventListener listener)
             {
-                listener.OnTimedEventUpdated(this, timeElapsed);
+                listener.OnTimedEventUpdate(this, timeElapsed);
+            }
+        }
+
+        protected virtual void OnLateUpdate(float timeElapsed)
+        {
+            WeakLateUpdate?.Invoke(this, timeElapsed);
+
+            if (weakContext is ITimedEventListener listener)
+            {
+                listener.OnTimedEventLateUpdate(this, timeElapsed);
             }
         }
 
@@ -132,7 +149,7 @@ namespace HHG.Common.Runtime
 
             if (weakContext is ITimedEventListener listener)
             {
-                listener.OnTimedEventExpired(this);
+                listener.OnTimedEventExpire(this);
             }
         }
     }
@@ -146,6 +163,7 @@ namespace HHG.Common.Runtime
         public event Action<TimedEvent<T>, float> Scheduled;
         public event Action<TimedEvent<T>, float> Rescheduled;
         public event Action<TimedEvent<T>, float> Updated;
+        public event Action<TimedEvent<T>, float> LateUpdated;
         public event Action<TimedEvent<T>> Unscheduled;
         public event Action<TimedEvent<T>> Expired;
 
@@ -165,6 +183,7 @@ namespace HHG.Common.Runtime
             Scheduled = null;
             Rescheduled = null;
             Updated = null;
+            LateUpdated = null;
             Unscheduled = null;
             Expired = null;
             base.Initialize(duration, ctx);
@@ -193,7 +212,7 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventScheduled(this, duration);
+                listener.OnTimedEventSchedule(this, duration);
             }
         }
 
@@ -204,7 +223,7 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventRescheduled(this, duration);
+                listener.OnTimedEventReschedule(this, duration);
             }
         }
 
@@ -215,7 +234,18 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventUpdated(this, timeElapsed);
+                listener.OnTimedEventUpdate(this, timeElapsed);
+            }
+        }
+
+        protected override void OnLateUpdate(float timeElapsed)
+        {
+            base.OnLateUpdate(timeElapsed);
+            LateUpdated?.Invoke(this, timeElapsed);
+
+            if (context is ITimedEventListener<T> listener)
+            {
+                listener.OnTimedEventLateUpdate(this, timeElapsed);
             }
         }
 
@@ -226,7 +256,7 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventUnscheduled(this);
+                listener.OnTimedEventUnschedule(this);
             }
         }
 
@@ -237,7 +267,7 @@ namespace HHG.Common.Runtime
 
             if (context is ITimedEventListener<T> listener)
             {
-                listener.OnTimedEventExpired(this);
+                listener.OnTimedEventExpire(this);
             }
         }
     }

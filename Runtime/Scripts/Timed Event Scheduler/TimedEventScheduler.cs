@@ -63,6 +63,12 @@ namespace HHG.Common.Runtime
             {
                 TimedEvent scheduledEvent = scheduledEvents[i];
                 scheduledEvent.Update(deltaTime);
+            }
+
+            for (int i = 0; i < scheduledEvents.Count; i++)
+            {
+                TimedEvent scheduledEvent = scheduledEvents[i];
+                scheduledEvent.LateUpdate(deltaTime);
 
                 if (scheduledEvent.IsExpired)
                 {
