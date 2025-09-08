@@ -31,7 +31,7 @@ namespace HHG.Common.Runtime
             return group.GetColumnItems(cols - 1, cols, rows);
         }
 
-        public static (int cols, int rows) GetGridDimensions(GridLayoutGroup group)
+        public static (int cols, int rows) GetGridDimensions(this GridLayoutGroup group)
         {
             int childCount = group.transform.GetChildren().Count(c => c.gameObject.activeSelf);
 
