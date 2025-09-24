@@ -38,31 +38,39 @@ namespace HHG.Common.Runtime
             if (maxLineLength <= 0) throw new ArgumentException("'length' must be > 0");
 
             sb.Clear();
-            StringBuilder line = new StringBuilder();
-            int visibleLength = 0;
 
-            foreach (var word in text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            foreach (string line in text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
             {
-                int wordVisibleLen = word.CountVisibleCharacters();
-
-                if (visibleLength > 0 && visibleLength + 1 + wordVisibleLen > maxLineLength)
+                if (string.IsNullOrWhiteSpace(line))
                 {
-                    sb.AppendLine(line.ToString());
-                    line.Clear();
-                    visibleLength = 0;
+                    sb.AppendLine();
+                    continue;
                 }
 
-                if (visibleLength > 0)
+                int visibleLength = 0;
+
+                foreach (var word in line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 {
-                    line.Append(' ');
-                    visibleLength++;
+                    int wordVisibleLen = word.CountVisibleCharacters();
+
+                    if (visibleLength > 0 && visibleLength + 1 + wordVisibleLen > maxLineLength)
+                    {
+                        sb.AppendLine();
+                        visibleLength = 0;
+                    }
+
+                    if (visibleLength > 0)
+                    {
+                        sb.Append(' ');
+                        visibleLength++;
+                    }
+
+                    sb.Append(word);
+                    visibleLength += wordVisibleLen;
                 }
 
-                line.Append(word);
-                visibleLength += wordVisibleLen;
+                sb.AppendLine();
             }
-
-            if (line.Length > 0) sb.Append(line);
 
             return sb.ToString();
         }
