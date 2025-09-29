@@ -183,7 +183,7 @@ namespace HHG.Common.Runtime
                         int row = i / columns;
                         int col = i % columns;
                         nav.selectOnUp = (row > 0 && i - columns >= 0) ? selectables.ElementAt(i - columns) : (length - columns + col < length ? selectables.ElementAt(length - columns + col) : null);
-                        nav.selectOnDown = (row < (length - 1) / columns && i + columns < length) ? selectables.ElementAt(i + columns) : (col < length ? selectables.ElementAt(col) : null);
+                        nav.selectOnDown = (row < (length - 1) / columns && i + columns < length) ? selectables.ElementAt(i + columns) : col < columns ? selectables.Last() : (col < length ? selectables.ElementAt(col) : null);
                         nav.selectOnLeft = (col > 0 && i - 1 >= 0) ? selectables.ElementAt(i - 1) : (row * columns + (columns - 1) < length ? selectables.ElementAt(row * columns + (columns - 1)) : null);
                         nav.selectOnRight = (col < columns - 1 && i + 1 < length) ? selectables.ElementAt(i + 1) : (row * columns < length ? selectables.ElementAt(row * columns) : null);
                         break;
