@@ -8,13 +8,14 @@ namespace HHG.Common.Runtime
     public class PlayAnimation : MonoBehaviour
     {
         [SerializeField] private AnimationClip animationClip;
-        
+        [SerializeField] private DirectorUpdateMode updateMode = DirectorUpdateMode.GameTime;
+
         private PlayableGraph playableGraph;
 
         private void Start()
         {
             playableGraph = PlayableGraph.Create();
-            playableGraph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+            playableGraph.SetTimeUpdateMode(updateMode);
 
             AnimationPlayableOutput playableOutput = AnimationPlayableOutput.Create(playableGraph, "Animation", GetComponent<Animator>());
 

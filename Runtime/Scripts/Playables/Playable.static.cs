@@ -13,22 +13,29 @@ namespace HHG.Common.Runtime
             Register<Animation>(
                 animation => animation.Play(), 
                 animation => animation.Stop(),
-                null,
-                null,
+                animation => animation.Pause(),
+                animation => animation.Resume(),
                 animation => animation.isPlaying);
+
+            Register<Animator>(
+                animator => animator.SetTrigger(animator.parameters[0].nameHash),
+                animator => animator.SetTrigger(animator.parameters[1].nameHash),
+                animator => animator.speed = 0f,
+                animator => animator.speed = 1f,
+                animator => animator.isActiveAndEnabled);
 
             Register<AudioSource>(
                 audioSource => audioSource.Play(), 
                 audioSource => audioSource.Stop(),
-                null,
-                null,
+                audioSource => audioSource.Pause(),
+                audioSource => audioSource.UnPause(),
                 audioSource => audioSource.isPlaying);
 
             Register<ParticleSystem>(
                 particleSystem => particleSystem.Play(false), 
                 particleSystem => particleSystem.Stop(false),
-                null,
-                null,
+                particleSystem => particleSystem.Pause(false),
+                particleSystem => particleSystem.Play(false),
                 particleSystem => particleSystem.isPlaying);
         }
 
