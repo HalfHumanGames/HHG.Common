@@ -39,8 +39,11 @@ namespace HHG.Common.Runtime
 
             sb.Clear();
 
-            foreach (string line in text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
+            string[] split = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            for (int i = 0; i < split.Length; i++)
             {
+                string line = split[i];
+
                 if (string.IsNullOrWhiteSpace(line))
                 {
                     sb.AppendLine();
@@ -69,7 +72,10 @@ namespace HHG.Common.Runtime
                     visibleLength += wordVisibleLen;
                 }
 
-                sb.AppendLine();
+                if (i < split.Length - 1)
+                {
+                    sb.AppendLine();
+                }
             }
 
             return sb.ToString();
