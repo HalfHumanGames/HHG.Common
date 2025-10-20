@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public static class EnumerableExtensions
+    public static class IEnumerableExtensions
     {
         public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T item)
         {
