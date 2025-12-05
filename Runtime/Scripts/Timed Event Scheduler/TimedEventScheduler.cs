@@ -99,9 +99,13 @@ namespace HHG.Common.Runtime
             if (expiredEvents.Count > 0)
             {
                 expiredEvent = expiredEvents[0];
-                expiredEvent.Expire();
                 expiredEvents.RemoveAt(0);
                 expiredEventsHash.Remove(expiredEvent);
+
+                // Invoke Expire after removing it from the 
+                // expired collections in case the callbacks
+                // also attempt to unschedule this event
+                expiredEvent.Expire();
                 return true;
             }
             else
