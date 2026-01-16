@@ -13,7 +13,7 @@ namespace HHG.Common.Runtime
         public virtual int Priority => 0;
         public abstract bool HasAsset { get; }
 
-        [SerializeField, HideInInspector] private string id => Guid.NewGuid().ToString();
+        [SerializeField, HideInInspector] private string id = Guid.NewGuid().ToString();
 
         public enum LoadMode
         {
