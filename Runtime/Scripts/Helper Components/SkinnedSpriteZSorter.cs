@@ -33,10 +33,12 @@ namespace HHG.Common.Runtime
                 materialPropertyBlock.SetFloat(zOffsetPropertyID, zOffset);
                 spriteRenderer.SetPropertyBlock(materialPropertyBlock);
 
-                SpriteSkin skin = spriteRenderer.GetComponent<SpriteSkin>();
-                foreach (Transform boneTransform in skin.boneTransforms)
+                if (spriteRenderer.TryGetComponent(out SpriteSkin skin))
                 {
-                    boneTransform.SetLocalPositionZ(0f);
+                    foreach (Transform boneTransform in skin.boneTransforms)
+                    {
+                        boneTransform.SetLocalPositionZ(0f);
+                    }
                 }
             }
         }
