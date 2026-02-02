@@ -43,5 +43,18 @@ namespace HHG.Common.Runtime
 
             return pixels2D;
         }
+
+        public static Vector4 GetUVs(this Sprite sprite)
+        {
+            Rect rect = sprite.textureRect;
+            Vector2 size = new Vector2(sprite.texture.width, sprite.texture.height);
+
+            return new Vector4(
+                rect.xMin / size.x, // Min X
+                rect.yMin / size.y, // Min Y
+                rect.xMax / size.x, // Max X
+                rect.yMax / size.y  // Max Y
+            );
+        }
     }
 }

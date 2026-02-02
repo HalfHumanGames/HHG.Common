@@ -34,6 +34,23 @@ namespace HHG.Common.Runtime
             new Vector2(-1, -1)
         };
 
+        public static Vector2 Signed(this Vector2 v)
+        {
+            return new Vector2(
+                Mathf.Sign(v.x),
+                Mathf.Sign(v.y)
+            );
+        }
+
+        public static Vector3 Signed(this Vector3 v)
+        {
+            return new Vector3(
+                Mathf.Sign(v.x),
+                Mathf.Sign(v.y),
+                Mathf.Sign(v.z)
+            );
+        }
+
         public static Vector2 Round(this Vector2 v, float nearest = 1f)
         {
             return new Vector2(

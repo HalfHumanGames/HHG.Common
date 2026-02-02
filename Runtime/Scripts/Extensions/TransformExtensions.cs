@@ -240,20 +240,11 @@ namespace HHG.Common.Runtime
         public static void SetGlobalScale(this Transform transform, Vector3 scale)
         {
             transform.localScale = Vector3.one;
-            Vector3 denominator = transform.lossyScale;
-            if (transform.lossyScale.x == 0)
-            {
-                denominator = denominator.WithX(1);
-            }
-            if (transform.lossyScale.y == 0)
-            {
-                denominator = denominator.WithY(1);
-            }
-            if (transform.lossyScale.z == 0)
-            {
-                denominator = denominator.WithZ(1);
-            }
-            transform.localScale = new Vector3(scale.x / denominator.x, scale.y / denominator.y, scale.z / denominator.z);
+            Vector3 lossy = transform.lossyScale;
+            float x = lossy.x != 0 ? scale.x / lossy.x : transform.localScale.x;
+            float y = lossy.y != 0 ? scale.y / lossy.y : transform.localScale.y;
+            float z = lossy.z != 0 ? scale.z / lossy.z : transform.localScale.z;
+            transform.localScale = new Vector3(x, y, z);
         }
 
         public static void SetGlobalScale(this Transform tranform, Transform other)
