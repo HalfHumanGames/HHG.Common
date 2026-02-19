@@ -14,13 +14,13 @@ namespace HHG.Common.Runtime
 
         private MaterialPropertyBlock materialPropertyBlock;
 
-        private void Awake()
+        private void OnEnable()
         {
             SetZOffsets();
         }
 
         [ContextMenu("Set Z Offsets")]
-        private void SetZOffsets()
+        public void SetZOffsets()
         {
             materialPropertyBlock ??= new MaterialPropertyBlock();
 
