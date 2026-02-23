@@ -8,9 +8,10 @@ namespace HHG.Common.Runtime
     {
         private static System.Random random = new System.Random();
 
-        public static T GetRandom<T>(this List<T> list)
+        public static T GetRandom<T>(this List<T> list, System.Random rand = null)
         {
-            return list[random.Next(0, list.Count)];
+            rand ??= random;
+            return list[rand.Next(0, list.Count)];
         }
 
         public static void Remove<T>(this IList<T> list, System.Func<T, bool> func)
@@ -75,16 +76,17 @@ namespace HHG.Common.Runtime
         // Shuffle affects the list itself while Shuffled
         // returns a new IEnumerable, but does not affect
         // the source list itself
-        public static void Shuffle<T>(this IList<T> list)
+        public static void Shuffle<T>(this IList<T> list, System.Random rand = null)
         {
+            rand ??= random;
             int count = list.Count;
             int last = count - 1;
             for (int i = 0; i < last; ++i)
             {
-                int rand = random.Next(i, count);
+                int index = rand.Next(i, count);
                 T temp = list[i];
-                list[i] = list[rand];
-                list[rand] = temp;
+                list[i] = list[index];
+                list[index] = temp;
             }
         }
 

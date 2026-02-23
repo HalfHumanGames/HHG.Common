@@ -30,16 +30,16 @@ namespace HHG.Common.Runtime
             public List<Vector2> ActivePoints;
         }
 
-        public static List<Vector2> Sampling(Vector2 bottomLeft, Vector2 topRight, float minimumDistance)
+        public static List<Vector2> Sampling(Vector2 bottomLeft, Vector2 topRight, float minimumDistance, System.Random random = null)
         {
-            return Sampling(bottomLeft, topRight, minimumDistance, defaultIterationPerPoint);
+            return Sampling(bottomLeft, topRight, minimumDistance, defaultIterationPerPoint, random);
         }
 
-        public static List<Vector2> Sampling(Vector2 bottomLeft, Vector2 topRight, float minimumDistance, int iterationPerPoint)
+        public static List<Vector2> Sampling(Vector2 bottomLeft, Vector2 topRight, float minimumDistance, int iterationPerPoint, System.Random random = null)
         {
             Settings settings = GetSettings(bottomLeft, topRight, minimumDistance, iterationPerPoint <= 0 ? defaultIterationPerPoint : iterationPerPoint);
 
-            System.Random random = new System.Random();
+            random ??= new System.Random();
 
             Bags bags = new Bags()
             {

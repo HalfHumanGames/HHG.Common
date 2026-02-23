@@ -6,6 +6,8 @@ namespace HHG.Common.Runtime
 {
     public static class IEnumerableExtensions
     {
+        private static System.Random random = new System.Random();
+
         public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T item)
         {
             return source.Where(x => !EqualityComparer<T>.Default.Equals(x, item));
@@ -48,9 +50,10 @@ namespace HHG.Common.Runtime
         // Shuffle affects the list itself while Shuffled
         // returns a new IEnumerable, but does not affect
         // the source list itself
-        public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> enumerable)
+        public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> enumerable, System.Random rand = null)
         {
-            return enumerable.OrderBy(x => Random.Range(0, int.MaxValue));
+            rand ??= random;
+            return enumerable.OrderBy(x => rand.Next(0, int.MaxValue));
         }
 
         public static T RandomOrDefault<T>(this IEnumerable<T> enumerable)
@@ -68,22 +71,24 @@ namespace HHG.Common.Runtime
             return enumerable.Where(item => item != null);
         }
 
-        public static T SelectByWeight<T>(this IEnumerable<T> source, System.Func<T, int> getter)
+        public static T SelectByWeight<T>(this IEnumerable<T> source, System.Func<T, int> getter, System.Random rand = null)
         {
+            rand ??= random;
             System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
-            int rand = Random.Range(0, source.Sum(min));
-            return source.FirstOrDefault(item => (rand -= min(item)) < 0);
+            int i = rand.Next(0, source.Sum(min));
+            return source.FirstOrDefault(item => (i -= min(item)) < 0);
         }
 
-        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, System.Func<T, int> getter)
+        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, System.Func<T, int> getter, System.Random rand = null)
         {
+            rand ??= random;
             System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
             HashSet<T> taken = new HashSet<T>();
             int sum = source.Sum(min);
 
             for (int i = 0; i < amount; i++)
             {
-                int rand = Random.Range(0, sum);
+                int index = rand.Next(0, sum);
 
                 foreach (T item in source)
                 {
@@ -92,7 +97,7 @@ namespace HHG.Common.Runtime
                         continue;
                     }
 
-                    if ((rand -= min(item)) < 0)
+                    if ((index -= min(item)) < 0)
                     {
                         yield return item;
                         taken.Add(item);
