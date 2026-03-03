@@ -12,11 +12,25 @@ namespace HHG.Common.Runtime
 
         private readonly int zOffsetPropertyID = Shader.PropertyToID("_ZOffset");
 
+        [SerializeField] private Mode mode;
+
         private MaterialPropertyBlock materialPropertyBlock;
+
+        private enum Mode
+        {
+            OnEnable,
+            LateUpdate,
+            Manual
+        }
 
         private void OnEnable()
         {
-            SetZOffsets();
+            if (mode == Mode.OnEnable) SetZOffsets();
+        }
+
+        private void LateUpdate()
+        {
+            if (mode == Mode.LateUpdate) SetZOffsets();
         }
 
         [ContextMenu("Set Z Offsets")]
