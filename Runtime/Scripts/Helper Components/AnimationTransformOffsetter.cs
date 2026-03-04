@@ -9,6 +9,7 @@ namespace HHG.Common.Runtime
         [System.Serializable]
         public struct Offset
         {
+            public bool Disabled;
             public Transform Target;
             public Vector3 Position;
             public Vector3 Rotation;
@@ -33,7 +34,7 @@ namespace HHG.Common.Runtime
             {
                 Offset offset = offsets[i];
 
-                if (offset.Target == null || offset.HasValue) continue;
+                if (offset.Disabled || offset.Target == null || offset.HasValue) continue;
 
                 offset.HasValue = true;
                 offset.OriginalPosition = offset.Target.localPosition;
@@ -55,7 +56,7 @@ namespace HHG.Common.Runtime
                 {
                     Offset offset = offsets[i];
 
-                    if (offset.Target == null || !offset.HasValue) continue;
+                    if (offset.Disabled || offset.Target == null || !offset.HasValue) continue;
 
                     offset.HasValue = false;
                     offset.Target.localPosition = offset.OriginalPosition;
