@@ -196,7 +196,7 @@ namespace HHG.Common.Runtime
 
         public static Vector3 WorldToCellWorld(this Tilemap tilemap, Vector3 position)
         {
-            return tilemap.CellToWorld(tilemap.WorldToCell(position));
+            return tilemap.GetCellCenterWorld(tilemap.WorldToCell(position));
         }
 
         public static void CompressBounds(this IEnumerable<Tilemap> tilemaps)

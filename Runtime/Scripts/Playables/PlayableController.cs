@@ -13,6 +13,12 @@ namespace HHG.Common.Runtime
 
         [SerializeField] private float repeatInterval = 2f;
 
+        [EditorButton(nameof(Play))]
+        [EditorButton(nameof(PlayRepeatedly))]
+        [EditorButton(nameof(Stop))]
+        [EditorButton(nameof(Pause))]
+        [EditorButton(nameof(Resume))]
+
         [Header("Events")]
         [SerializeField] private ActionEvent onPlay;
         [SerializeField] private ActionEvent onStop;
@@ -28,7 +34,6 @@ namespace HHG.Common.Runtime
             return Play();
         }
 
-        [ContextMenu("Play Repeatedly")]
         public Coroutine PlayRepeatedly()
         {
             return PlayRepeatedly(repeatInterval);
@@ -48,7 +53,6 @@ namespace HHG.Common.Runtime
             }
         }
 
-        [ContextMenu("Play")]
         public CustomYieldInstruction Play()
         {
             CustomYieldInstruction instruction = playable.Play();
@@ -56,21 +60,19 @@ namespace HHG.Common.Runtime
             return instruction;
         }
 
-        [ContextMenu("Stop")]
         public void Stop()
         {
+            StopAllCoroutines();
             playable.Stop();
             InvokeEvent(onStop);
         }
 
-        [ContextMenu("Pause")]
         public void Pause()
         {
             playable.Pause();
             InvokeEvent(onPause);
         }
 
-        [ContextMenu("Resume")]
         public CustomYieldInstruction Resume()
         {
             CustomYieldInstruction instruction = playable.Resume();
