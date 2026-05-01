@@ -2,9 +2,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace HHG.Common.Runtime
+namespace HHG.Common.Editor
 {
-    public static class TilemapMenuItem
+    public static class TilemapMenuItems
     {
         [MenuItem("CONTEXT/Tilemap/Print Tilemap Bounds")]
         public static void PrintTilemapBounds()

@@ -8,8 +8,8 @@ namespace HHG.Common.Runtime
 {
     public class ScriptableSingleton<T> : ScriptableObject where T : ScriptableSingleton<T>
     {
-        private static string resourcePath => typeof(T).Name.ToNicified();
-        private static string assetPath => $"Assets/Resources/{resourcePath}.asset";
+        private static string assetName => typeof(T).Name.ToNicified();
+        private static string assetPath => $"Assets/Resources/{assetName}.asset";
 
         private static T instance;
         public static T Instance
@@ -19,7 +19,7 @@ namespace HHG.Common.Runtime
                 if (instance == null || instance.Equals(null))
                 {
                     // Resources.Load does NOT work with string.Empty
-                    instance = Resources.Load<T>(resourcePath);
+                    instance = Resources.Load<T>(assetName);
                     
                     if (instance == null)
                     {

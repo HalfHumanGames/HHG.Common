@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Path = System.IO.Path;
 
 namespace HHG.Common.Editor
 {
-    public static class RuleTileMenuItem
+    public static class RuleTileMenuItems
     {
         [MenuItem("CONTEXT/RuleTile/Duplicate")]
         private static void Duplicate(MenuCommand menuCommand)
@@ -25,7 +22,7 @@ namespace HHG.Common.Editor
                 {
                     if (rule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Single)
                     {
-                        Array.Resize(ref rule.m_Sprites, 1);
+                        System.Array.Resize(ref rule.m_Sprites, 1);
                     }
                 }
 
