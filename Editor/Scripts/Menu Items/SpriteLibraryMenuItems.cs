@@ -95,10 +95,13 @@ namespace HHG.Common.Editor
                 return;
             }
 
-            string[] guids = AssetDatabase.FindAssets("t:Sprite");
+            string libraryPath = AssetDatabase.GetAssetPath(library);
+            string[] pathParts = libraryPath.Split('/');
+            string searchFolder = pathParts.Length > 1 ? $"{pathParts[0]}/{pathParts[1]}" : "Assets";
+            string[] guids = AssetDatabase.FindAssets("t:Sprite", new[] { searchFolder });
             if (guids.Length == 0)
             {
-                Debug.LogWarning($"No sprites found.", comp);
+                Debug.LogWarning($"No sprites found in '{searchFolder}'.", comp);
             }
 
             // Map category to label to sprite using longest-match prefix
@@ -107,21 +110,22 @@ namespace HHG.Common.Editor
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>();
 
-                if (sprite == null) continue;
-
-                foreach (string category in categories)
+                foreach (Sprite sprite in sprites)
                 {
-                    string prefix = category + " - ";
-                    if (sprite.name.StartsWith(prefix))
+                    foreach (string category in categories)
                     {
-                        string label = sprite.name.Substring(prefix.Length);
-                        if (!string.IsNullOrWhiteSpace(label))
+                        string prefix = category + " - ";
+                        if (sprite.name.StartsWith(prefix))
                         {
-                            found[category][label] = sprite;
+                            string label = sprite.name.Substring(prefix.Length);
+                            if (!string.IsNullOrWhiteSpace(label))
+                            {
+                                found[category][label] = sprite;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -174,31 +178,56 @@ namespace HHG.Common.Editor
                 return;
             }
 
+            SpriteLibraryAsset library = comp.spriteLibraryAsset;
+
             int added = 0, updated = 0;
             foreach (SpriteRenderer sr in renderers)
             {
                 SpriteResolver resolver = sr.GetComponent<SpriteResolver>();
                 string expected = sr.gameObject.name;
+                string currentCategory = resolver.GetCategory();
+                string currentLabel = resolver.GetLabel();
 
                 if (resolver == null)
                 {
+                    string defaultLabel = GetDefaultLabel(library, expected);
                     resolver = Undo.AddComponent<SpriteResolver>(sr.gameObject);
-                    resolver.SetCategoryAndLabel(expected, "None");
+                    resolver.SetCategoryAndLabel(expected, defaultLabel);
                     EditorUtility.SetDirty(sr.gameObject);
                     added++;
                 }
-                else if (resolver.GetCategory() != expected)
+                else if (currentCategory != expected)
                 {
+                    string defaultLabel = GetDefaultLabel(library, expected);
+                    string newLabel = (currentLabel != "None" && currentLabel != null) ? currentLabel : defaultLabel;
                     Undo.RecordObject(resolver, "Sync Resolver Category");
-                    resolver.SetCategoryAndLabel(expected, resolver.GetLabel());
+                    resolver.SetCategoryAndLabel(expected, newLabel);
                     EditorUtility.SetDirty(resolver);
                     updated++;
+                }
+                else if (currentLabel == "None")
+                {
+                    string defaultLabel = GetDefaultLabel(library, expected);
+                    string newLabel = (currentLabel != "None" && currentLabel != null) ? currentLabel : defaultLabel;
+                    if (newLabel != "None")
+                    {
+                        Undo.RecordObject(resolver, "Sync Resolver Category");
+                        resolver.SetCategoryAndLabel(expected, newLabel);
+                        EditorUtility.SetDirty(resolver);
+                        updated++;
+                    }
                 }
             }
 
             if (added > 0 || updated > 0) AssetDatabase.SaveAssets();
 
             Debug.Log($"[SpriteLibrary] Sync Resolvers '{comp.gameObject.name}': +{added} ~{updated}", comp);
+        }
+
+        private static string GetDefaultLabel(SpriteLibraryAsset library, string category)
+        {
+            string first = library.GetCategoryLabelNames(category).FirstOrDefault(l => l != "None");
+            return first ?? "None";
         }
 
         private static void SortCategoriesAlphabetically(SpriteLibraryAsset library)
