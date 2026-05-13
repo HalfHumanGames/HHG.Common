@@ -9,6 +9,15 @@ namespace HHG.Common.Runtime
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector3 offset;
         [SerializeField] private Space offsetSpace;
+        [SerializeField] private Mode mode;
+
+        private enum Mode
+        {
+            LateUpdate,
+            OnEnable,
+            Manual
+        }
+
 
         private void Awake()
         {
@@ -16,9 +25,19 @@ namespace HHG.Common.Runtime
             if (tilemap == null) tilemap = FindAnyObjectByType<Tilemap>(FindObjectsInactive.Include);
         }
 
+        private void OnEnable()
+        {
+            if (mode == Mode.OnEnable) Snap();
+        }
 
-        // Optimize so have mode: OnEnable, LateUpdate, or Manual
+
         private void LateUpdate()
+        {
+            // Always snap when in edit mode
+            if (!Application.isPlaying || mode == Mode.LateUpdate) Snap();
+        }
+
+        public void Snap()
         {
             transform.position = tilemap.WorldToCellWorld(transform.position);
 
