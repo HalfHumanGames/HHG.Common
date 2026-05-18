@@ -28,8 +28,8 @@ namespace HHG.Common.Runtime
 
         public void Initialize()
         {
-            _tabs.Reset();
-            _contents.Reset();
+            _tabs.Clear();
+            _contents.Clear();
 
             rectTransform = GetComponent<RectTransform>();
 
