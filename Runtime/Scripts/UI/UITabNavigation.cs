@@ -16,9 +16,9 @@ namespace HHG.Common.Runtime
         [SerializeField] private Transform contentContainer;
 
         private RectTransform rectTransform;
-        private Lazy<UIButton> _tabs = new Lazy<UIButton>();
+        private LazyArray<UIButton> _tabs = new LazyArray<UIButton>();
         private UIButton[] tabs => _tabs.FromComponentsInChildren(tabContainer, true);
-        private Lazy<GameObject> _contents = new Lazy<GameObject>();
+        private LazyArray<GameObject> _contents = new LazyArray<GameObject>();
         private GameObject[] contents => _contents.From(() => contentContainer.GetChildren().Select(t => t.gameObject).ToArray());
 
         private void Awake()
