@@ -141,12 +141,12 @@ namespace HHG.Common.Runtime
         protected void Set<T>(ref T value, T newValue)
         {
             value = newValue;
-            OnUpdated();
-            InvokeUpdated();
+            RaiseUpdated();
         }
 
-        protected void InvokeUpdated()
+        protected void RaiseUpdated()
         {
+            OnUpdated();
             Updated?.Invoke();
         }
 
