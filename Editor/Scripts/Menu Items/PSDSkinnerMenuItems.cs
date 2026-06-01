@@ -155,7 +155,7 @@ namespace HHG.Common.Editor
 
                 boneProvider.SetBones(guid, new List<SpriteBone>(skeletonBones));
 
-                bool isTorso = psdSkinner.IsTorsoSprite(boneName) && pelvisBoneIndex >= 0;
+                bool isTorso = psdSkinner.IsTorsoSprite(spriteRect.name) && pelvisBoneIndex >= 0;
                 CharacterPart? torsoPart = isTorso ? FindCharacterPart(characterParts, guid) : null;
                 float boneWorldY = isTorso ? GetBoneWorldY(skeletonBones, boneIndex) : 0f;
                 float torsoThreshold = isTorso && torsoPart.HasValue ? GetBoneSpriteLocalY(torsoPart.Value, boneWorldY) : 0f;
