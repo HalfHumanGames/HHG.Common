@@ -8,5 +8,6 @@
         public float OutlineDetail => 0f;
 
         public string MapSpriteToBone(string spriteName);
+        public bool IsTorsoSprite(string spriteName);
     }
 }
