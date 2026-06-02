@@ -10,6 +10,8 @@ namespace HHG.Common.Editor
 {
     public static class SpriteLibraryMenuItems
     {
+        private const string menuRoot = "| Half Human Games |/Tools/Sprite Library/";
+
         [MenuItem("CONTEXT/SpriteLibrary/Sync Categories")]
         private static void SyncCategoriesMenuItem(MenuCommand command)
         {
@@ -32,6 +34,27 @@ namespace HHG.Common.Editor
         private static void SyncAllMenuItem(MenuCommand command)
         {
             if (command.context is SpriteLibrary comp) SyncAll(comp);
+        }
+
+        [MenuItem(menuRoot + "Sync Labels")]
+        private static void SyncLabelsMenuItem2()
+        {
+            switch (Selection.activeObject)
+            {
+                case SpriteLibrary comp:
+                    SyncLabels(comp);
+                    break;
+                case SpriteLibraryAsset asset:
+                    SyncLabels(asset);
+                    break;
+            }
+        }
+
+        [MenuItem(menuRoot + "Sync Labels", validate = true)]
+        private static bool SyncLabelsValidate()
+        {
+            return Selection.activeObject is SpriteLibrary ||
+                   Selection.activeObject is SpriteLibraryAsset;
         }
 
         private static void SyncCategories(SpriteLibrary comp)
@@ -78,12 +101,13 @@ namespace HHG.Common.Editor
             Debug.Log($"[SpriteLibrary] Sync Categories '{library.name}': +{added} -{removed}", comp);
         }
 
-        private static void SyncLabels(SpriteLibrary comp)
+        private static void SyncLabels(SpriteLibrary library) => SyncLabels(library.spriteLibraryAsset, library);
+        private static void SyncLabels(SpriteLibraryAsset library) => SyncLabels(library, library);
+        private static void SyncLabels(SpriteLibraryAsset library, Object context)
         {
-            SpriteLibraryAsset library = comp.spriteLibraryAsset;
             if (library == null)
             {
-                Debug.LogError($"SpriteLibrary on '{comp.gameObject.name}' has no SpriteLibraryAsset assigned.", comp);
+                Debug.LogError($"SpriteLibrary on '{context.name}' has no SpriteLibraryAsset assigned.", context);
                 return;
             }
 
@@ -91,7 +115,7 @@ namespace HHG.Common.Editor
             List<string> categories = library.GetCategoryNames().OrderByDescending(c => c.Length).ToList();
             if (categories.Count == 0)
             {
-                Debug.LogWarning($"No categories in '{library.name}'. Run 'Sync Categories' first.", comp);
+                Debug.LogWarning($"No categories in '{library.name}'. Run 'Sync Categories' first.", context);
                 return;
             }
 
@@ -101,7 +125,7 @@ namespace HHG.Common.Editor
             string[] guids = AssetDatabase.FindAssets("t:Sprite", new[] { searchFolder });
             if (guids.Length == 0)
             {
-                Debug.LogWarning($"No sprites found in '{searchFolder}'.", comp);
+                Debug.LogWarning($"No sprites found in '{searchFolder}'.", context);
             }
 
             // Map category to label to sprite using longest-match prefix
@@ -159,7 +183,7 @@ namespace HHG.Common.Editor
 
             Save(library);
 
-            Debug.Log($"[SpriteLibrary] Sync Labels '{library.name}': +{added} ~{updated} -{removed}", comp);
+            Debug.Log($"[SpriteLibrary] Sync Labels '{library.name}': +{added} ~{updated} -{removed}", context);
         }
 
         private static void SyncAll(SpriteLibrary comp)
