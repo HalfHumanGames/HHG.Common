@@ -28,10 +28,19 @@ namespace HHG.Common.Runtime
         private Playable _playable;
         private Playable playable => _playable ??= Playable.Create(gameObject);
 
-        public CustomYieldInstruction PlayAt(Vector3 position)
+        public Coroutine Play()
         {
-            transform.position = position;
-            return Play();
+            return Play(0f);
+        }
+
+        public Coroutine Play(float delay)
+        {
+            return StartCoroutine(PlayAsync(delay));
+        }
+
+        public Coroutine PlayAt(Vector3 position, float delay = 0f)
+        {
+            return StartCoroutine(PlayAtAsync(position, delay));
         }
 
         public Coroutine PlayRepeatedly()
@@ -44,43 +53,48 @@ namespace HHG.Common.Runtime
             return StartCoroutine(PlayRepeatedlyAsync(interval));
         }
 
+        public IEnumerator PlayAsync(float delay = 0f)
+        {
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+            RaiseEvent(onPlay);
+            yield return playable.Play();
+        }
+
+        public IEnumerator PlayAtAsync(Vector3 position, float delay = 0f)
+        {
+            transform.position = position;
+            return PlayAsync(delay);
+        }
+
         private IEnumerator PlayRepeatedlyAsync(float interval)
         {
             while (true)
             {
-                Play();
+                yield return PlayAsync();
                 yield return new WaitForSeconds(interval);
             }
         }
 
-        public CustomYieldInstruction Play()
-        {
-            CustomYieldInstruction instruction = playable.Play();
-            InvokeEvent(onPlay);
-            return instruction;
-        }
-
         public void Stop()
         {
+            RaiseEvent(onStop);
             StopAllCoroutines();
             playable.Stop();
-            InvokeEvent(onStop);
         }
 
         public void Pause()
         {
+            RaiseEvent(onPause);
             playable.Pause();
-            InvokeEvent(onPause);
         }
 
-        public CustomYieldInstruction Resume()
+        public IEnumerator Resume()
         {
-            CustomYieldInstruction instruction = playable.Resume();
-            InvokeEvent(onResume);
-            return instruction;
+            RaiseEvent(onResume);
+            yield return playable.Resume();
         }
 
-        private void InvokeEvent(ActionEvent actionEvent)
+        private void RaiseEvent(ActionEvent actionEvent)
         {
             // Must be active since starts coroutine
             if (gameObject.activeInHierarchy)
