@@ -16,14 +16,13 @@ namespace HHG.Common.Runtime
         [SerializeField] private bool unscaledTime;
 
         private Renderer flashRenderer;
-        private MaterialPropertyBlock block;
+        private Material flashMaterial;
         private Coroutine coroutine;
 
         private void Awake()
         {
-            block = new MaterialPropertyBlock();
             flashRenderer = GetComponent<Renderer>();
-            flashRenderer.GetPropertyBlock(block);
+            flashMaterial = flashRenderer.material;
             SetFlashAmount(0);
         }
 
@@ -76,10 +75,8 @@ namespace HHG.Common.Runtime
 
         private void SetFlashAmount(float amount)
         {
-            flashRenderer.GetPropertyBlock(block);
-            block.SetColor(flashColor, color);
-            block.SetFloat(flashAmount, amount);
-            flashRenderer.SetPropertyBlock(block);
+            flashMaterial.SetColor(flashColor, color);
+            flashMaterial.SetFloat(flashAmount, amount);
         }
 
         private void Cleanup()
@@ -87,6 +84,11 @@ namespace HHG.Common.Runtime
             StopAllCoroutines();
             SetFlashAmount(0);
             coroutine = null;
+        }
+
+        private void OnDestroy()
+        {
+            if (flashMaterial) Destroy(flashMaterial);
         }
     }
 }

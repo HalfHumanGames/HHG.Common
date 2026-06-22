@@ -11,13 +11,13 @@ namespace HHG.Common.Runtime
         public ActionEvent OnPause => onPause;
         public ActionEvent OnResume => onResume;
 
-        [SerializeField] private float repeatInterval = 2f;
+        [EditorButton(nameof(Play), PositionType = ButtonPositionType.Above)]
+        [EditorButton(nameof(PlayRepeatedly), PositionType = ButtonPositionType.Above)]
+        [EditorButton(nameof(Stop), PositionType = ButtonPositionType.Above)]
+        [EditorButton(nameof(Pause), PositionType = ButtonPositionType.Above)]
+        [EditorButton(nameof(Resume), PositionType = ButtonPositionType.Above)]
 
-        [EditorButton(nameof(Play))]
-        [EditorButton(nameof(PlayRepeatedly))]
-        [EditorButton(nameof(Stop))]
-        [EditorButton(nameof(Pause))]
-        [EditorButton(nameof(Resume))]
+        [SerializeField] private float repeatInterval = 2f;
 
         [Header("Events")]
         [SerializeField] private ActionEvent onPlay;

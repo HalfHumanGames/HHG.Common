@@ -10,13 +10,13 @@ namespace HHG.Common.Runtime
         private static readonly int normalMapID = Shader.PropertyToID(normalMapName);
 
         private SpriteRenderer spriteRenderer;
-        private MaterialPropertyBlock materialPropertyBlock;
+        private Material spriteMaterial;
         private Sprite lastSprite;
 
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            materialPropertyBlock = new MaterialPropertyBlock();
+            spriteMaterial = spriteRenderer.material;
         }
 
         private void LateUpdate()
@@ -40,9 +40,12 @@ namespace HHG.Common.Runtime
             spriteRenderer.sprite.GetSecondaryTextures(secondaries);
             SecondarySpriteTexture nomral = secondaries.FirstOrDefault(s => s.name == normalMapName);
             Texture2D texture = nomral.texture;
-            spriteRenderer.GetPropertyBlock(materialPropertyBlock);
-            materialPropertyBlock.SetTexture(normalMapID, texture);
-            spriteRenderer.SetPropertyBlock(materialPropertyBlock);
+            spriteMaterial.SetTexture(normalMapID, texture);
+        }
+
+        private void OnDestroy()
+        {
+            if (spriteMaterial) Destroy(spriteMaterial);
         }
     }
 

@@ -17,24 +17,18 @@ namespace HHG.Common.Runtime
 
         private Renderer outlineRenderer;
         private Graphic outlineGraphic;
-        private MaterialPropertyBlock block;
 
         private void Awake()
         {
             outlineRenderer = GetComponent<Renderer>();
             outlineGraphic = GetComponent<Graphic>();
 
-            if (outlineRenderer)
+            if (!outlineMaterial)
             {
-                block = new MaterialPropertyBlock();
-                outlineRenderer.GetPropertyBlock(block);
+                if (outlineRenderer) outlineMaterial = outlineRenderer.material;
+                else if (outlineGraphic) outlineMaterial = outlineGraphic.material;
             }
-
-            if (outlineGraphic && !outlineMaterial)
-            {
-                outlineMaterial = outlineGraphic.material;
-            }
-
+            
             Hide();
         }
 
@@ -57,39 +51,20 @@ namespace HHG.Common.Runtime
         {
             color = newColor;
             width = newWidth;
-            
-            if (outlineGraphic)
-            {
-                outlineGraphic.material = outlineMaterial;
-            }
 
-            if (outlineRenderer)
-            {
-                block.SetColor(outlineColor, color);
-                block.SetFloat(outlineWidth, width);
-                outlineRenderer.SetPropertyBlock(block);
-            }
-
-            if (outlineGraphic)
-            {
-                outlineGraphic.material.SetColor(outlineColor, color);
-                outlineGraphic.material.SetFloat(outlineWidth, width);
-            }
+            outlineMaterial.SetColor(outlineColor, color);
+            outlineMaterial.SetFloat(outlineWidth, width);
         }
 
         public void Hide()
         {
-            if (outlineRenderer)
-            {
-                block.SetColor(outlineColor, Color.clear);
-                block.SetFloat(outlineWidth, 0f);
-                outlineRenderer.SetPropertyBlock(block);
-            }
-            
-            if (outlineGraphic)
-            {
-                outlineGraphic.material = null;
-            }
+            outlineMaterial.SetColor(outlineColor, Color.clear);
+            outlineMaterial.SetFloat(outlineWidth, 0f);
+        }
+
+        private void OnDestroy()
+        {
+            if (outlineRenderer && outlineMaterial) Destroy(outlineMaterial);
         }
     }
 }

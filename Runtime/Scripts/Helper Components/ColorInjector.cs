@@ -10,7 +10,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private Mode mode;
 
         private SpriteRenderer spriteRenderer;
-        private MaterialPropertyBlock propertyBlock;
+        private Material spriteMaterial;
 
         public enum Mode
         {
@@ -32,10 +32,14 @@ namespace HHG.Common.Runtime
         public void InjectColor()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
-            propertyBlock ??= new MaterialPropertyBlock();
-            spriteRenderer.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetColor(colorProperty, spriteRenderer.color);
-            spriteRenderer.SetPropertyBlock(propertyBlock);
+            if (spriteMaterial == null) spriteMaterial = spriteRenderer.material;
+
+            spriteMaterial.SetColor(colorProperty, spriteRenderer.color);
+        }
+
+        private void OnDestroy()
+        {
+            if (spriteMaterial) Destroy(spriteMaterial);
         }
     }
 }
