@@ -37,6 +37,11 @@ namespace HHG.Common.Runtime
                 particleSystem => particleSystem.Pause(false),
                 particleSystem => particleSystem.Play(false),
                 particleSystem => particleSystem.isPlaying);
+
+            Register<TimeEffectSource>(
+                source => source.Play(),
+                source => source.Stop(),
+                isPlaying: source => source.IsPlaying);
         }
 
         public static void Register<T>(
@@ -64,6 +69,21 @@ namespace HHG.Common.Runtime
             creators.Remove(typeof(T));
         }
 
+        private static bool TryGetActions(Type type, out Actions actions)
+        {
+            Type current = type;
+            while (current != null && current != typeof(MonoBehaviour))
+            {
+                if (creators.TryGetValue(current, out actions))
+                {
+                    return true;
+                }
+                current = current.BaseType;
+            }
+            actions = default;
+            return false;
+        }
+
         public static Playable Create(GameObject gameObject)
         {
             Playable root = new Playable();
@@ -76,7 +96,7 @@ namespace HHG.Common.Runtime
                 {
                     Type type = component.GetType();
 
-                    if (creators.TryGetValue(type, out Actions actions))
+                    if (TryGetActions(type, out Actions actions))
                     {
                         Playable child = new Playable(
                             () => actions.Play(component), 

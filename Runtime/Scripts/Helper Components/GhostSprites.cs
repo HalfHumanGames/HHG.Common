@@ -10,9 +10,9 @@ namespace HHG.Common.Runtime
         private static Transform container => _container.FromFindOrCreate("Ghost Sprites");
         private static Prototype prototype;
 
-        [SerializeField] private int ghostCount = 10;
-        [SerializeField] private float spacing = .1f;
-        [SerializeField] private float fadeDuration = .1f;
+        [SerializeField, Min(1f)] private int ghostCount = 10;
+        [SerializeField, Min(.01f)] private float spacing = .1f;
+        [SerializeField, Min(.01f)] private float fadeDuration = .1f;
         [SerializeField] private Color color;
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Material material;
@@ -175,18 +175,6 @@ namespace HHG.Common.Runtime
             if (material != null)
             {
                 ghost.material = material;
-            }
-        }
-
-        private void OnValidate()
-        {
-            if (spacing <= 0)
-            {
-                spacing = .01f;
-            }
-            if (fadeDuration <= 0)
-            {
-                fadeDuration = .01f;
             }
         }
     }
