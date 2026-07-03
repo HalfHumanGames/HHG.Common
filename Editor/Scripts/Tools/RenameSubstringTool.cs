@@ -82,6 +82,55 @@ namespace HHG.Common.Editor
                 obj.name = obj.name.Replace(findString, replaceString);
             }
         }
+
+        [MenuItem("Assets/Tools/Rename Flip")]
+        public static void RenameFlip_Asset()
+        {
+            foreach (Object obj in Selection.objects)
+            {
+                string path = AssetDatabase.GetAssetPath(obj);
+                string newName = Flip(obj.name);
+                if (newName != obj.name)
+                {
+                    AssetDatabase.RenameAsset(path, newName);
+                }
+            }
+            AssetDatabase.Refresh();
+        }
+
+        [MenuItem("GameObject/Tools/Rename Flip")]
+        public static void RenameFlip_GameObject()
+        {
+            foreach (GameObject obj in Selection.gameObjects)
+            {
+                obj.name = Flip(obj.name);
+            }
+        }
+
+        [MenuItem("Assets/Tools/Rename Flip", true)]
+        public static bool CanRenameFlip()
+        {
+            return Selection.activeObject != null;
+        }
+
+        private static string Flip(string name)
+        {
+            if (!name.Contains("-"))
+            {
+                return name;
+            }
+
+            string[] parts = name.Split('-');
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = parts[i].Trim();
+            }
+
+            System.Array.Reverse(parts);
+
+            return string.Join(" - ", parts);
+        }
     }
 
 }
