@@ -9,16 +9,34 @@ namespace HHG.Common.Runtime
         [EditorButton(nameof(Regenerate))]
         [SerializeField, Disable] private string id = System.Guid.NewGuid().ToString();
 
+        [System.NonSerialized] private bool isOriginal;
+
         private void Awake()
         {
-            Locator.Register(id, this);
-            Locator.Register(name, this);
+            if (Locator.Contains(id, this))
+            {
+                Regenerate();
+                Locator.Register(id, this);
+            }
+            else
+            {
+                isOriginal = true;
+                Locator.Register(id, this);
+                Locator.Register(name, this);
+            }
         }
 
         private void OnDestroy()
         {
-            Locator.Unregister(id);
-            Locator.Unregister(name);
+            if (isOriginal)
+            {
+                Locator.Unregister(id, this);
+                Locator.Unregister(name, this);
+            }
+            else
+            {
+                Locator.Unregister(id, this);
+            }
         }
 
         public void Regenerate()

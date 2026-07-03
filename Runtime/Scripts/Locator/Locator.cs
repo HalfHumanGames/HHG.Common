@@ -6,6 +6,17 @@ namespace HHG.Common.Runtime
     {
         private static Dictionary<SubjectId, object> dict = new Dictionary<SubjectId, object>();
 
+        public static bool Contains(object obj)
+        {
+            return Contains(null, obj);
+        }
+
+        public static bool Contains(object id, object obj)
+        {
+            SubjectId subjectId = new SubjectId(obj.GetType(), id);
+            return dict.ContainsKey(subjectId);
+        }
+
         public static void Register(object obj)
         {
             Register(null, obj);
