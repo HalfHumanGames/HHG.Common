@@ -1,29 +1,31 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HHG.Common.Runtime
 {
     public class SyncTransform : MonoBehaviour
     {
-        [SerializeField] private Transform target;
-        [SerializeField] private bool syncPosition;
-        [SerializeField] private bool syncRotation;
-        [SerializeField] private bool syncLocalScale;
+        // Public so can modify at runtime without setter methods
+        [FormerlySerializedAs("target")] public Transform Target;
+        [FormerlySerializedAs("syncPosition")] public bool SyncPosition;
+        [FormerlySerializedAs("syncRotation")] public bool SyncRotation;
+        [FormerlySerializedAs("syncLocalScale")] public bool SyncLocalScale;
 
         private void LateUpdate()
         {
-            if (syncPosition)
+            if (SyncPosition)
             {
-                transform.position = target.position;
+                transform.position = Target.position;
             }
 
-            if (syncRotation)
+            if (SyncRotation)
             {
-                transform.rotation = target.rotation;
+                transform.rotation = Target.rotation;
             }
 
-            if (syncLocalScale)
+            if (SyncLocalScale)
             {
-                transform.localScale = target.localScale;
+                transform.localScale = Target.localScale;
             }
         }
     }
