@@ -13,20 +13,10 @@ namespace HHG.Common.Runtime
 
         private void LateUpdate()
         {
-            if (SyncPosition)
-            {
-                transform.position = Target.position;
-            }
-
-            if (SyncRotation)
-            {
-                transform.rotation = Target.rotation;
-            }
-
-            if (SyncLocalScale)
-            {
-                transform.localScale = Target.localScale;
-            }
+            if (Target == null) return;
+            if (SyncPosition) transform.position = Target.position;
+            if (SyncRotation) transform.rotation = Target.rotation;
+            if (SyncLocalScale) transform.localScale = Target.localScale;
         }
     }
 }
