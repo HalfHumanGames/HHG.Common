@@ -179,5 +179,28 @@ namespace HHG.Common.Runtime
             float u = 1f - t;
             return (u * u * p0) + (2f * u * t * p1) + (t * t * p2);
         }
+
+        public static Quaternion SmoothDamp(Quaternion current, Quaternion target, ref Quaternion velocity, float smoothTime, float maxSpeed = Mathf.Infinity)
+        {
+            // Flip the target's sign when needed so damping follows the shortest path
+            float dot = Quaternion.Dot(current, target);
+            float sign = dot > 0f ? 1f : -1f;
+
+            Vector4 result = new Vector4(
+                Mathf.SmoothDamp(current.x, target.x * sign, ref velocity.x, smoothTime, maxSpeed),
+                Mathf.SmoothDamp(current.y, target.y * sign, ref velocity.y, smoothTime, maxSpeed),
+                Mathf.SmoothDamp(current.z, target.z * sign, ref velocity.z, smoothTime, maxSpeed),
+                Mathf.SmoothDamp(current.w, target.w * sign, ref velocity.w, smoothTime, maxSpeed)
+            ).normalized;
+
+            // Keep the velocity tangent to the quaternion hypersphere so it stays valid after normalization
+            Vector4 error = Vector4.Project(new Vector4(velocity.x, velocity.y, velocity.z, velocity.w), result);
+            velocity.x -= error.x;
+            velocity.y -= error.y;
+            velocity.z -= error.z;
+            velocity.w -= error.w;
+
+            return new Quaternion(result.x, result.y, result.z, result.w);
+        }
     }
 }
