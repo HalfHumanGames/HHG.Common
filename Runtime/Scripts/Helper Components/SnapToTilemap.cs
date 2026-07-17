@@ -39,10 +39,14 @@ namespace HHG.Common.Runtime
 
         public void Snap()
         {
+            if (!transform.hasChanged) return;
+
             transform.position = tilemap.WorldToCellWorld(transform.position);
 
             if (offsetSpace == Space.Self) transform.localPosition += offset;
             if (offsetSpace == Space.World) transform.position += offset;
+
+            transform.hasChanged = false;
         }
     }
 }

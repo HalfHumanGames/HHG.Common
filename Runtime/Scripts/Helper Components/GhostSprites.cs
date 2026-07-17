@@ -47,13 +47,14 @@ namespace HHG.Common.Runtime
             GameObject prototypeGO = new GameObject("Ghost Prototype", typeof(SpriteRenderer), typeof(Prototype));
             prototype = prototypeGO.GetComponent<Prototype>();
             prototype.gameObject.SetActive(false);
+            DontDestroyOnLoad(prototype);
         }
 
         private void ReinitializeVariables()
         {
             spacing = Mathf.Max(spacing, .01f);
             fadeDuration = Mathf.Max(fadeDuration, .01f);
-            startColor = spriteRenderer.color.WithA(color.a * spriteRenderer.color.a);
+            startColor = color.WithA(color.a * spriteRenderer.color.a);
             fadeSpeed = 1f / fadeDuration * startColor.a;
 
             // For if change in Editor during Play Mode via the Inspector
@@ -151,11 +152,15 @@ namespace HHG.Common.Runtime
         {
             SpriteRenderer ghost = ghosts.Dequeue();
 
-            // Can be null when application is quitting
-            if (ghost != null)
+            // Ghost and/or prototype may be null when quitting
+            if (ghost != null && prototype != null)
             {
                 ghost.gameObject.SetActive(false);
                 ghost.GetComponent<Prototype>().ReturnToPool();
+            }
+            else
+            {
+                Destroy(ghost);
             }
         }
 
