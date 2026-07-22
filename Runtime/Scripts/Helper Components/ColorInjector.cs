@@ -2,21 +2,25 @@
 
 namespace HHG.Common.Runtime
 {
-    [ExecuteInEditMode]
     public class ColorInjector : MonoBehaviour
     {
-        private readonly int colorProperty = Shader.PropertyToID("_Color");
-
         [SerializeField] private Mode mode;
+        [SerializeField] private string propertyName = "_Color";
 
         private SpriteRenderer spriteRenderer;
         private Material spriteMaterial;
+        private int propertyId;
 
         public enum Mode
         {
             OnEnable,
             LateUpdate,
             Manual
+        }
+
+        private void Awake()
+        {
+            propertyId = Shader.PropertyToID(propertyName);
         }
 
         private void OnEnable()
@@ -34,7 +38,7 @@ namespace HHG.Common.Runtime
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteMaterial == null) spriteMaterial = spriteRenderer.material;
 
-            spriteMaterial.SetColor(colorProperty, spriteRenderer.color);
+            spriteMaterial.SetColor(propertyId, spriteRenderer.color);
         }
 
         private void OnDestroy()
