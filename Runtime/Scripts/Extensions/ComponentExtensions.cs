@@ -9,14 +9,14 @@ namespace HHG.Common.Runtime
             return mono.transform.GetPath();
         }
 
-        public static bool TryGetComponentInChildren<T>(this Component mono, out T component) 
+        public static bool TryGetComponentInChildren<T>(this Component mono, out T component, bool includeInactive = false) 
         {
-           return mono.gameObject.TryGetComponentInChildren(out component);
+           return mono.gameObject.TryGetComponentInChildren(out component, includeInactive);
         }
 
-        public static bool TryGetComponentInParent<T>(this Component mono, out T component) 
+        public static bool TryGetComponentInParent<T>(this Component mono, out T component, bool includeInactive = false) 
         {
-            return mono.gameObject.TryGetComponentInParent(out component);
+            return mono.gameObject.TryGetComponentInParent(out component, includeInactive);
         }
 
         public static T GetComponent<T>(this Component mono)
