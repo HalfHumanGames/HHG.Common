@@ -23,9 +23,7 @@ namespace HHG.Common.Runtime
         [SerializeField] private string registryName;
         [SerializeField] private bool inherit;
         [SerializeField, ShowIf(nameof(inherit), true)] private SceneObjectCollectionAsset inheritFrom;
-
-        [EditorButton(nameof(AddReference), "+")]
-        [SerializeField, SceneObjectRegistry] private List<SceneObjectReference> items = new List<SceneObjectReference>();
+        [SerializeField, ReorderableList, SceneObjectRegistry] private List<SceneObjectReference> items = new List<SceneObjectReference>();
 
         [System.NonSerialized] private List<SceneObjectReference> _items;
 
@@ -40,13 +38,5 @@ namespace HHG.Common.Runtime
         {
             return GetEnumerator();
         }
-
-#if UNITY_EDITOR
-        private void AddReference()
-        {
-            items.Add(default);
-            UnityEditor.EditorUtility.SetDirty(this);
-        }
-#endif
     }
 }
