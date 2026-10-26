@@ -6,10 +6,11 @@ namespace HHG.Common.Runtime
     public class PlayableController : MonoBehaviour
     {
         public bool IsPlaying => playable.IsPlaying;
-        public ActionEvent OnPlay => onPlay;
-        public ActionEvent OnStop => onStop;
-        public ActionEvent OnPause => onPause;
-        public ActionEvent OnResume => onResume;
+        public ActionEvent<PlayableController> OnPlay => onPlay;
+        public ActionEvent<PlayableController> OnPlayComplete => onPlayComplete;
+        public ActionEvent<PlayableController> OnStop => onStop;
+        public ActionEvent<PlayableController> OnPause => onPause;
+        public ActionEvent<PlayableController> OnResume => onResume;
 
         [EditorButton(nameof(Play), PositionType = ButtonPositionType.Above)]
         [EditorButton(nameof(PlayRepeatedly), PositionType = ButtonPositionType.Above)]
@@ -20,10 +21,11 @@ namespace HHG.Common.Runtime
         [SerializeField] private float repeatInterval = 2f;
 
         [Header("Events")]
-        [SerializeField] private ActionEvent onPlay;
-        [SerializeField] private ActionEvent onStop;
-        [SerializeField] private ActionEvent onPause;
-        [SerializeField] private ActionEvent onResume;
+        [SerializeField] private ActionEvent<PlayableController> onPlay;
+        [SerializeField] private ActionEvent<PlayableController> onPlayComplete;
+        [SerializeField] private ActionEvent<PlayableController> onStop;
+        [SerializeField] private ActionEvent<PlayableController> onPause;
+        [SerializeField] private ActionEvent<PlayableController> onResume;
 
         private Playable _playable;
         private Playable playable => _playable ??= Playable.Create(gameObject);
@@ -58,6 +60,7 @@ namespace HHG.Common.Runtime
             if (delay > 0f) yield return new WaitForSeconds(delay);
             RaiseEvent(onPlay);
             yield return playable.Play();
+            RaiseEvent(onPlayComplete);
         }
 
         public IEnumerator PlayAtAsync(Vector3 position, float delay = 0f)
@@ -94,7 +97,7 @@ namespace HHG.Common.Runtime
             yield return playable.Resume();
         }
 
-        private void RaiseEvent(ActionEvent actionEvent)
+        private void RaiseEvent(ActionEvent<PlayableController> actionEvent)
         {
             // Must be active since starts coroutine
             if (gameObject.activeInHierarchy)

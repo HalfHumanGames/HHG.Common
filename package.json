@@ -25,6 +25,7 @@
     "com.unity.textmeshpro": "3.0.8",
     "com.unity.splines": "2.4.0",
     "com.unity.inputsystem": "1.8.1",
+    "com.unity.timeline": "1.8.10",
     "com.mackysoft.serializereference-extensions": "1.4.0"
   }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using Action = System.Action;
 
 namespace HHG.Common.Runtime
 {
@@ -9,15 +8,15 @@ namespace HHG.Common.Runtime
         private float time;
         private float duration;
         private int repeatCount;
-        private Action onTimer;
-        private Action onTimerDone;
+        private System.Action onTimer;
+        private System.Action onTimerDone;
 
-        public Timer(float seconds, Action timerDone) : this(seconds, 0, null, timerDone)
+        public Timer(float seconds, System.Action timerDone) : this(seconds, 0, null, timerDone)
         {
            
         }
 
-        public Timer(float seconds, int repetitions, Action timer, Action timerDone = null)
+        public Timer(float seconds, int repetitions, System.Action timer, System.Action timerDone = null)
         {
             repetitionCount = 0;
             time = 0f;

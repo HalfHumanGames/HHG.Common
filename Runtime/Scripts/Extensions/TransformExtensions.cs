@@ -35,6 +35,18 @@ namespace HHG.Common.Runtime
             return transform.Cast<Transform>();
         }
 
+        public static Transform FindDeep(this Transform parent, string childName)
+        {
+            foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+            {
+                if (child.name == childName)
+                {
+                    return child;
+                }
+            }
+            return null;
+        }
+
         public static Vector3 SnapPosition(this Transform transform, float nearest = 1, bool local = false)
         {
             if (local)
@@ -265,11 +277,6 @@ namespace HHG.Common.Runtime
         public static void SetGlobalScaleZ(this Transform transform, float z)
         {
             transform.SetGlobalScale(transform.lossyScale.WithZ(z));
-        }
-
-        public static GameObject FindGameObject(this Transform transform, string path)
-        {
-            return transform.Find(path) is Transform found ? found.gameObject : null;
         }
     }
 }
