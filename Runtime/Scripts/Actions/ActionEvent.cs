@@ -113,9 +113,30 @@ namespace HHG.Common.Runtime
             invoked2?.Invoke(invoker);
             invoked3?.Invoke(invoker, context);
 
-            if (coroutine1 != null) yield return coroutine1();
-            if (coroutine2 != null) yield return coroutine2(invoker);
-            if (coroutine3 != null) yield return coroutine3(invoker, context);
+            // Invoking a multicast func only returns the last listener's coroutine, so invoke each listener separately
+            if (coroutine1 != null)
+            {
+                foreach (System.Func<IEnumerator> func in coroutine1.GetInvocationList())
+                {
+                    yield return func();
+                }
+            }
+
+            if (coroutine2 != null)
+            {
+                foreach (System.Func<TInvoker, IEnumerator> func in coroutine2.GetInvocationList())
+                {
+                    yield return func(invoker);
+                }
+            }
+
+            if (coroutine3 != null)
+            {
+                foreach (System.Func<TInvoker, TContext, IEnumerator> func in coroutine3.GetInvocationList())
+                {
+                    yield return func(invoker, context);
+                }
+            }
 
             foreach (IActionBase action in actions)
             {

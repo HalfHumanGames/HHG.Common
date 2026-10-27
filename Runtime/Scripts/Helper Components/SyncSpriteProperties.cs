@@ -12,7 +12,7 @@ namespace HHG.Common.Runtime
         private SpriteRenderer spriteRenderer;
         private LineRenderer lineRenderer;
         private Image image;
-        private Material spriteMaterial;
+        private Material materialInstance;
         private Type type;
         private int colorPropertyId;
         private int flipPropertyId;
@@ -50,28 +50,28 @@ namespace HHG.Common.Runtime
         public void SyncProperties()
         {
             EnsureMaterialIsCached();
-            spriteMaterial.SetColor(colorPropertyId, GetSpriteColor());
-            spriteMaterial.SetVector(flipPropertyId, GetFlipVector());
+            materialInstance.SetColor(colorPropertyId, GetSpriteColor());
+            materialInstance.SetVector(flipPropertyId, GetFlipVector());
         }
 
         private void EnsureMaterialIsCached()
         {
-            if (spriteMaterial == null)
+            if (materialInstance == null)
             {
                 if (spriteRenderer == null && TryGetComponent(out spriteRenderer))
                 {
                     type = Type.SpriteRenderer;
-                    spriteMaterial = spriteRenderer.material;
+                    materialInstance = spriteRenderer.material;
                 }
                 else if (image == null && TryGetComponent(out image))
                 {
                     type = Type.Image;
-                    spriteMaterial = image.material;
+                    materialInstance = image.GetMaterialInstance();
                 }
                 else if (lineRenderer == null && TryGetComponent(out lineRenderer))
                 {
                     type = Type.LineRenderer;
-                    spriteMaterial = lineRenderer.material;
+                    materialInstance = lineRenderer.material;
                 }
             }
         }
@@ -89,18 +89,35 @@ namespace HHG.Common.Runtime
 
         private Vector4 GetFlipVector()
         {
-            // Then get flip vector from scale
             Vector3 lossyScale = transform.lossyScale;
             float xSign = Mathf.Sign(lossyScale.x);
             float ySign = Mathf.Sign(lossyScale.y);
-            float scaleSign = Mathf.Sign(lossyScale.x * lossyScale.y * lossyScale.z);
+
+            // Sprite renderer flips mirror the sprite on top of the transform's scale
+            if (type == Type.SpriteRenderer)
+            {
+                if (spriteRenderer.flipX)
+                {
+                    xSign = -xSign;
+                }
+
+                if (spriteRenderer.flipY)
+                {
+                    ySign = -ySign;
+                }
+            }
+
+            float scaleSign = Mathf.Sign(xSign * ySign * lossyScale.z);
             return new Vector4(xSign, ySign, scaleSign, ySign);
         }
 
         private void OnDestroy()
         {
-            // Images do NOT create new material instances like sprite renderer's do
-            if (spriteMaterial && type == Type.SpriteRenderer) Destroy(spriteMaterial);
+            // Every type uses its own material instance, so it's always ours to destroy
+            if (materialInstance)
+            {
+                Destroy(materialInstance);
+            }
         }
     }
 }
