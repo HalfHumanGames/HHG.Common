@@ -71,41 +71,83 @@ namespace HHG.Common.Runtime
             return enumerable.Where(item => item != null);
         }
 
-        public static T SelectByWeight<T>(this IEnumerable<T> source, System.Func<T, int> getter, System.Random rand = null)
+        // Weights <= 0 are never picked, unless nothing has weight; then every item is equally likely
+        public static T SelectByWeight<T>(this IList<T> source, System.Func<T, int> getter, System.Random rand = null)
         {
-            rand ??= random;
-            System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
-            int i = rand.Next(0, source.Sum(min));
-            return source.FirstOrDefault(item => (i -= min(item)) < 0);
+            int index = WeightedIndex(source, getter, rand ?? random);
+            return index < 0 ? default : source[index];
         }
 
-        public static IEnumerable<T> TakeByWeight<T>(this IEnumerable<T> source, int amount, System.Func<T, int> getter, System.Random rand = null)
+        public static T SelectByWeight<T>(this IEnumerable<T> source, System.Func<T, int> getter, System.Random rand = null)
+        {
+            // Copied once so a lazy source isn't enumerated twice
+            List<T> items = Pool.GetList<T>();
+            items.AddRange(source);
+            T item = items.SelectByWeight(getter, rand);
+            Pool.ReleaseList(items);
+            return item;
+        }
+
+        // Picks up to amount distinct items, each pick weighted over what's left
+        public static IEnumerable<T> SelectByWeight<T>(this IEnumerable<T> source, int amount, System.Func<T, int> getter, System.Random rand = null)
         {
             rand ??= random;
-            System.Func<T, int> min = item => Mathf.Max(getter(item), 1);
-            HashSet<T> taken = new HashSet<T>();
-            int sum = source.Sum(min);
+            List<T> remaining = Pool.GetList<T>();
+            remaining.AddRange(source);
 
-            for (int i = 0; i < amount; i++)
+            // Returns the list to the pool even if the caller stops enumerating early
+            try
             {
-                int index = rand.Next(0, sum);
-
-                foreach (T item in source)
+                for (int i = 0; i < amount && remaining.Count > 0; i++)
                 {
-                    if (taken.Contains(item))
+                    T item = remaining[WeightedIndex(remaining, getter, rand)];
+
+                    for (int j = remaining.Count - 1; j >= 0; j--)
                     {
-                        continue;
+                        if (EqualityComparer<T>.Default.Equals(remaining[j], item))
+                        {
+                            remaining.RemoveAt(j);
+                        }
                     }
 
-                    if ((index -= min(item)) < 0)
-                    {
-                        yield return item;
-                        taken.Add(item);
-                        sum -= min(item);
-                        break;
-                    }
+                    yield return item;
                 }
             }
+            finally
+            {
+                Pool.ReleaseList(remaining);
+            }
+        }
+
+        // Returns -1 when items is empty
+        private static int WeightedIndex<T>(IList<T> items, System.Func<T, int> getter, System.Random rand)
+        {
+            int total = 0;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                total += Mathf.Max(getter(items[i]), 0);
+            }
+
+            if (total <= 0)
+            {
+                int uniformIndex = rand.Next(0, items.Count);
+                return items.Count > 0 ? uniformIndex : -1;
+            }
+
+            int roll = rand.Next(0, total);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                roll -= Mathf.Max(getter(items[i]), 0);
+
+                if (roll < 0)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public static int IndexOf<T>(this IEnumerable<T> source, T search)

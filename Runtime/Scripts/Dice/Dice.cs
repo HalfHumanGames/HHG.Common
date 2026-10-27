@@ -14,7 +14,7 @@ namespace HHG.Common.Runtime
 
     public static class DiceExtensions
     {
-        public static int Roll(this Dice dice) => Random.Range(1, dice.Sides());
+        public static int Roll(this Dice dice) => Random.Range(1, dice.Sides() + 1);
 
         public static int Sides(this Dice dice) => dice switch
         {
