@@ -42,7 +42,7 @@ namespace HHG.Common.Runtime
 
             if (texture == null || texture.width != resolution || texture.height != rows)
             {
-                DestroyObject(texture);
+                this.SmartDestroy(texture);
 
                 // sRGB because gradient colors are authored in gamma space
                 texture = new Texture2D(resolution, rows, TextureFormat.RGBA32, false, false)
@@ -94,16 +94,8 @@ namespace HHG.Common.Runtime
 
         private void OnDisable()
         {
-            DestroyObject(material);
-            DestroyObject(texture);
-        }
-
-        private static void DestroyObject(Object obj)
-        {
-            if (obj == null) return;
-
-            if (Application.isPlaying) Destroy(obj);
-            else DestroyImmediate(obj);
+            this.SmartDestroy(material);
+            this.SmartDestroy(texture);
         }
     }
 }

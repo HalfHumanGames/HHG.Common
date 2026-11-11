@@ -127,12 +127,13 @@ Shader "HHG/UI/Gradient Map"
                 #endif
                 half value = saturate(dot(gammaSource, half3(0.299, 0.587, 0.114)));
 
-                half3 fromColor = tex2D(_RampTex, float2(value, IN.ramp.x)).rgb;
-                half3 toColor = tex2D(_RampTex, float2(value, IN.ramp.y)).rgb;
+                half4 fromColor = tex2D(_RampTex, float2(value, IN.ramp.x));
+                half4 toColor = tex2D(_RampTex, float2(value, IN.ramp.y));
+                half4 ramp = lerp(fromColor, toColor, IN.ramp.z);
 
                 half4 color;
-                color.rgb = lerp(fromColor, toColor, IN.ramp.z) * IN.color.rgb;
-                color.a = source.a * IN.color.a;
+                color.rgb = ramp.rgb * IN.color.rgb;
+                color.a = source.a * ramp.a * IN.color.a;
 
                 #ifdef UNITY_UI_CLIP_RECT
                 half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(IN.mask.xy)) * IN.mask.zw);

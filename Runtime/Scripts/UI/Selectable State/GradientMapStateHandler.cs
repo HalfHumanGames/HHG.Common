@@ -4,12 +4,13 @@ namespace HHG.Common.Runtime
 {
     public class GradientMapStateHandler : SelectableStateHandler<int>
     {
-        [SerializeField] private UIGradientMap[] targets = new UIGradientMap[0];
         [SerializeField, Min(0f)] private float fadeDuration = .1f;
 
-        protected override void Reset()
+        private UIGradientMap[] targets = new UIGradientMap[0];
+
+        protected override void Awake()
         {
-            base.Reset();
+            base.Awake();
             targets = GetComponentsInChildren<UIGradientMap>(true);
         }
 

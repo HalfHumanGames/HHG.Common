@@ -4,14 +4,15 @@ namespace HHG.Common.Runtime
 {
     public abstract class SelectableStateHandler<T> : MonoBehaviour
     {
-        [SerializeField] private StateButton button;
         [SerializeField] private StateValues<T> available;
         [SerializeField] private bool overrideUnavailable;
         [SerializeField] private StateValues<T> unavailable;
 
+        private StateButton button;
+
         protected abstract void Apply(T value, bool instant);
 
-        protected virtual void Reset()
+        protected virtual void Awake()
         {
             button = GetComponentInParent<StateButton>(true);
         }

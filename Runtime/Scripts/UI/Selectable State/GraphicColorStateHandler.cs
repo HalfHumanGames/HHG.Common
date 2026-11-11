@@ -5,16 +5,17 @@ using UnityEngine.UI;
 namespace HHG.Common.Runtime
 {
     // Sets a Graphic's color (not the CanvasRenderer tint) per state, so text keeps exact authored colors
+    [RequireComponent(typeof(Graphic))]
     public class GraphicColorStateHandler : SelectableStateHandler<Color>
     {
-        [SerializeField] private Graphic target;
         [SerializeField, Min(0f)] private float fadeDuration = .1f;
 
+        private Graphic target;
         private Coroutine fade;
 
-        protected override void Reset()
+        protected override void Awake()
         {
-            base.Reset();
+            base.Awake();
             target = GetComponent<Graphic>();
         }
 
