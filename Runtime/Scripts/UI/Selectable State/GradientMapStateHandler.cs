@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
-    public class GradientMapStateHandler : SelectableStateHandler<int>
+    public class GradientMapStateHandler : SelectableStateHandler<GradientMapRamp>
     {
         [SerializeField, Min(0f)] private float fadeDuration = .1f;
 
@@ -14,11 +14,11 @@ namespace HHG.Common.Runtime
             targets = GetComponentsInChildren<UIGradientMap>(true);
         }
 
-        protected override void Apply(int row, bool instant)
+        protected override void Apply(GradientMapRamp ramp, bool instant)
         {
             foreach (UIGradientMap target in targets)
             {
-                target.SetRow(row, instant ? 0f : fadeDuration);
+                target.SetRamp(ramp, instant ? 0f : fadeDuration);
             }
         }
     }

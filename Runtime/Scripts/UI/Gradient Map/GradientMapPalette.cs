@@ -25,20 +25,43 @@ namespace HHG.Common.Runtime
 
         [SerializeField] private Shader shader;
         [SerializeField, Min(2)] private int resolution = 256;
-        [SerializeField] private List<GradientMapRamp> ramps = new List<GradientMapRamp>();
+        [SerializeField] private SubAssetList<GradientMapRamp> ramps = new SubAssetList<GradientMapRamp>();
 
         private Texture2D texture;
         private Material material;
 
-        public float GetRowCoordinate(int row)
+        public float GetRowCoordinate(GradientMapRamp ramp)
         {
-            int count = Mathf.Max(1, ramps.Count);
-            return (Mathf.Clamp(row, 0, count - 1) + .5f) / count;
+            IReadOnlyList<GradientMapRamp> items = ramps.Items;
+            int row = 0;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i] == ramp)
+                {
+                    row = i;
+                    break;
+                }
+            }
+
+            return (row + .5f) / Mathf.Max(1, items.Count);
+        }
+
+        internal void Rebuild()
+        {
+            // Only rebuild what already exists so validating an unused palette stays free
+            if (material != null || texture != null)
+            {
+                Build();
+            }
+
+            Changed?.Invoke();
         }
 
         private void Build()
         {
-            int rows = Mathf.Max(1, ramps.Count);
+            IReadOnlyList<GradientMapRamp> items = ramps.Items;
+            int rows = Mathf.Max(1, items.Count);
 
             if (texture == null || texture.width != resolution || texture.height != rows)
             {
@@ -58,7 +81,7 @@ namespace HHG.Common.Runtime
 
             for (int y = 0; y < rows; y++)
             {
-                Gradient gradient = y < ramps.Count ? ramps[y].Gradient : null;
+                Gradient gradient = y < items.Count && items[y] != null ? items[y].Gradient : null;
 
                 for (int x = 0; x < resolution; x++)
                 {
@@ -83,13 +106,18 @@ namespace HHG.Common.Runtime
 
         private void OnValidate()
         {
-            // Only rebuild what already exists so validating an unused palette stays free
-            if (material != null || texture != null)
+#if UNITY_EDITOR
+            // Link ramps added through the Sub-Asset tools back to this palette
+            foreach (GradientMapRamp ramp in ramps.Items)
             {
-                Build();
+                if (ramp != null && ramp.Palette != this)
+                {
+                    ramp.Palette = this;
+                    UnityEditor.EditorUtility.SetDirty(ramp);
+                }
             }
-
-            Changed?.Invoke();
+#endif
+            Rebuild();
         }
 
         private void OnDisable()

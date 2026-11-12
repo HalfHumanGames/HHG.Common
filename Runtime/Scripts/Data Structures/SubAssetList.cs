@@ -1,62 +1,15 @@
 using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using UnityEngine;
 
 namespace HHG.Common.Runtime
 {
+    // Ordered list of sub-assets stored inside the owning asset.
+    // Edit it through the Sub-Asset tools (inspector Add button, Project window right-click), not by hand.
     [System.Serializable]
     public class SubAssetList<T> where T : ScriptableObject
     {
         public IReadOnlyList<T> Items => items;
 
-        [SerializeField] private List<string> names = new List<string>();
         [SerializeField] private List<T> items = new List<T>();
-
-#if UNITY_EDITOR
-        public void SyncSubAssetList(Object parent)
-        {
-            items.Clear();
-            Object[] children = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(parent));
-
-            foreach (Object asset in children)
-            {
-                if (asset is T child)
-                {
-                    items.Add(child);
-                }
-            }
-
-            for (int i = 0; i < names.Count; i++)
-            {
-                if (i < items.Count)
-                {
-                    if (items[i].name != names[i])
-                    {
-                        items[i].name = names[i];
-                        EditorUtility.SetDirty(items[i]);
-                    }
-                }
-                else
-                {
-                    T child = ScriptableObject.CreateInstance<T>();
-                    child.name = names[i];
-                    items.Add(child);
-                    AssetDatabase.AddObjectToAsset(child, parent);
-                    EditorUtility.SetDirty(child);
-                }
-            }
-
-            for (int i = items.Count - 1; i >= names.Count; i--)
-            {
-                Object.DestroyImmediate(items[i], true);
-                items.RemoveAt(i);
-            }
-
-            AssetDatabase.SaveAssets();
-
-        }
-#endif
     }
 }

@@ -9,8 +9,26 @@ namespace HHG.Common.Runtime
         [SerializeField] private StateValues<T> unavailable;
 
         private StateButton button;
+        private T overrideValue;
+        private bool hasOverride;
 
         protected abstract void Apply(T value, bool instant);
+
+        // Lets game code force a value regardless of state until cleared
+        public void SetOverride(T value)
+        {
+            overrideValue = value;
+            hasOverride = true;
+            OnStateChanged(false);
+        }
+
+        public void ClearOverride()
+        {
+            if (!hasOverride) return;
+
+            hasOverride = false;
+            OnStateChanged(false);
+        }
 
         protected virtual void Awake()
         {
@@ -30,6 +48,12 @@ namespace HHG.Common.Runtime
 
         private void OnStateChanged(bool instant)
         {
+            if (hasOverride)
+            {
+                Apply(overrideValue, instant);
+                return;
+            }
+
             StateValues<T> values = overrideUnavailable && !button.IsAvailable ? unavailable : available;
             Apply(values.Get(button.State), instant);
         }

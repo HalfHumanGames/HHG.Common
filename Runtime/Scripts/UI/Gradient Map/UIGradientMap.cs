@@ -15,16 +15,16 @@ namespace HHG.Common.Runtime
         private static readonly int stencilWriteMaskId = Shader.PropertyToID("_StencilWriteMask");
         private static readonly int colorMaskId = Shader.PropertyToID("_ColorMask");
 
-        [SerializeField] private GradientMapPalette palette;
-        [SerializeField] private int row;
+        [SerializeField] private GradientMapRamp ramp;
 
+        private GradientMapPalette palette => ramp != null ? ramp.Palette : null;
         private GradientMapPalette subscribedPalette;
         private Material stencilMaterial;
         private Coroutine fade;
-        private int fromRow;
+        private GradientMapRamp fromRamp;
         private float blend = 1f;
 
-        public void SetRow(int newRow, float duration = 0f)
+        public void SetRamp(GradientMapRamp newRamp, float duration = 0f)
         {
             if (fade != null)
             {
@@ -32,24 +32,29 @@ namespace HHG.Common.Runtime
                 fade = null;
             }
 
-            if (duration > 0f && newRow != row && isActiveAndEnabled && Application.isPlaying)
+            // Fading samples both rows from one texture, so it only works within a palette
+            bool canFade = newRamp != ramp && ramp != null && newRamp != null && newRamp.Palette == ramp.Palette;
+
+            if (duration > 0f && canFade && isActiveAndEnabled && Application.isPlaying)
             {
-                fade = StartCoroutine(FadeAsync(newRow, duration));
+                fade = StartCoroutine(FadeAsync(newRamp, duration));
             }
             else
             {
-                row = newRow;
-                fromRow = newRow;
+                ramp = newRamp;
+                fromRamp = newRamp;
                 blend = 1f;
+                Resubscribe();
+                graphic.SetMaterialDirty();
                 graphic.SetVerticesDirty();
             }
         }
 
-        private IEnumerator FadeAsync(int newRow, float duration)
+        private IEnumerator FadeAsync(GradientMapRamp newRamp, float duration)
         {
-            // Fade from the row currently on screen, which may itself be mid-fade
-            fromRow = blend < .5f ? fromRow : row;
-            row = newRow;
+            // Fade from the ramp currently on screen, which may itself be mid-fade
+            fromRamp = blend < .5f ? fromRamp : ramp;
+            ramp = newRamp;
             blend = 0f;
 
             while (blend < 1f)
@@ -59,7 +64,7 @@ namespace HHG.Common.Runtime
                 yield return null;
             }
 
-            fromRow = row;
+            fromRamp = ramp;
             fade = null;
         }
 
@@ -67,13 +72,13 @@ namespace HHG.Common.Runtime
         {
             if (!IsActive() || palette == null) return;
 
-            Vector4 ramp = new Vector4(palette.GetRowCoordinate(fromRow), palette.GetRowCoordinate(row), blend, 0f);
+            Vector4 rows = new Vector4(palette.GetRowCoordinate(fromRamp), palette.GetRowCoordinate(ramp), blend, 0f);
             UIVertex vertex = default;
 
             for (int i = 0; i < vh.currentVertCount; i++)
             {
                 vh.PopulateUIVertex(ref vertex, i);
-                vertex.uv1 = ramp;
+                vertex.uv1 = rows;
                 vh.SetUIVertex(vertex, i);
             }
         }
@@ -110,7 +115,7 @@ namespace HHG.Common.Runtime
 
         protected override void OnEnable()
         {
-            fromRow = row;
+            fromRamp = ramp;
             blend = 1f;
             Subscribe();
             EnableCanvasChannel();
@@ -136,13 +141,12 @@ namespace HHG.Common.Runtime
 #if UNITY_EDITOR
         protected override void OnValidate()
         {
-            fromRow = row;
+            fromRamp = ramp;
             blend = 1f;
 
             if (isActiveAndEnabled)
             {
-                Unsubscribe();
-                Subscribe();
+                Resubscribe();
                 EnableCanvasChannel();
                 graphic.SetMaterialDirty();
             }
@@ -158,6 +162,12 @@ namespace HHG.Common.Runtime
                 palette.Changed += Refresh;
                 subscribedPalette = palette;
             }
+        }
+
+        private void Resubscribe()
+        {
+            Unsubscribe();
+            Subscribe();
         }
 
         private void Unsubscribe()
